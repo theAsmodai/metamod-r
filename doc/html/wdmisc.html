@@ -1,0 +1,48 @@
+<!-- vi: set ts=4 sw=4 : -->
+<!-- vim: set tw=75 : -->
+
+<HTML>
+<head>
+<title>Metamod WDMisc Plugin</title>
+</head>
+<body>
+
+<h1>WDMisc plugin
+</h1>
+
+<p> This is a simple plugin that I use as a testbed for various features
+and other things I need to try from a plugin.
+
+<p> It currently provides two features:
+
+<ul>
+
+   <p><li> a cvar "bounce" that, if set to 1, will exit the server at map
+   change.  I use this when I need to shutdown or the server, and don't
+   want to kill it in the middle of a map, nor watch the server constantly
+   until the timelimit expires.
+
+   <p><li> it prints a centersay to all the players whenever someone in
+   Counter-Strike plants the bomb.  This was done basically as a
+   proof-of-concept for catching certain game-events that aren't otherwise
+   triggered by the HL API.  It works only by examining every log message
+   that the server generates, and checking to see if it includes the string
+   indicating the particular event in question (in this case
+   "Planted_The_Bomb").  
+   
+   <p>Although this works, it is really a rather <i><b>poor</b></i>
+   solution to the problem, as it assumes a <i><b>lot</b></i> of
+   string-compares, which <i>can</i> seriously degrade the performance of
+   the server.  I did try to take as many short-cuts as reasonable in the
+   code, to decrease the amount of string-comparing going on, which makes
+   the code a bit less readable than doing just a "strstr" on the log line.
+
+</ul>
+
+Other features to be added/removed in the future...
+
+<p>
+<hr>
+
+</body>
+</HTML>

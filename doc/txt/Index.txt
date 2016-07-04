@@ -1,0 +1,27 @@
+Metamod
+=-=-=-=
+
+Metamod is a plugin/DLL manager that sits between the Half-Life Engine and
+an HL Game mod, allowing the dynamic loading/unloading of mod-like DLL
+plugins to add functionality to the HL server or game mod.
+
+--------------------------------------------------------------------------
+
+See metamod.org (metamod.org/) for news, downloads, and plugin links.
+
+--------------------------------------------------------------------------
+
+Metamod Docs                        Other HLDS info                       
+                                                                          
+  - About metamod                     * SDK DLLAPI Notes                  
+  - FAQ                               * SDK NEWAPI Notes                  
+  - Using metamod                     * SDK Engine Notes                  
+  - Release Notes                                                         
+  - Game/Mod support                  * Related links & books             
+  - Trace Plugin                      * Mailing lists                     
+  - WDMisc Plugin                                                         
+  - Coding for metamod                                                    
+
+--------------------------------------------------------------------------
+
+<willday@metamod.org>

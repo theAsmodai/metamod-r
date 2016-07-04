@@ -1,0 +1,340 @@
+Coding for Metamod
+=-=-=-=-=-=-=-=-=-=
+
+
+Compiling
+=========
+
+You'll need the Half-Life SDK, of course. In particular you'll need HL SDK
+version 2.3. You can find the original SDK 2.3 at the Valve Editing
+Resource Center (VERC) (www.valve-erc.com/), and a modified version of SDK
+2.3 at metmod.org/files/sdk (metamod.org/files/sdk/).
+
+
+Operation
+=========
+
+The basic operation is, for each api call:
+
+  - iterate through list of plugins
+  - for each plugin, if it provides this api call, then call the function
+    in the plugin
+  - call the "real" function (in the game dll, or from the engine)
+  - for each plugin, check for a "post" version of the function, and call
+    if present
+
+Also, for any api call, each plugin has the opportunity to replace the
+real routine, in two ways:
+
+  - prevent the real routine from being called (SUPERCEDE).
+  - allow the real routine to be called, but change the value that's
+    returned (OVERRIDE)
+
+Thus after each plugin is called, its META_RESULT flag is checked, and
+action taken appropriately. Note that supercede/override only affects the
+_real_ routine; other plugins will still be called. In addition to the 
+SUPERCEDE and OVERRIDE flags, there are two additional flags a plugin can
+return:
+
+  - HANDLED ("I did something here")
+  - IGNORED ("I didn't really do anything")
+
+These aren't used by Metamod itself, but could be used by plugins to get
+an idea if a previous plugin did anything.
+
+Note that each routine _needs_ to set its META_RESULT value before
+returning. Plugin routines that do not set a value will be reported as
+errors in the logs.
+
+
+Plugin coding requirements
+==========================
+
+Plugins MUST provide the following standard HLSDK exported function:
+
+   void GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t *pGlobals);
+
+AS WELL AS the following new functions:
+
+   void Meta_Init(void); (optional)
+   int Meta_Query(char *interfaceVersion, plugin_info_t **pinfo, mutil_funcs_t *pMetaUtilFuncs);
+   int Meta_Attach(PLUG_LOADTIME now, META_FUNCTIONS *pFunctionTable, meta_globals_t *pMGlobals, gamedll_funcs_t *pGamedllFuncs);
+   int Meta_Detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
+
+Also, it must provide AT LEAST one function returning a standard HL
+function table, from either the following standard HLSDK functions:
+
+   int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
+   int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion );
+   int GetNewDLLFunctions( NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion );
+
+or from the following new functions:
+
+   int GetEntityAPI_Post(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion);
+   int GetEntityAPI2_Post(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion ;
+   int GetNewDLLFunctions_Post(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion);
+
+   int GetEngineFunctions(enginefuncs_t *pengfuncsFromEngine, int *interfaceVersion);
+   int GetEngineFunctions_Post(enginefuncs_t *pengfuncsFromEngine, int *interfaceVersion);
+
+Thus, it needs to have (at least):
+
+   GiveFnptrsToDll
+   Meta_Query
+   Meta_Attach
+   Meta_Detach
+   <one or more Get function>
+
+See the "stub_plugin" for an example of _bare minimum_ code. See "
+trace_plugin" for an example of more complete functionality.
+
+Also, if the plugin needs to use LINK_ENTITY_TO_CLASS, support for the
+particular entity(ies) has to be added explicitly to Metamod
+(linkfunc.cpp), just as it does for entities in game DLLs.
+
+
+Operation Details
+=================
+
+These are the valid META_RESULT values a plugin routine can specify:
+
+   
+  - MRES_IGNORED
+    The plugin did nothing. This could be used to tell a subsequent plugin
+    that the some situation hasn't been handled yet. This would be
+    recognized only by other plugins; Metamod itself doesn't do anything
+    special for this situation. Unless otherwise specified by a later
+    plugin, execution of routine in the gameDLL will take place. This is
+    valid in both normal and post routines.
+   
+  - MRES_HANDLED
+    The plugin handled the situation, or did something with the
+    information. Again, this could be used to tell a subsequent plugin
+    that some situation has already been taken care of, and is not
+    recognized specially by Metamod. Unless otherwise specified by a later
+    plugin, execution of routine in the gameDLL will take place. This is
+    valid in both normal and post routines.
+   
+  - MRES_OVERRIDE
+    The plugin is providing a return value for the routine, which should
+    be used in place of the return value from the gameDLL's routine (the
+    plugin "overrides" the gameDLL's return value). Unless otherwise
+    specified by a later plugin, the gameDLL routine will still be called.
+    Note this only makes sense for non-void routines. This is valid in
+    both normal and post routines.
+   
+  - MRES_SUPERCEDE
+    The plugin has performed sufficient actions for the routine, and the
+    gameDLL's routine should NOT be called (the plugin "supercedes" the
+    gameDLL's routine, more or less replacing it entirely). Any return
+    value for the routine should be specified as well by the plugin. Note
+    this is only valid for normal routines, as post routines cannot
+    prevent calling the gameDLL's routine (as it has already happened!).
+    Also note, this doesn't prevent subsequent plugins from being called
+    for this routine; it supercedes _only_ the gameDLL.
+
+As the plugins are called, a running status is kept of the "highest" meta
+status so far, in the order (lowest to highets) shown above. After calling
+all the "normal" routines, the status is checked to see if the gameDLL's
+routine should be called - ie, it will not be called if one (or more) of
+the plugin's has specified META_SUPERCEDE. The gameDLL's routine is then
+called, or skipped, as appropriate. Then, all the "post" routines are
+called in the same manner (except META_SUPERCEDE is no longer a valid meta
+result).
+
+Last, if any plugins specified META_OVERRIDE or META_SUPERCEDE, the return
+value given by the _last_ such plugin is returned as the routine's return
+code to the engine (assuming a non-void routine). Thus, the order of the
+plugins as specified in the metamod.ini _does_ have a possible effect.
+
+
+Available Macros
+================
+
+The meta_api.h header that describes the Metamod API functions, types, and
+structures also includes several macros that can be of help when coding a
+plugin.
+
+   
+  - SET_META_RESULT(result)
+    Sets the META_RESULT for the plugin.
+   
+  - RETURN_META(result)
+    Sets the META_RESULT for the plugin, and then calls return. This
+    assumes a void function.
+   
+  - RETURN_META_VALUE(result, value)
+    Sets the META_RESULT for the plugin, and then returns the given value.
+    This assumes a non-void function, and it doesn't matter the particular
+    type of the return value.
+   
+  - META_RESULT_STATUS
+    Gives the current status of META_RESULT for this routine from plugins
+    so far. It will return the "highest" result so far, in the order of
+    lesser to greater: IGNORED, HANDLED, OVERRIDE, SUPERCEDE (see also
+    above Operation Details)
+   
+  - META_RESULT_PREVIOUS
+    Gives the META_RESULT of the previous plugin.
+   
+  - META_RESULT_ORIG_RET(type)
+    Gives the "original" return value for the routine, ie the return value
+    of the routine from gameDLL. The type for the routine's return value
+    must be specified in the macro; this is used as a cast for assignment.
+    Note this is only valid in a "post" routine.
+   
+  - META_RESULT_OVERRIDE_RET(type)
+    Gives the return value from any previous plugin that specified 
+    META_OVERRIDE or META_SUPERCEDE. The type for the routine's return
+    value must be specified in the macro; this is used as a cast for
+    assignment. This should only be used after checking the META_RESULT to
+    see if there's actually an override value available.
+   
+  - MDLL_*(args)
+    Calls a given DLLAPI routine in the gameDLL. For instance, 
+    MDLL_GameDLLInit(args), MDLL_Spawn(args), etc.
+   
+  - MNEW_*(args)
+    Calls a given NEWAPI routine in the gameDLL. For instance, 
+    MNEW_GameShutdown(args), etc.
+
+
+Utility Callback Functions
+==========================
+
+In version 1.05, Metamod began providing a set of utility functions to
+plugins to centralize functionality, reduce code reuse, and to provide
+some convenience in plugin coding. Presently, only a few functions are
+provided. More are added as I find the time, and identify some advantage
+to having them (either for my own plugins, or by others' request for their
+plugins).
+
+Note the PLID keyword passed to each function. This is basically a "plugin
+id" to indicate to Metamod which plugin is calling the function (else it's
+difficult to tell), and is a macro that should be specified verbatim with
+each call. (Currently, the macro is merely the plugin_info struct pointer
+returned by the plugin via Meta_Query; in the future this could change to
+some other identifier.)
+
+   
+  - void LOG_CONSOLE(PLID, char *fmt, ...)
+    Print a message line on the console. Message is specified as a printf
+    style format string and arguments. A trailing newline is provided by
+    the routine and should not be specified in the string (unless you want
+    two newlines).
+   
+  - void LOG_MESSAGE(PLID, char *fmt, ...)
+    Print a message line in the server logs. Message is specified as a
+    printf style format string and arguments. A trailing newline is
+    provided by the routine and should not be specified in the string. Log
+    message is prefixed by the logtag string in the plugin's "info"
+    struct, surrounded by brackets. For instance:
+   
+    L 04/17/2001 - 18:00:35: [TraceAPI] Tracing Engine routine
+    'RegUserMsg'
+   
+  - void LOG_ERROR(PLID, char *fmt, ...)
+    As in LOG_MESSAGE above, only marked as well with the string "ERROR:".
+    For example:
+   
+    L 04/17/2001 - 18:03:13: [TraceAPI] ERROR: malloc failed
+   
+  - void LOG_DEVELOPER(PLID, char *fmt, ...)
+    As in LOG_MESSAGE above, only message will be logged only if cvar
+    developer is set to 1; message is marked as well with the string "dev:
+    ". For example:
+   
+    L 04/17/2001 - 18:03:13: [TraceAPI] dev: called: GiveFnptrsToDll
+   
+  - void CENTER_SAY(PLID, char *fmt, ...)
+    Prints a message on the center of all players' screens. This is like
+    the "centersay" of AdminMod, with pretty_say enabled, with the same
+    defaults (green, and a 10 second fade-in). A message is logged as
+    well, ie: [added in 1.06]
+   
+    L 04/17/2001 - 15:44:52: [WDMISC] (centersay) random set up us the
+    bomb!
+   
+  - void CENTER_SAY_PARMS(PLID, hudtextparms_t tparms, char *fmt, ...)
+    As in CENTER_SAY above, but allows specifying all the parameters. (see
+    SDK dlls/util.h for the struct hudtextparms_t). [added in 1.06]
+   
+  - void CENTER_SAY_VARARGS(PLID, hudtextparms_t tparms, char *fmt,
+    va_list ap)
+    As in CENTER_SAY_PARMS above, only the message is passed as a
+    vsnprintf style varargs format string and args list. This is included
+    merely because both the previous CENTER_SAY functions actually call
+    this, and it was convenient to include it as well. [added in 1.06]
+   
+  - qboolean CALL_GAME_ENTITY(PLID, char *entStr, entvars_t *pev)
+    Calls an entity function in the gameDLL. For instance, a bot usually
+    needs to call the player entity function. [added in 1.09]
+   
+  - int GET_USER_MSG_ID(PLID, const char *name, int *size)
+    Returns the id number corresponding to the given message name, of
+    those messages registered by the gamedll with RegUserMsg, optionally
+    returning the registered size of the message as well. This is to allow
+    things like bots to access the name/id mapping without having to catch
+    RegUserMsg themselves, and thus have to be loaded at startup. [added
+    in 1.11]
+   
+  - const char * GET_USER_MSG_NAME(PLID, int msgid, int *size)
+    Returns the name corresponding to the given msgid number, of those
+    messages registered by the gamedll with RegUserMsg, optionally
+    returning the registered size of the message as well. It will return
+    guess-names for any builtin Engine messages that it knows about
+    (SVC_TEMPENTITY, etc). The returned string is presumed to be a
+    compile-time constant string, stored in the text segment of the
+    gamedll. [added in 1.11]
+   
+  - const char * GET_PLUGIN_PATH(PLID)
+    Returns the full pathname of the loaded dll/so file for the calling
+    plugin. The returned string is a pointer to a static buffer, and
+    should be copied by the caller to local storage. [added in 1.12]
+   
+  - const char * GET_GAME_INFO(PLID, ginfo_t type)
+    Returns various string-based information about the running game/MOD/
+    gamedll. The given type can be one of:
+      - GINFO_NAME - short name of game, from "-game" argument to hlds (ie
+        "cstrike")
+      - GINFO_DESC - long name of game, from autodetection (ie
+        "Counter-Strike")
+      - GINFO_GAMEDIR - game directory, full pathname (ie "/usr/local/
+        half-life/cstrike")
+      - GINFO_DLL_FULLPATH - full pathname of the game dll (ie "/usr/local
+        /half-life/cstrike/dlls/cs_i386.so")
+      - GINFO_DLL_FILENAME - bare filename of the gamedll (ie
+        "cs_i386.so")
+    The returned string is a pointer to a static buffer, and should be
+    copied by the caller to local storage. [added in 1.14]
+
+
+Plugin Loading
+==============
+
+(this is some rough notes I intend to fill in in the future)
+
+Plugins are loaded when the engine calls GiveFnptrsToDll(). The config
+file is parsed, and for each valid plugin (uncommented, platform
+relevant), the operation is:
+
+  - dlopen() the file, store the handle
+  - dlsym() and call:
+       Meta_Init (if present)
+       GiveFnptrsToDll
+       Meta_Query
+       Meta_Attach
+  - if present, call function pointers, and store resulting function
+    table:
+       GetEntityAPI
+       GetEntityAPI2
+       GetNewDLLFunctions
+    
+       GetEntityAPI_Post
+       GetEntityAPI2_Post
+       GetNewDLLFunctions_Post
+    
+       GetEngineFunctions
+       GetEngineFunctions_Post
+
+--------------------------------------------------------------------------

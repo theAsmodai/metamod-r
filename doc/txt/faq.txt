@@ -1,0 +1,120 @@
+Metamod FAQ
+=-=-=-=-=-=
+
+Please add support for (some) mod.
+
+    Please see game support requirements in the documentation.
+
+How do I use bots with Metamod?
+
+    If the bot is not a Metamod plugin, then you will need to tell Metamod
+    to use your bot as the gamedll, by specifying it on the hlds command
+    line with the "+localinfo mm_gamedll" option. See the Metamod docs.
+    See also the AdminMod docs (www.adminmod.org/help/online/Configuration
+    /How_to_Use_Bots_with_MetaMod_AM_2.50_and_up.htm).
+
+The download links give corrupt files.
+
+    I think what you're observing is that your web client is quietly
+    uncompressing the file, but not updating the name of the downloaded
+    file to reflect this. In particular, some web clients will silently
+    decompress (gunzip) files _without_ removing the ".gz" from the
+    filename, so you'll end up with a file "metamod_i386.so.gz" which is
+    _really_ "metamod_i386.so", and so trying to gunzip it will produce an
+    error ("not in gzip format"). Try running "file" on the resulting file
+    to see what the OS thinks it is. Or, where you don't have "file" (ie
+    windows), just look at the file size - it should be pretty indicative
+    of whether the file is still compressed or not.
+
+How do I install Metamod?
+
+    This is covered briefly in the Metamod docs. Typically, though,
+    Metamod is installed as part of some major plugin, like AdminMod
+    (www.adminmod.org/). There is also some discussion of installing
+    Metamod by hand in the AdminMod docs (www.adminmod.org/help/online/
+    Installing/Manual_Installation_-_Walk-Through.htm). If you already
+    have Metamod installed and merely want to update it, this requires
+    only replacing the .so/.dll with the latest version from the webpage
+    (metamod.org/).
+
+I'm having trouble with AdminMod.
+
+    You'll need to ask your AdminMod questions on the AdminMod forums
+    (www.ozforums.com/forumdisplay.php?forumid=143).
+
+How do I do (something) in a Metamod plugin?
+
+    Generally speaking, a Metamod plugin works very much like an Half-Life
+    Game Mod, since all it's doing is making the same calls to the same
+    SDK that the Game Mod does. So, the question typically isn't "how do I
+    do this in Metamod?" but instead "how do I do this in an Half-Life
+    Mod?", and is best asked in a HL SDK Programming forum/mailinglist
+    (see related links and especially Botman's MOD FAQ (planethalflife.com
+    /botman/MOD_FAQ.shtml)). Once you figure out how it would normally be
+    done in a Game Mod, figuring out how to do it in Metamod is relatively
+    straightforward.
+   
+    However, if you have questions on how to convert a piece of code from
+    HLmod to Metamod plugin, then I can provide some pointers, or you can
+    ask on the Metamod mailing list (groups.yahoo.com/group/metamod/). And
+    of course, if you have questions about things in the code specific to
+    Metamod (ie things mentioned in the Metamod Coding docs) feel free to
+    ask me or on the mailing list.
+
+Is there a tutorial or example of how to write a Metamod plugin?
+
+    The sourcecode includes a couple of plugins that can be used as
+    examples. The "stub" plugin is the bare basics of what a plugin needs.
+    The "trace" plugin provides an example of hooking _every_ SDK
+    function. The "wdmisc" plugin provides a couple of basic useful
+    features. You can also look at several of the other plugins out there
+    for more examples.
+   
+    Note that the example plugins in the Metamod sourcecode show how to
+    use Metamod to interface with Half-Life code, but they mostly assume
+    you already know how to write Half-Life code. If you need examples or
+    info on how to write Half-Life code itself, you'll need to go look
+    through the HL SDK programming websites (see related links and
+    Botman's MOD FAQ (planethalflife.com/botman/MOD_FAQ.shtml)).
+
+I have (or know of) a Metamod plugin not listed on the webpage.
+
+    Send me the information about the plugin (name, author, description,
+    URL), and I'd be happy to provide a link from the webpage.
+
+I'm having trouble compiling under MSVC.
+
+    Please note that I do not use MSVC, so I can't help a lot with using
+    that compiler. I do all my development under linux, using gcc for
+    linux binaries and mingw32 (www.mingw.org/) for windows binaries. The
+    sourcecode does include an MSVC project file for Metamod, as well as a
+    project file for the stub plugin, both mostly as examples. They should
+    work, and indeed did work the last time I dug up MSVC to test them.
+    That said, there are a few folks on the Metamod mailing list
+    (groups.yahoo.com/group/metamod/) that do use MSVC, so you might find
+    some assistance there.
+
+If I create a Metamod plugin, does it have to be open source?
+
+    Generally speaking, yes. The way the GPL is interpreted, plugins of a
+    GPL program need to be also GPL. See also the FAQ entry on the GNU
+    site about plugins of a GPL program (www.gnu.org/licenses/gpl-faq.html
+    #GPLAndPlugins).
+
+How about a port of Metamod to other engines like Q3, Unreal, etc?
+
+    I haven't looked into it myself, but several folks on the AdminMod
+    team (from which Metamod was derived) had looked at porting to other
+    games like Q3 and UT, and determined that those engines either didn't
+    provide the necessary API hooks, or that they already provided a
+    suitable method for extending functionality. So, I wouldn't expect to
+    see a version of Metamod for those. Perhaps for some other future
+    engines, although I believe most modern engines are now providing
+    their own method for extensions or plugins, so that a third-party
+    solution like Metamod wouldn't be necessary.
+   
+    If Half-Life 2 ever sees the light of day, I expect I'd look seriously
+    at porting to that - unless, of course, Valve ends up providing their 
+    own plugin framework themselves. :)
+
+--------------------------------------------------------------------------

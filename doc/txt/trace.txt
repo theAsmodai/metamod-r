@@ -1,0 +1,70 @@
+TraceAPI plugin
+=-=-=-=-=-=-=-=
+
+This was originally intended as a (more or less) complete example of a
+Metamod plugin. It catches _every_ call available to it (dll routines both
+before and after the game, as well as engine functions both before and
+after the engine).
+
+Because it catches every routine, I figured I'd give it the ability to log
+when given routines are called, so it became an "api tracing" plugin. :)
+
+This can actually be useful for tracking the operation of the HL engine,
+as well as that of a particular HL game mod.
+
+It recognizes the following server cvars:
+
+   // Tracing debug levels; higher values log increasingly frequent routines.
+   // Currently 0-50.  See "api_info.cpp" for the debug levels of various
+   // functions.
+
+   // Trace level for dllapi routines.
+   trace_dllapi
+
+   // Trace level for "new" dllapi routines.
+   trace_newapi
+
+   // Trace level for engine functions.
+   trace_engine
+
+   // Enable unlimited trace logging.  By default (as of v1.06), it only
+   // logs _one_ trace message per second, to keep from overwhelming the
+   // server.  Set to "1" to enable unlimited logging.  (Default "0")
+   trace_unlimit
+
+   // General debug level, independent of trace levels.  Not currently used.
+   trace_debug
+
+
+and the following server commands:
+
+   // Enable tracing of a given routine, independent of "trace_*" level.
+   // See the list of routine names in "api_info.cpp".  Case is insignificant.
+   trace set <APIroutine>
+
+   // Disable tracing of a given routine, iff previously enabled with "trace".
+   // Doesn't affect routines being logged via "trace_*" level.
+   trace unset <APIroutine>
+
+   // Show the routines being traced.
+   trace show
+
+   // List the various routines that can be traced.
+   trace list dllapi
+   trace list newapi
+   trace list engine
+   trace list all
+
+   // Prints out version/date/etc.
+   trace version
+
+Note the information it logs on each routine invocation is, at the moment,
+relatively minimal. I included information that seemed obvious (args for a
+ClientCommand, etc), and I've added info for other routines as I've come
+across a need. Most routines I still know too little about to log any
+particular information (CreateBaseline, etc). Feel free to add information
+that you're interested in to the log messages in the routines; the
+examples should be pretty self-explanatory. I'd be interested in knowing
+as well, for adding it to the distribution code.
+
+--------------------------------------------------------------------------

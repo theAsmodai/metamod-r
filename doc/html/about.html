@@ -1,0 +1,52 @@
+<!-- vi: set ts=4 sw=4 : -->
+<!-- vim: set tw=75 : -->
+
+<HTML>
+<head>
+<title>About Metamod</title>
+</head>
+<body>
+
+<h1>Metamod
+</h1>
+
+<h2>a Half-Life utility mod</h2>
+
+<pre>
+    <b>meta</b> /me't*/ <i>or</i> /may't*/ <i>or</i> <i>(Commonwealth)</i> /mee't*/ <i>adj.,pref.</i>
+        <i>[from analytic philosophy]</i> <b>One level of description up.</b>
+</pre>
+
+<p> The purpose of MetaMod is to function "one level up" from the normal
+Half-Life game mod DLL.  Sitting between the mod game DLL and the Half-Life
+engine/binary, it intercepts the function calls between the two, with the
+option of passing them along untouched, as well as passing them on to as
+any number of <b><i>additional mod-like DLLs</i></b>.
+
+<p> Thus, you can actually have multiple "mod-like" DLLs in operation at
+one time.  I say "mod-like" because these additional DLLs (we'll call them
+"plugins") are not intended to provide a full "game"; that functionality is
+still provided by the "game dll".  However, these plugins can <b><i>add
+to</i></b> or <b><i>modify</i></b> the functionality provided by the game
+dll, or by the engine itself - for instance, adding new server commands, or
+new client commands, or even disabling commands built into the game dll.
+Although the plugin isn't intended to provide full HL-game functionality,
+since it's receiving the same information given to the game DLL, it has the
+opportunity to do <b><i>anything</i></b> the game DLL can do (given enough
+coding effort of course).
+
+<p> This is very similar to the way Alfred Reynolds' 
+<a href="http://www.adminmod.org">AdminMod</a> works, as it also sits
+between the engine and game dll, catching routines, and passing them on.
+thus modifying functionality.  However, rather than providing just the
+additional server features builtin to AdminMod DLL, MetaMod allows you to
+add features from multiple, separate DLLs.  Under that framework, AdminMod
+can be a plugin itself, and be run alongside numerous other plugins.  And,
+as of version 2.50 of AdminMod, AM has now transitioned to running as a
+Metamod plugin.
+
+<p>
+<hr>
+
+</body>
+</html>

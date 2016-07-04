@@ -1,0 +1,27 @@
+#!/bin/ksh
+# vi: set ts=4 sw=4 :
+# vim: set ft=awk :
+
+nawk '
+	BEGIN {ret=0}
+	$0 ~ "iostream.h:.*[io]stream" {next}
+	$0 ~ "iostream.h:.*operator=" {next}
+	$0 ~ "stl_iterator.h:.*::operator" {next}
+	$0 ~ "stl_bvector.h:.*Bit_(reference|iterator|const_iterator)" {next}
+	$0 ~ "stl_bvector.h:.*operator=" {next}
+	$0 ~ "stl_vector.h:.*_Vector" {next}
+	$0 ~ "instantiated from .(_Vector|vector<)" {next}
+	$0 ~ "instantiation of .vector<" {next}
+	$0 ~ "^(In file included| *) from /usr/lib/gcc-lib/i386-linux/.*/include/g\+\+-3/(stl_iterator.h|stl_algobase.h|vector|stl_bvector.h|stl_vector.h):" {next}
+	$0 ~ "/usr/lib/gcc-lib/i386-linux/.*/include/g\+\+-3/.*: At top level" {next}
+	$0 ~ "   *instantiated from here$" {next}
+	$0 ~ "                 from.*:$" {next}
+	$0 ~ "cc1plus: warnings being treated as errors" {print; next}
+	$0 ~ "warning:" {ret=1}
+	$0 ~ "error" {ret=1}
+	{print}
+	END {exit(ret)}
+'
+ret=$?
+echo "stlfilter exiting with $ret"
+exit $ret

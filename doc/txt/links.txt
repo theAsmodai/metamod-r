@@ -1,0 +1,129 @@
+Related links
+=============
+
+Here's a list of links, other sites, and information I found useful when
+working on Metamod:
+
+  - AdminMod's DLL Forum (www.ozforums.com/forumdisplay.php?forumid=114)
+  - AdminMod CVS at Sourceforge (cvs.sourceforge.net/cgi-bin/viewcvs.cgi/
+    halflifeadmin/)
+   
+  - Valve Editing Resource Center (collective.valve-erc.com/), Valve's
+    official site
+  - Botman's Bots (planethalflife.com/botman/)
+  - Half-Life Programming Planet (hlpp.valveworld.com/)
+  - Shadowman's Half-Life SDK2 Site (planethalflife.com/hlsdk2)
+  - Half-Life Coding Pages (www.planethalflife.com/botman/balfourroad/
+    index.shtml)
+  - Fixxxer's HL Coding page (planethalflife.com/fixxxer/)
+  - The Handy Vandal's HL Coding Links (www.karljones.com/halflife/
+    coding.asp)
+   
+  - Half-Life SDK Forums (www.chatbear.com/cgi-bin/board.pl?boardid=942),
+    at the VERC
+  - Half-Life SDK Forums (www.chatbear.com/cgi-bin/board.pl?action=
+    boardlisting&boardid=590), at Valve's former SDK site
+  - HL Coders mailing list (www.topica.com/lists/hlcoders), at topica.com
+  - Botman's forums (dynamic.gamespy.com/~botman/yabb/YaBB.pl)
+  - Wavelength Half-Life Coding Forum (www.thewavelength.net/forums/
+    index.php?act=SF&f=13)
+  - SDK2 Forum (pub21.ezboard.com/fshadowmanshalflifeforumsdk2), at
+    ezboard.com
+  - HL Programming Forum (dynamic.gamespy.com/~hlprogramming/ultimatebb/
+    forumdisplay.cgi?action=topics&forum=Coding&number=1), at gamespy.com
+  - Fixxxer's HL Coding forum (network54.com/Hide/Forum/goto?forumid=
+    21807)
+  - HL Programming Forum (forums.gamedesign.net/forums/wwwthreads.pl?
+    action=list&Board=halflife_coding), at gamedesign.net
+   
+  - C FAQ (www.eskimo.com/~scs/C-faq/top.html)
+  - C++ FAQ Lite (www.parashift.com/cpp-faq-lite/)
+  - C++ FAQ Index (www.calpoly.edu/~jfischer/c++faq/index.html)
+  - alt.comp.lang.learn.c-c++ FAQ (snurse-l.org/acllc-c++/faq)
+  - C++ Annotations (dragon.klte.hu/~kollarl/C++/cplusplu.html), guide for
+    C programmers to using C++
+  - C++ Portability Guide (www.mozilla.org/hacking/portable-cpp.html)
+  - Standard Template Library Programmer's Guide (www.sgi.com/tech/stl/),
+    at SGI
+  - comp.std.c++ FAQ (reality.sgi.com/austern_mti/std-c++/faq.html)
+  - GNU g++ FAQ (www.landfield.com/faqs/g++-FAQ/plain/)
+  - GNU libstdc++ FAQ (gcc.gnu.org/onlinedocs/libstdc++/faq/)
+  - C++ References (www.apl.jhu.edu/~paulmac/c++-references.html), books
+    and other links
+  - Thinking in C++ (www.mindview.net/Books/TICPP/ThinkingInCPP2e.html),
+    free electronic book
+   
+  - comp.programming.threads FAQ (www.serpentine.com/~bos/threads-faq/)
+  - comp.programming.threads FAQ #2 (www.lambdacs.com/cpt/FAQ.html)
+  - Implementing POSIX Condition Variables in Win32 (www.cs.wustl.edu/
+    ~schmidt/win32-cv-1.html)
+   
+  - Microsoft Developer Network (msdn.microsoft.com/), online win32 API
+    docs
+  - Win32 Programming FAQ (www.iseran.com/Win32/FAQ/)
+  - Minimal Gnu for Windows (mingw) (www.mingw.org/), gcc for win32
+  - Creating DLLs w/mingw (www.geocities.com/Tokyo/Towers/6162/win32/dll/
+    make.html)
+  - Mingw binaries (www.devolution.com/~slouken/SDL/Xmingw32/)
+  - Mingw binaries (newer) (members.telering.at/jessich/mingw/index.html)
+
+Books
+
+And here are books I picked up that I found useful as well:
+
+  - C: A Reference Manual (vig.prenhall.com/catalog/academic/product/
+    1,4096,0133262243,00.html), by Samuel Harbison & Guy Steele
+    (www.sls.lcs.mit.edu/~hurley/guysteele.html) (at Bookpool
+    (www.bookpool.com/.x//sm/0133262243), at Amazon (www.amazon.com/exec/
+    obidos/ASIN/0133262243))
+  - C Programming FAQs (cseng.aw.com/book/0,3828,0201845199,00.html), by
+    Steve Summit (www.eskimo.com/~scs/) (at Bookpool (www.bookpool.com/.x/
+    /sm/0201845199), at Amazon (www.amazon.com/exec/obidos/ASIN/
+    0201845199))
+   
+  - C++: The Core Language (www.oreilly.com/catalog/core/), by Gregory
+    Satir & Doug Brown (at Bookpool (www.bookpool.com/.x//sm/156592116X),
+    at Amazon (www.amazon.com/exec/obidos/ASIN/156592116X))
+  - C++ Programming Language Special Edition (cseng.aw.com/book/
+    0,3828,0201700735,00.html), by Bjarne Stroustrup (www.research.att.com
+    /~bs/) (at Bookpool (www.bookpool.com/.x//sm/0201700735), at Amazon
+    (www.amazon.com/exec/obidos/ASIN/0201700735))
+  - The C++ Standard Library: A Tutorial and Reference (cseng.aw.com/book/
+    0,3828,0201379260,00.html), by Nicolai Josuttis (www.josuttis.de/
+    indexe.html) (at Bookpool (www.bookpool.com/.x//sm/0201379260), at
+    Amazon (www.amazon.com/exec/obidos/ASIN/0201379260))
+  - C++ FAQs (cseng.aw.com/book/0,3828,0201309831,00.html), by Marshall
+    Cline (www.parashift.com/), Greg Lomow, & Mike Girou (at Bookpool
+    (www.bookpool.com/.x//sm/0201309831), at Amazon (www.amazon.com/exec/
+    obidos/ASIN/0201309831))
+  - Effective C++ (cseng.aw.com/book/0,,0201924889,00.html), by Scott
+    Meyers (www.aristeia.com/) (at Bookpool (www.bookpool.com/.x//sm/
+    0201924889), at Amazon (www.amazon.com/exec/obidos/ASIN/0201924889))
+  - Algorithms in C++, Parts 1-4 (cseng.aw.com/book/
+    0,,0201350882,00.html), by Robert Sedgewick (www.cs.princeton.edu/~rs
+    /) (at Bookpool (www.bookpool.com/.x//sm/0201350882), at Amazon
+    (www.amazon.com/exec/obidos/ASIN/0201350882))
+   
+  - Advanced Programming in the UNIX Environment (cseng.aw.com/book/
+    0,3828,0201563177,00.html), by W. Richard Stevens (www.kohala.com/)
+    (at Bookpool (www.bookpool.com/.x//sm/0201563177), at Amazon
+    (www.amazon.com/exec/obidos/ASIN/0201563177))
+  - Win32 System Programming (cseng.aw.com/book/
+    0,3828,0201703106,00.html), by Johnson Hart (world.std.com/~jmhart/)
+    (at Bookpool (www.bookpool.com/.x//sm/0201703106), at Amazon
+    (www.amazon.com/exec/obidos/ASIN/0201703106))
+  - Managing Projects with Make (www.oreilly.com/catalog/make2/), by
+    Andrew Oram & Steve Talbott (www.oreilly.com/~stevet/) (at Bookpool
+    (www.bookpool.com/.x//sm/0937175900), at Amazon (www.amazon.com/exec/
+    obidos/ASIN/0937175900))
+   
+  - Thread Time (vig.prenhall.com/catalog/academic/product/
+    1,4096,0131900676,00.html), by Scott Norton & Mark DiPasquale (at
+    Bookpool (www.bookpool.com/.x//sm/0131900676), at Amazon
+    (www.amazon.com/exec/obidos/ASIN/0131900676))
+  - Programming with POSIX Thrads (cseng.awl.com/book/
+    0,3828,0201633922,00.html), by David Butenhof (at Bookpool
+    (www.bookpool.com/.x//sm/0201633922), at Amazon (www.amazon.com/exec/
+    obidos/ASIN/0201633922))
+
+--------------------------------------------------------------------------

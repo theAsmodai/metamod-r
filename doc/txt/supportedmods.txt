@@ -1,0 +1,18 @@
+Supported Mods/Games
+=-=-=-=-=-=-=-=
+
+Metamod includes support for the following mods, with version and last
+update if known.
+
+To get support added for a new Mod, or for an updated version of a Mod,
+see Adding game support.
+
++------------------------------------------------------------------------+
+|              Name              | Version  |  Last  |  Ent   | Comments |
+|                                |          | update |  list  |          |
+|--------------------------------+----------+--------+--------+----------|
+| ALL MODS SUPPORTED BY          | ALL      |        | NONE   |          |
+|     All-Mod-Support PATCH      |          |        |        |          |
+|     By Jussi Kivilinna         |          |        |        |          |
+|     http://koti.mbnet.fi/axh/  |          |        |        |          |
++------------------------------------------------------------------------+

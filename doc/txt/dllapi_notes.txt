@@ -1,0 +1,702 @@
+HLSDK DLLAPI Notes
+=-=-=-=-=-=-=-=-=-=
+
+--------------------------------------------------------------------------
+
+  - GameDLLInit
+  - DispatchSpawn
+  - DispatchThink
+  - DispatchUse
+  - DispatchTouch
+  - DispatchBlocked
+  - DispatchKeyValue
+  - DispatchSave
+  - DispatchRestore
+  - DispatchObjectCollsionBox
+  - SaveWriteFields
+  - SaveReadFields
+  - SaveGlobalState
+  - RestoreGlobalState
+  - ResetGlobalState
+  - ClientConnect
+  - ClientDisconnect
+  - ClientKill
+  - ClientPutInServer
+  - ClientCommand
+  - ClientUserInfoChanged
+  - ServerActivate
+  - ServerDeactivate
+  - PlayerPreThink
+  - PlayerPostThink
+  - StartFrame
+  - ParmsNewLevel
+  - ParmsChangeLevel
+  - GetGameDescription
+  - PlayerCustomization
+  - SpectatorConnect
+  - SpectatorDisconnect
+  - SpectatorThink
+  - Sys_Error
+  - PM_Move
+  - PM_Init
+  - PM_FindTextureType
+  - SetupVisibility
+  - UpdateClientData
+  - AddToFullPack
+  - CreateBaseline
+  - RegisterEncoders
+  - GetWeaponData
+  - CmdStart
+  - CmdEnd
+  - ConnectionlessPacket
+  - GetHullBounds
+  - CreateInstancedBaselines
+  - InconsistentFile
+  - AllowLagCompensation
+
+--------------------------------------------------------------------------
+
+GameDLLInit
+
+from dlls/game.cpp:
+void GameDLLInit(void);
+
+    Register your console variables here.
+    This gets called one time when the game is initialied.
+    Initialize the game (one-time call after loading of game .dll)
+
+comments:
+
+    Called just after hlds reports "Dll loaded for mod Half-Life".
+
+--------------------------------------------------------------------------
+
+DispatchSpawn
+
+from dlls/cbase.cpp
+int DispatchSpawn(edict_t *pent);
+
+comments:
+
+    Called when entity defined in mapfile is being created.
+    First entity has classname "worldcraft" and can be used to detect
+    map start.
+    
+    0==Success, -1==Failure ?
+
+--------------------------------------------------------------------------
+
+DispatchThink
+
+from dlls/cbase.cpp
+void DispatchThink(edict_t *pent);
+    Called when pent->v.nextthink is first time less or equal as 
+    server time. 
+
+--------------------------------------------------------------------------
+
+DispatchUse
+
+from dlls/cbase.cpp
+void DispatchUse(edict_t *pentUsed, edict_t *pentOther);
+    Unused. Use is dispatched internally inside gamedll.
+
+--------------------------------------------------------------------------
+
+DispatchTouch
+
+from dlls/cbase.cpp
+void DispatchTouch(edict_t *pentTouched, edict_t *pentOther);
+    Called when other entity collides touched entity.
+
+--------------------------------------------------------------------------
+
+DispatchBlocked
+
+from dlls/cbase.cpp
+void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther);
+    Unknown.
+
+--------------------------------------------------------------------------
+
+DispatchKeyValue
+
+from dlls/cbase.cpp
+void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd);
+    Client uses 'setinfo' command.
+     - pentKeyvalue 	Client edict
+     - pkvd		Client key values
+
+--------------------------------------------------------------------------
+
+DispatchSave
+
+from dlls/cbase.cpp
+void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData);
+    Save game?
+
+--------------------------------------------------------------------------
+
+DispatchRestore
+
+from dlls/cbase.cpp
+int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int
+globalEntity);
+
+comments:
+    Load game?
+
+    0==Success, -1==Failure ?
+
+--------------------------------------------------------------------------
+
+DispatchObjectCollsionBox
+
+from dlls/cbase.cpp
+void DispatchObjectCollsionBox(edict_t *pent);
+
+--------------------------------------------------------------------------
+
+SaveWriteFields
+
+from dlls/cbase.cpp
+void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *
+pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
+
+--------------------------------------------------------------------------
+
+SaveReadFields
+
+from dlls/cbase.cpp
+void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *
+pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);
+
+--------------------------------------------------------------------------
+
+SaveGlobalState
+
+from dlls/world.cpp
+void SaveGlobalState(SAVERESTOREDATA *pSaveData);
+
+--------------------------------------------------------------------------
+
+RestoreGlobalState
+
+from dlls/world.cpp
+void RestoreGlobalState(SAVERESTOREDATA *pSaveData);
+
+--------------------------------------------------------------------------
+
+ResetGlobalState
+
+from dlls/world.cpp
+void ResetGlobalState(void);
+
+--------------------------------------------------------------------------
+
+ClientConnect
+
+from dlls/client.cpp:
+BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *
+pszAddress, char szRejectReason[128]);
+
+    Called when a player connects to a server.
+
+comments:
+
+    Called on initial connect, just after hlds reports "connected", ie:
+        "John<1><WON:9856723>" connected, address "127.0.0.1:27005"
+    This is before the user begins downloading, or anything else.
+
+--------------------------------------------------------------------------
+
+ClientDisconnect
+
+from dlls/client.cpp:
+void ClientDisconnect(edict_t *pEntity);
+
+    Called when a player disconnects from a server.
+    GLOBALS ASSUMED SET: g_fGameOver
+
+comments:
+
+    This is not the opposite of ClientConnect, despite the similar name.
+    It appears to only be called if the client was PutInServer first. If
+    the client disconnects before being PutInServer, no API routine is
+    called. This would be more appropriately named ClientRemoveFromServer_
+    .
+
+--------------------------------------------------------------------------
+
+ClientKill
+
+from dlls/client.cpp:
+void ClientKill(edict_t *pEntity);
+
+    Player entered the suicide command.
+    GLOBALS ASSUMED SET: g_ulModelIndexPlayer
+
+comments:
+
+    When the client typed "kill" in the console?
+
+--------------------------------------------------------------------------
+
+ClientPutInServer
+
+from dlls/client.cpp:
+void ClientPutInServer(edict_t *pEntity);
+
+    Called each time a player is spawned.
+
+comments:
+
+    Called after the client has uploaded/download all necessary resources,
+    just after hlds reports "entered the game", ie:
+       "John<1>" has entered the game
+
+--------------------------------------------------------------------------
+
+ClientCommand
+
+from dlls/client.cpp:
+void ClientCommand(edict_t *pEntity);
+
+    Called each time a player uses a "cmd" command. Use CMD_ARGS,
+    CMD_ARGV, and CMD_ARGC to get pointers to the character string
+    command.
+
+--------------------------------------------------------------------------
+
+ClientUserInfoChanged
+
+from dlls/client.cpp:
+void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer);
+
+    Called after the player changes userinfo - gives dll a chance to
+    modify it before it gets sent into the rest of the engine.
+
+comments:
+
+    Called when user issues "setinfo" from the console. Also appears to be
+    called whenever the user returns to the game from the ESC menu.
+
+--------------------------------------------------------------------------
+
+ServerActivate
+
+from dlls/client.cpp:
+void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);
+
+    Every call to ServerActivate should be matched by a call to
+    ServerDeactivate.
+
+comments:
+
+    Added in SDK 2.0. Apparently called when the server has loaded the
+    map, but before it precaches from the .res file.
+
+--------------------------------------------------------------------------
+
+ServerDeactivate
+
+from dlls/client.cpp:
+void ServerDeactivate(void);
+
+    Peform any shutdown operations here.
+    It's possible that the engine will call this function more times than
+    is necessary. Therefore, only run it one time for each call to
+    ServerActivate.
+
+comments:
+
+    Called upon "quit" or "changelevel" .
+
+--------------------------------------------------------------------------
+
+PlayerPreThink
+
+from dlls/client.cpp:
+void PlayerPreThink(edict_t *pEntity);
+
+    Called every frame before physics are run.
+
+--------------------------------------------------------------------------
+
+PlayerPostThink
+
+from dlls/client.cpp:
+void PlayerPostThink(edict_t *pEntity);
+
+    Called every frame after physics are run.
+
+--------------------------------------------------------------------------
+
+StartFrame
+
+from dlls/client.cpp:
+void StartFrame(void);
+
+    GLOBALS ASSUMED SET: g_ulFrameCount
+
+--------------------------------------------------------------------------
+
+ParmsNewLevel
+
+from dlls/client.cpp
+void ParmsNewLevel(void);
+
+--------------------------------------------------------------------------
+
+ParmsChangeLevel
+
+from dlls/client.cpp
+void ParmsChangeLevel(void);
+
+--------------------------------------------------------------------------
+
+GetGameDescription
+
+from dlls/client.cpp:
+const char *GetGameDescription(void);
+
+    Returns string describing current .dll game.
+    Returns the descriptive name of this .dll. E.g., Half-Life, or Team
+    Fortress 2.
+    This function might be called before the world has spawned, and the
+    game rules initialized.
+
+--------------------------------------------------------------------------
+
+PlayerCustomization
+
+from dlls/client.cpp:
+void PlayerCustomization(edict_t *pEntity, customization_t *pCust);
+
+    Notifies .dll of new customization for player.
+    A new player customization has been registered on the server. UNDONE:
+    This only sets the # of frames of the spray can logo animation right
+    now.
+
+--------------------------------------------------------------------------
+
+SpectatorConnect
+
+from dlls/client.cpp:
+void SpectatorConnect(edict_t *pEntity);
+
+    Called when spectator joins server.
+    A spectator has joined the game.
+
+--------------------------------------------------------------------------
+
+SpectatorDisconnect
+
+from dlls/client.cpp:
+void SpectatorDisconnect(edict_t *pEntity);
+
+    Called when spectator leaves the server.
+    A spectator has left the game.
+
+--------------------------------------------------------------------------
+
+SpectatorThink
+
+from dlls/client.cpp:
+void SpectatorThink(edict_t *pEntity);
+
+    Called when spectator sends a command packet (usercmd_t).
+    A spectator has sent a usercmd.
+
+--------------------------------------------------------------------------
+
+Sys_Error
+
+from dlls/client.cpp:
+void Sys_Error(const char *error_string);
+
+    Called when engine has encountered an error.
+    Notify game .dll that engine is going to shut down.
+    Engine is going to shut down, allows setting a breakpoint in game dll
+    to catch that occasion.
+    Add code ( e.g., _asm { int 3 }; here to cause a breakpoint for
+    debugging your game .dlls.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+PM_Move
+
+from pm_shared/pm_shared.c:
+void PM_Move(struct playermove_s *ppmove, int server);
+
+    This modume implements the shared player physics code between any
+    particular game and the engine. The same PM_Move routine is built into
+    the game .dll and the client .dll and is invoked by each side as
+    appropriate. There should be no distinction, internally, between
+    server and client. This will ensure that prediction behaves
+    appropriately.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+PM_Init
+
+from pm_shared/pm_shared.c:
+void PM_Init(struct playermove_s *ppmove);
+
+    Server version of player movement initialization.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+PM_FindTextureType
+
+from pm_shared/pm_shared.c
+char PM_FindTextureType(char *name);
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+SetupVisibility
+
+from dlls/client.cpp:
+void SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned char
+**pvs, unsigned char **pas);
+
+from dlls/client.cpp:
+
+    Set up PVS and PAS for networking for this client.
+   
+    A client can have a separate "view entity" indicating that his/her
+    view should depend on the origin of that view entity. If that's the
+    case, then pViewEntity will be non-NULL and will be used. Otherwise,
+    the current entity's origin is used. Either is offset by the view_ofs
+    to get the eye position.
+   
+    From the eye position, we set up the PAS and PVS to use for filtering
+    network messages to the client. At this point, we could override the
+    actual PAS or PVS values, or use a different origin.
+   
+    NOTE: Do not cache the values of pas and pvs, as they depend on
+    reusable memory in the engine, they are only good for this one frame
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+UpdateClientData
+
+from dlls/client.cpp:
+void UpdateClientData (const struct edict_s *ent, int sendweapons, struct
+clientdata_s *cd);
+
+    Set up data sent only to specific client.
+    Data sent to current client only.
+    Engine sets argument 'cd' to 0 before calling.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+AddToFullPack
+
+from dlls/client.cpp:
+int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent,
+edict_t *host, int hostflags, int player, unsigned char *pSet);
+
+    Return 1 if the entity state has been filled in for the ent and the
+    entity will be propagated to the client, 0 otherwise.
+   
+    State is the server maintained copy of the state info that is
+    transmitted to the client. A MOD could alter values copied into state
+    to send the "host" a different look for a particular entity update,
+    etc.
+   
+    Arguments 'e' and 'ent' are the entity that is being added to the
+    update, if 1 is returneds. Host is the player's edict of the player
+    whom we are sending the update to. Player is 1 if the ent/e is a
+    player and 0 otherwise. Argument 'pSet' is either the PAS or PVS that
+    we previous set up. We can use it to ask the engine to filter the
+    entity against the PAS or PVS.
+   
+    We could also use the pas/ pvs that we set in SetupVisibility, if we
+    wanted to. Caching the value is valid in that case, but still only for
+    the current frame.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+CreateBaseline
+
+from dlls/client.cpp:
+void CreateBaseline(int player, int eindex, struct entity_state_s *
+baseline, struct edict_s *entity, int playermodelindex, vec3_t
+player_mins, vec3_t player_maxs);
+
+    Tweak entity baseline for network encoding, allows setup of player
+    baselines, too.
+    Creates baselines used for network encoding, especially for player
+    data since players are not spawned until connect time.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+RegisterEncoders
+
+from dlls/client.cpp:
+void RegisterEncoders(void);
+
+    Callbacks for network encoding.
+    Allows game .dll to override network encoding of certain types of
+    entities and tweak values, etc.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+GetWeaponData
+
+from dlls/client.cpp
+int GetWeaponData(struct edict_s *player, struct weapon_data_s *info);
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+CmdStart
+
+from dlls/client.cpp:
+void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned
+int random_seed);
+
+    We're about to run this usercmd for the specified player. We can set
+    up groupinfo and masking here, etc. This is the time to examine the
+    usercmd for anything extra. This call happens even if think does not.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+CmdEnd
+
+from dlls/client.cpp:
+void CmdEnd (const edict_t *player);
+
+    Each cmdstart is exactly matched with a cmd end, clean up any group
+    trace flags, etc. here.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+ConnectionlessPacket
+
+from dlls/client.cpp:
+int ConnectionlessPacket(const struct netadr_s *net_from, const char *
+args, char *response_buffer, int *response_buffer_size);
+
+    Return 1 if the packet is valid. Set response_buffer_size if you want
+    to send a response packet. Incoming, it holds the max size of the
+    response_buffer, so you must zero it out if you choose not to respond.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+GetHullBounds
+
+from dlls/client.cpp:
+int GetHullBounds(int hullnumber, float *mins, float *maxs);
+
+    Engine calls this to enumerate player collision hulls, for prediction.
+    Return 0 if the hullnumber doesn't exist.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+CreateInstancedBaselines
+
+from dlls/client.cpp:
+void CreateInstancedBaselines (void);
+
+    Tweak entity baseline for network encoding, allows setup of player
+    baselines, too.
+    Create pseudo-baselines for items that aren't placed in the map at
+    spawn time, but which are likely to be created during play (e.g.,
+    grenades, ammo packs, projectiles, corpses, etc.).
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+InconsistentFile
+
+from dlls/client.cpp:
+int InconsistentFile(const edict_t *player, const char *filename, char *
+disconnect_message);
+
+    One of the ENGINE_FORCE_UNMODIFIED files failed the consistency check
+    for the specified player Return 0 to allow the client to continue, 1
+    to force immediate disconnection (with an optional disconnect message
+    of up to 256 characters).
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+AllowLagCompensation
+
+from dlls/client.cpp:
+int AllowLagCompensation(void);
+
+    The game .dll should return 1 if lag compensation should be allowed
+    (could also just set the sv_unlag cvar. Most games right now should
+    return 0, until client-side weapon prediction code is written and
+    tested for them (note you can predict weapons, but not do lag
+    compensation, too, if you want.
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------

@@ -1,0 +1,62 @@
+<!-- vi: set ts=4 sw=4 : -->
+<!-- vim: set tw=75 : -->
+
+<HTML>
+<head>
+<title>HLSDK NEWAPI Notes</title>
+</head>
+<body>
+
+<h1>HLSDK NEWAPI Notes
+</h1>
+
+<hr>
+<ul>
+   <li><a href=#OnFreeEntPrivateData>OnFreeEntPrivateData</a>
+   <li><a href=#GameShutdown>GameShutdown</a>
+   <li><a href=#ShouldCollide>ShouldCollide</a>
+</ul>
+
+<b>NOTE</b>: No examples of these found in SDK...
+
+<p>
+
+<hr><h3><tt><a name="OnFreeEntPrivateData">OnFreeEntPrivateData</a></tt></h3>
+<dd><tt>void OnFreeEntPrivateData(edict_t pEnt);</tt><p>
+<i>from engine/eiface.h:</i><br>
+<blockquote><tt>
+	Called right before the object's memory is freed.  Calls its destructor.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	See also <a
+	href="http://list.valvesoftware.com/pipermail/hlcoders/2002-January/001397.html"
+	>Ken Birdwell on constructors</a>, from the HLCoders list.
+	<br>Added in SDK 2.0.  
+</blockquote>
+
+<hr><h3><tt><a name="GameShutdown">GameShutdown</a></tt></h3>
+<dd><tt>void GameShutdown(void);</tt><p>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="ShouldCollide">ShouldCollide</a></tt></h3>
+<dd><tt>int ShouldCollide(edict_t *pentTouched, edict_t *pentOther);</tt><p>
+<i>from kenb@valvesoftware.com, via HLCoders:</i><br>
+<blockquote><tt>
+	..a hook that can override if any two entities should collide  
+	when they try to pass through each other.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Mugsy from DoD indicates that the return value for normal operation is 1.
+	<br>Added in SDK 2.0.  
+</blockquote>
+
+<p>
+<hr>
+
+</body>
+</HTML>

@@ -1,0 +1,568 @@
+Using Metamod
+=-=-=-=-=-=-=
+
+Client Commands
+===============
+
+Similar to the server console interface, clients can also issue commands
+to Metamod, of the following form:
+
+  - meta version - displays version information about the Metamod instance
+    currently running on the server, ie:
+   
+    Metamod v1.21p37  2013/05/30 (5:13)
+    by Will Day
+       http://www.metamod.org/
+     Patch: Metamod-P (mm-p) v37
+     by Jussi Kivilinna
+        http://koti.mbnet.fi/axh/
+    compiled: Feb 18 2013, 11:53:27 EET (optimized)
+    
+  - meta list - displays information about the list of currently running
+    plugins, ie:
+   
+    Currently running plugins:
+    [ 1] Trace HLSDK API, v1.XX.93, 2003/02/17, by Will Day
+    <willday@metamod.org>, see http://www.metamod.org/
+    [ 2] Adminmod, v2.50.56 (MM), Jul 13 2003, by Alfred Reynolds
+    <alfred@valvesoftware.com>, see http://www.adminmod.org/
+    2 plugins
+
+Client Cvars
+============
+
+Also available to client browser applications is a cvar metamod_version
+that should report the version of Metamod running on the server, ie:
+
+"metamod_version" is "1.21p37"
+
+Installation
+============
+
+If you want to install Metamod by hand, here's what you have to do:
+
+   
+  - Install the Metamod library (.dll for win32, or .so for linux) to a
+    directory under your game directory. For instance, if you were running
+    Counter-Strike, under win32 you might want have:
+   
+        half-life/cstrike/addons/metamod/dlls/metamod.dll
+   
+    If a directory you want doesn't exist, create it.
+   
+  - Edit the "liblist.gam" file in your game directory, replacing the game
+    dll filename with the Metamod dll filename. For instance with
+    Counter-Strike, you would change:
+   
+        gamedll "dlls/mp.dll"
+        gamedll_linux "dlls/cs.so"
+   
+    to:
+   
+        gamedll "addons/metamod/dlls/metamod.dll"
+        gamedll_linux "addons/metamod/dlls/metamod.so"
+   
+    Note that it's only really necessary to change the line corresponding
+    to your OS (win32 or linux); you can leave the other line unchanged,
+    or you can change it - it doesn't matter.
+   
+  - To load plugins at game startup, you'll need to create a "plugins.ini"
+    file containing a list of the plugins you want to load.
+
+
+Configuration
+=============
+
+Metamod has several ways to provide config options, partially because it
+started with one method and then added other methods, but also because one
+method can be more convenient than the other, varying with the situation.
+
+Generally speaking, the two methods of providing configuration information
+to Metamod are:
+
+  - on the command line, via +localinfo arguments to hlds.
+  - as the contents of some file that Metamod reads and parses.
+
+The confusing part can come when the pathnames to some of the config files
+can be specified via command line options - or indeed, when the pathnames
+to some config files can be specified in other config files.
+
+In any case, here are the various config options and config files Metamod
+uses, (listed in order of priority), where "$gamedir" indicates the game
+directory, ie "cstrike":
+
+  - +localinfo mm_configfile <file>
+   
+  - +localinfo mm_pluginsfile <file>
+  - config.ini option: plugins_file <file>
+  - $gamedir/addons/metamod/plugins.ini
+  - $gamedir/metamod.ini
+   
+  - $localinfo mm_execcfg <file>
+  - config.ini option: exec_cfg <file>
+  - $gamedir/addons/metamod/exec.cfg
+  - $gamedir/metaexec.cfg
+   
+  - $localinfo mm_gamedll <file>
+  - config.ini option: gamedll <file>
+  - [DEL]$gamedir/metagame.ini[DEL] -- NO LONGER SUPPORTED.
+
+
+File: plugins.ini
+=====
+
+Default location: _$gamedir/addons/metamod/plugins.ini, ie "cstrike/addons
+/metamod/plugins.ini".
+
+Plugins are described in a file "plugins.ini" and each line describes a
+plugin to load:
+
+    <platform> <filepath> [<description>]
+
+Fields are whitespace delimited (tabs/spaces).
+
+  - Platform is a keyword, either "linux" or "win32".
+   
+  - Filepath is a path to the DLL/so file. Relative paths are from the
+    game dir; absolute paths are also valid. Paths should use unix-style 
+    forward slashes (/) and not backward slashes (\), even on windows
+    platforms.
+   
+    Also, the filepath (once expanded to full path name) is expected to be
+    unique within the list of plugins. Thus, a plugin with a fullpathname
+    matching that of a previous plugin is considered a duplicate, and is
+    not loaded.
+   
+  - Description is an optional description of the plugin, used in place of
+    the plugin's internal name in log messages and console output.
+    Whitespace in the description _is_ allowed; quoting is unnecessary.
+
+Comments are recognized at _only_ the beginning of a line, and can be in
+either shell style ("#") or c++ style ("//").
+
+For instance, in "cstrike/addons/metamod/plugins.ini" these are all valid
+lines:
+
+    // linux    dlls/mybot.so
+    # win32     dlls/mybot-old.dll         Mybot old
+    win32       dlls/mybot.dll             Mybot current
+    linux       /tmp/stub_mm_i386.so
+    win32       /tmp/stub_mm_i386.dll
+    linux       ../dlls/trace_mm_i386.so
+    win32       ../dlls/trace_mm_i386.dll
+    linux       dlls/admin_MM_i386.so
+    win32       dlls/admin_MM_i386.dll
+
+Note that order in the plugins.ini file _is_ significant. Plugins are
+loaded and accessed in the order specified, so ordering can be important,
+depending on the plugin(s).
+
+The file is re-read at changelevel, as well as on demand (via "meta
+refresh" console command; see below). When the file is re-read, it will:
+
+  - load any new plugins added to the file
+  - unload any plugins that have been deleted from the file. This is only
+    applicable to plugins loaded _from the inifile_. If the plugin was
+    loaded from the console, it will not be unloaded during a refresh,
+    whether it's in the inifile or not.
+  - reload any plugin whose file on disk has been updated since it was
+    loaded. Note this appears to be only useful under linux, as under
+    Windows you cannot rename or overwrite an open DLL, so it doesn't look
+    a loaded plugin could ever have a newer file on disk. Oh well.
+
+The game dll is auto-detected, along the same lines AdminMod operated
+(looking at the "gamedir"); see "mm_gamedll" below if you want to use a
+"bot" DLL.
+
+You can override the name of this file by specifying it via the +localinfo
+field "mm_pluginsfile".
+
+For compatibility with previous versions, Metamod will also look for a
+file "metamod.ini" under the gamedir, ie "cstrike/metamod.ini".
+
+
+File: config.ini
+=====
+
+Default location: _$gamedir/addons/metamod/config.ini, ie "cstrike/addons/
+metamod/config.ini".
+
+This contains basic config information, at the moment duplicating most of
+the +localinfo variables, but allowing for more flexible expansion of
+config options in the future. Also, it provides somewhat more reliable
+options setting, since +localinfo munges some argument values (in
+particular, pathnames with leading dots, ie "../dlls/blah.dll").
+
+Basic format is:
+
+    <option> <value>
+
+Fields are whitespace delimited (tabs/spaces). Comments are recognized at 
+_only_ the beginning of a line, and can be in either shell style ("#") or
+c++ style ("//"). The following is a list of currently recognized options,
+their defaults, and examples of usage:
+
+   
+  - debuglevel <number>
+   
+    where <number> is an integer, 0 and up.
+    Sets the initial debugging level for metamod (same as cvar
+    "meta_debug").
+    Default is normally 0. If hlds is run with "-dev", default is 3.
+    Overridden by: +localinfo mm_debug <number>
+    Examples:
+    debuglevel 0
+    debuglevel 42
+   
+  - gamedll <path>
+   
+    where <path> is an absolute path, or a path relative to the gamedir.
+    Overrides the auto-detected gamedll, in particular for bots.
+    Default is empty, with gamedll being auto-recognized based on the
+    gamedir.
+    Overridden by: +localinfo mm_gamedll <number>
+    Examples:
+    gamedll dlls/hl.dll
+    gamedll ../podbot/podbot.dll
+    gamedll /home/bots/dlls/mybot.dll
+   
+  - plugins_file <path>
+   
+    where <path> is an absolute path, or a path relative to the gamedir.
+    Overrides the default filename containing the MM plugins to load.
+    Default is "addons/metamod/plugins.ini".
+    Overridden by: +localinfo mm_pluginsfile <number>
+    Examples:
+    plugins_file cfg/clanmode.ini
+    plugins_file ../private.ini
+    plugins_file /home/half-life/testing.ini
+   
+  - exec_cfg <path>
+   
+    where <path> is a path relative to the gamedir. NOTE! This cannot be
+    an absolute path, as hlds will not "exec" absolute pathnames.
+    Overrides the default filename containing hlds commands to run just
+    after loading Metamod.
+    Default is "addons/metamod/exec.cfg".
+    Overridden by: +localinfo mm_execcfg <number>
+    Examples:
+    exec_cfg configs/debugging.cfg
+    exec_cfg ../clan/match.cfg
+  
+  - autodetect <yes/no>
+  
+    Setting to disable or enable autodetection of gamedll.
+    Extra feature for Metamod+All-Mod-Support Patch.
+    Default is "yes".
+    Overridden by: +localinfo mm_autodetect <yes/no>
+
+  - clientmeta <yes/no>
+  
+    Setting to disable or enable Metamod's client commands, 'meta list' and
+    'meta version'.
+    Extra setting for Metamod+All-Mod-Support Patch.
+    Default is "yes".
+    Overridden by: +localinfo mm_clientmeta <yes/no>
+
+You can override the name of this file by specifying it via the +localinfo
+field "mm_configfile".
+
+
+File: exec.cfg
+=====
+
+Default location: _$gamedir/addons/metamod/exec.cfg, ie "cstrike/addons/
+metamod/exec.cfg". This is necessary for plugins that need to have
+settings specified prior to early API routines like ServerActivate, since
+autoexec.cfg is read too early and server.cfg is read to late. In
+particular, I found this necessary for the Trace plugin, in order to trace
+routines like RegUserMsg which are called during ServerActivate.
+
+You can override the name of this file by specifying it via the +localinfo
+field "mm_execcfg".
+
+For compatibility with previous versions, Metamod will also look for a
+file "metaexec.cfg" under the gamedir, ie "cstrike/metaexec.cfg".
+
+
+[DEL]file: metagame.ini[DEL]
+=========
+
+NOTE! This file is no longer supported! -- use instead the +localinfo
+field "mm_gamedll" or the config.ini option gamedll.
+
+
+Commandline option: +localinfo
+===================
+
+Several of Metamod's configuration options can be specified by the
+"+localinfo" facility on the hlds command line. This is similar to the
+"setinfo" console command, where the syntax is:
+
+    +localinfo <field> <value>
+
+Current localinfo fields recognized by Metamod:
+
+   
+  - mm_configfile Specifies the file that lists config options, instead of
+    using the file config.ini. The <value> should be the pathname of the
+    config file, either absolute path or path relative to the gamedir.
+   
+  - mm_pluginsfile Specifies a file that lists the Metamod plugins to
+    load, instead of using the file plugins.ini. The <value> should be the
+    pathname of the plugins file, either absolute path or path relative to
+    the gamedir.
+   
+  - mm_execcfg Specifies a file that contains cvar or other configs to be
+    exec'd after loading the plugins, instead of using the file exec.cfg.
+    The <value> should be the pathname of the exec file, either absolute
+    path or path relative to the gamedir.
+   
+  - mm_autodetect Specifies if 'autodetect of gamedll' should be enabled
+    or disabled. It's enabled by default. This is extra feature of 
+    Metamod+All-Mod-Support Patch.
+   
+  - mm_clientmeta Specifies if Metamod's client commands should be enabled
+    or disabled. It's enabled by default. This is extra setting of 
+    Metamod+All-Mod-Support Patch.
+   
+  - mm_gamedll Specifies a game or Bot DLL to be used instead of the
+    normal gameDLL. The <value> should be the pathname of the DLL, either
+    absolute path or path relative to the gamedir.
+   
+    This replaces using the metagame.ini file. With previous versions of
+    AdminMod (2.10 and earlier), this same functionality was provided by
+    the file "admin.ini".
+   
+  - mm_debug Specifies an initial meta_debug value.
+
+Note that each localinfo field can have only one value. If specified more
+than once on the command line, only the last one will be recognized. (In
+particular, trying to use mm_gamedll to load multiple dll-style bots will 
+not work. In a case like that, the multiple dll's must be chained
+together).
+
+Some examples are:
+
+        ./hlds_run -game cstrike +localinfo mm_pluginsfile mylist.ini
+        ./hlds_run -game cstrike +localinfo mm_execcfg mysettings.cfg
+        ./hlds_run -game cstrike +localinfo mm_gamedll dlls/pod_bot.so
+        ./hlds_run -game cstrike +localinfo mm_debug 7
+
+Note, paths should use unix-style forward slashes (/) and not backward
+slashes (\), even on windows platforms.
+
+
+Commands
+========
+
+All console command functionality is provide by a single command "meta",
+with multiple sub-commands:
+
+   usage: meta <command> [<arguments>]
+   valid commands are:
+      version                - display Metamod version info
+      list                   - list plugins currently loaded
+      cmds                   - list console cmds registered by plugins
+      cvars                  - list cvars registered by plugins
+      refresh                - load/unload any new/deleted/updated plugins
+      config                 - show config info loaded from config.ini
+      load <name>            - find and load a plugin with the given name
+      unload <plugin>        - unload a loaded plugin
+      reload <plugin>        - unload a plugin and load it again
+      info <plugin>          - show all information about a plugin
+      pause <plugin>         - pause a loaded, running plugin
+      unpause <plugin>       - unpause a previously paused plugin
+      retry <plugin>         - retry a plugin that previously failed its action
+      clear <plugin>         - clear a failed plugin from the list
+      force_unload <plugin>  - forcibly unload a loaded plugin
+      require <plugin>       - exit server if plugin not loaded/running
+
+where <plugin> can be either the plugin index number, or a non-ambiguous
+prefix string matching description or file.
+
+Also, a single cvar is available:
+   meta_debug       - set debugging level
+
+For instance with:
+
+  Currently loaded plugins:
+        description       stat pend  file               vers    src  load  unlod
+   [ 1] Trace HLSDK API   RUN   -    mm_trace_i386.so   v0.90   ini  ANY   Pause
+   [ 2] adminmod          RUN   -    admin_MM.so        v2.11   ini  Start Start
+   [ 3] stub              RUN   -    mm_stub_i386.so    v0.90   ini  ANY   Pause
+  2 plugins, 2 running
+
+You could then do any of the following to unload the API Trace plugin:
+   meta unload 1
+   meta unload trace
+   meta unload mm_trace
+
+
+Plugin Loading/Unloading Process
+================================
+
+Through the process of loading and unloading, a plugin can be in one of
+several different states ('stat' column in the 'meta list' output):
+
+  - BADFILE - The plugin file couldn't be found, or it doesn't appear to
+    be a valid Metamod plugin.
+  - OPENED - The plugin file was found, and is a valid Metamod plugin, and
+    is ready to be loaded.
+  - FAILED - The plugin file attempted to load or unload, but couldn't
+    complete for some reason.
+  - RUNNING - The plugin file was loaded and is active and running.
+  - PAUSED - The plugin file was loaded, but has been temporarily
+    disabled.
+
+Also through the operation process, a plugin can have a pending "action"
+to next take (indicated by the 'pend' column in the 'meta list' output),
+and can be one of:
+
+  - LOAD - Open and look at the plugin file.
+  - ATTACH - Attach the plugin to the running game; ie activate it
+  - UNLOAD - Remove the plugin from the running game and close the file
+  - RELOAD - Unload/close and re-open/load the plugin, for instance when
+    the plugin file has changed.
+
+
+Example Output
+==============
+
+Here's some other example output:
+
+   meta info admin
+            name: adminmod
+            desc: Adminmod
+          status: running
+          action: none
+        filename: dlls/admin_MM.so
+            file: admin_MM.so
+        pathname: /home/willday/test/cstrike/dlls/admin_MM.so
+           index: 3
+          source: ini file
+        loadable: at server startup
+      unloadable: at server startup
+         version: 2.11
+            date: 2001/02/04
+          author: Alfred Reynolds <alfred@mazuma.net.au>
+             url: http://www.adminmod.org/
+          logtag: ADMIN
+     last loaded: Mon Feb  5 02:06:34 2001
+   DLLAPI functions:
+      GameDLLInit
+      DispatchThink
+      ClientConnect
+      ClientCommand
+      ClientUserInfoChanged
+      ServerActivate
+   6 functions (dllapi)
+   No DLLAPI-Post functions.
+   No NEWAPI functions.
+   No NEWAPI-Post functions.
+   No Engine functions.
+   No Engine-Post functions.
+   Registered commands:
+      admin_command
+   1 commands
+   Registered cvars:                      float value  string value
+      users_file                             0.000000  users.ini
+      maps_file                              0.000000  mapvote.txt
+      default_access                         1.000000  1
+      ips_file                               0.000000  0
+      reserve_slots                          1.000000  1
+      reserve_slots_msg                      0.000000  0
+      admin_debug                            1.000000  1
+      password_field                         0.000000  admin_password
+      alarm_message                          0.000000  0
+      alarm_time                             0.000000  0
+      use_regex                              1.000000  1
+      models_password_field                  0.000000  0
+      models_file                            0.000000  models.ini
+      models_kick_msg                        0.000000  Invalid model
+      script_file                            0.000000  cstrike/dlls/admin.amx
+      help_file                              0.000000  admin_help.txt
+      vote_freq                            360.000000  360
+      encrypt_password                       1.000000  1
+      pretty_say                             1.000000  1
+      admin_mod_version                      2.110000  2.11
+      reserve_type                           1.000000  1
+      map_ratio                             60.000000  60
+      kick_ratio                            75.000000  75
+      words_file                             0.000000  0
+      password_timeout                    1800.000000  1800
+      file_access_read                       0.000000  0
+      file_access_write                      0.000000  0
+      public_slots_free                     20.000000  20.000000
+      allow_client_exec                      0.000000  0
+      admin_balance_teams                    0.000000  0
+   30 cvars
+   No child plugins.
+   
+   meta cmds
+   Registered plugin commands:
+          plugin              command
+    [  1] API trace           trace_version
+    [  2] API trace           trace
+    [  3] API trace           untrace
+    [  4] API trace           showtrace
+    [  5] Adminmod            admin_command
+   5 commands, 5 available
+
+   meta cvars
+   Registered plugin cvars:
+          plugin      cvar                   float value  string value
+    [  1] API trace   trace_debug               3.000000  3.000000
+    [  2] API trace   trace_dllapi              8.000000  8
+    [  3] API trace   trace_newapi              0.000000  0
+    [  4] API trace   trace_engine              8.000000  8
+    [  5] Adminmod    users_file                0.000000  users.ini
+    [  6] Adminmod    maps_file                 0.000000  mapvote.txt
+    [  7] Adminmod    default_access            1.000000  1
+    [  8] Adminmod    ips_file                  0.000000  0
+    [  9] Adminmod    reserve_slots             1.000000  1
+    [ 10] Adminmod    reserve_slots_msg         0.000000  0
+    [ 11] Adminmod    admin_debug               1.000000  1
+    [ 12] Adminmod    password_field            0.000000  admin_password
+    [ 13] Adminmod    alarm_message             0.000000  0
+    [ 14] Adminmod    alarm_time                0.000000  0
+    [ 15] Adminmod    use_regex                 1.000000  1
+    [ 16] Adminmod    models_password_fiel      0.000000  0
+    [ 17] Adminmod    models_file               0.000000  models.ini
+    [ 18] Adminmod    models_kick_msg           0.000000  Invalid model
+    [ 19] Adminmod    script_file               0.000000  cstrike/dlls/admin.amx
+    [ 20] Adminmod    help_file                 0.000000  admin_help.txt
+    [ 21] Adminmod    vote_freq               360.000000  360
+    [ 22] Adminmod    encrypt_password          1.000000  1
+    [ 23] Adminmod    pretty_say                1.000000  1
+    [ 24] Adminmod    admin_mod_version         2.110000  2.11
+    [ 25] Adminmod    reserve_type              1.000000  1
+    [ 26] Adminmod    map_ratio                60.000000  60
+    [ 27] Adminmod    kick_ratio               75.000000  75
+    [ 28] Adminmod    words_file                0.000000  0
+    [ 29] Adminmod    password_timeout       1800.000000  1800
+    [ 30] Adminmod    file_access_read          0.000000  0
+    [ 31] Adminmod    file_access_write         0.000000  0
+    [ 32] Adminmod    public_slots_free        20.000000  20.000000
+    [ 33] Adminmod    allow_client_exec         0.000000  0
+    [ 34] Adminmod    admin_balance_teams       0.000000  0
+   34 cvars, 34 available
+
+   meta unload stub
+   Unloaded plugin 'Stub plugin'
+   Currently loaded plugins:
+         description       stat pend  file               vers   src  load  unlod
+    [ 1] Trace HLSDK API   RUN   -    mm_trace_i386.so   v0.90  ini  ANY   Pause
+    [ 2] adminmod          RUN   -    admin_MM.so        v2.11  ini  Start Start
+   2 plugins, 2 running
+
+   meta load stub
+   Loaded plugin 'stub' successfully
+   Currently loaded plugins:
+         description       stat pend  file               vers   src  load  unlod
+    [ 1] Trace HLSDK API   RUN   -    mm_trace_i386.so   v0.90  ini  ANY   Pause
+    [ 2] adminmod          RUN   -    admin_MM.so        v2.11  ini  Start Start
+    [ 3] stub              RUN   -    mm_stub_i386.so    v0.90  cmd  ANY   Pause
+   3 plugins, 3 running
+
+--------------------------------------------------------------------------

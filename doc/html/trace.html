@@ -1,0 +1,88 @@
+<!-- vi: set ts=4 sw=4 : -->
+<!-- vim: set tw=75 : -->
+
+<HTML>
+<head>
+<title>Metamod TraceAPI Plugin</title>
+</head>
+<body>
+
+<h1>TraceAPI plugin
+</h1>
+
+<p> This was originally intended as a (more or less) complete example of a
+Metamod plugin.  It catches <b><i>every</i></b> call available to it (dll
+routines both before and after the game, as well as engine functions both
+before and after the engine).
+
+<p> Because it catches every routine, I figured I'd give it the ability to
+log when given routines are called, so it became an "api tracing" plugin.
+:)
+
+<p> This can actually be useful for tracking the operation of the HL
+engine, as well as that of a particular HL game mod.
+
+<p> It recognizes the following server cvars:
+
+<p><pre>
+   // Tracing debug levels; higher values log increasingly frequent routines.
+   // Currently 0-50.  See "api_info.cpp" for the debug levels of various
+   // functions.
+
+   // Trace level for dllapi routines.
+   trace_dllapi
+
+   // Trace level for "new" dllapi routines.
+   trace_newapi
+
+   // Trace level for engine functions.
+   trace_engine
+
+   // Enable unlimited trace logging.  By default (as of v1.06), it only
+   // logs _one_ trace message per second, to keep from overwhelming the
+   // server.  Set to "1" to enable unlimited logging.  (Default "0")
+   trace_unlimit
+
+   // General debug level, independent of trace levels.  Not currently used.
+   trace_debug
+
+</pre>
+
+<p> and the following server commands:
+
+<p><pre>
+   // Enable tracing of a given routine, independent of "trace_*" level.
+   // See the list of routine names in "api_info.cpp".  Case is insignificant.
+   trace set &lt;APIroutine&gt;
+
+   // Disable tracing of a given routine, iff previously enabled with "trace".
+   // Doesn't affect routines being logged via "trace_*" level.
+   trace unset &lt;APIroutine&gt;
+
+   // Show the routines being traced.
+   trace show
+
+   // List the various routines that can be traced.
+   trace list dllapi
+   trace list newapi
+   trace list engine
+   trace list all
+
+   // Prints out version/date/etc.
+   trace version
+</pre>
+
+<p> Note the information it logs on each routine invocation is, at the
+moment, relatively minimal.  I included information that seemed obvious
+(args for a <tt>ClientCommand</tt>, etc), and I've added info for other
+routines as I've come across a need.  Most routines I still know too little
+about to log any particular information (<tt>CreateBaseline</tt>, etc).
+Feel free to add information that you're interested in to the log messages
+in the routines; the examples should be pretty self-explanatory.  I'd be
+interested in knowing as well, for adding it to the distribution code.
+
+<p>
+<hr>
+
+</body>
+</HTML>

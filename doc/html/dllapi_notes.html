@@ -1,0 +1,569 @@
+<!-- vi: set ts=4 sw=4 : -->
+<!-- vim: set tw=75 : -->
+
+<HTML>
+<head>
+<title>HLSDK DLLAPI Notes</title>
+</head>
+<body>
+
+<h1>HLSDK DLLAPI Notes
+</h1>
+
+<hr>
+<ul>
+   <li><a href=#GameDLLInit>GameDLLInit</a>
+   <li><a href=#DispatchSpawn>DispatchSpawn</a>
+   <li><a href=#DispatchThink>DispatchThink</a>
+   <li><a href=#DispatchUse>DispatchUse</a>
+   <li><a href=#DispatchTouch>DispatchTouch</a>
+   <li><a href=#DispatchBlocked>DispatchBlocked</a>
+   <li><a href=#DispatchKeyValue>DispatchKeyValue</a>
+   <li><a href=#DispatchSave>DispatchSave</a>
+   <li><a href=#DispatchRestore>DispatchRestore</a>
+   <li><a href=#DispatchObjectCollsionBox>DispatchObjectCollsionBox</a>
+   <li><a href=#SaveWriteFields>SaveWriteFields</a>
+   <li><a href=#SaveReadFields>SaveReadFields</a>
+   <li><a href=#SaveGlobalState>SaveGlobalState</a>
+   <li><a href=#RestoreGlobalState>RestoreGlobalState</a>
+   <li><a href=#ResetGlobalState>ResetGlobalState</a>
+   <li><a href=#ClientConnect>ClientConnect</a>
+   <li><a href=#ClientDisconnect>ClientDisconnect</a>
+   <li><a href=#ClientKill>ClientKill</a>
+   <li><a href=#ClientPutInServer>ClientPutInServer</a>
+   <li><a href=#ClientCommand>ClientCommand</a>
+   <li><a href=#ClientUserInfoChanged>ClientUserInfoChanged</a>
+   <li><a href=#ServerActivate>ServerActivate</a>
+   <li><a href=#ServerDeactivate>ServerDeactivate</a>
+   <li><a href=#PlayerPreThink>PlayerPreThink</a>
+   <li><a href=#PlayerPostThink>PlayerPostThink</a>
+   <li><a href=#StartFrame>StartFrame</a>
+   <li><a href=#ParmsNewLevel>ParmsNewLevel</a>
+   <li><a href=#ParmsChangeLevel>ParmsChangeLevel</a>
+   <li><a href=#GetGameDescription>GetGameDescription</a>
+   <li><a href=#PlayerCustomization>PlayerCustomization</a>
+   <li><a href=#SpectatorConnect>SpectatorConnect</a>
+   <li><a href=#SpectatorDisconnect>SpectatorDisconnect</a>
+   <li><a href=#SpectatorThink>SpectatorThink</a>
+   <li><a href=#Sys_Error>Sys_Error</a>
+   <li><a href=#PM_Move>PM_Move</a>
+   <li><a href=#PM_Init>PM_Init</a>
+   <li><a href=#PM_FindTextureType>PM_FindTextureType</a>
+   <li><a href=#SetupVisibility>SetupVisibility</a>
+   <li><a href=#UpdateClientData>UpdateClientData</a>
+   <li><a href=#AddToFullPack>AddToFullPack</a>
+   <li><a href=#CreateBaseline>CreateBaseline</a>
+   <li><a href=#RegisterEncoders>RegisterEncoders</a>
+   <li><a href=#GetWeaponData>GetWeaponData</a>
+   <li><a href=#CmdStart>CmdStart</a>
+   <li><a href=#CmdEnd>CmdEnd</a>
+   <li><a href=#ConnectionlessPacket>ConnectionlessPacket</a>
+   <li><a href=#GetHullBounds>GetHullBounds</a>
+   <li><a href=#CreateInstancedBaselines>CreateInstancedBaselines</a>
+   <li><a href=#InconsistentFile>InconsistentFile</a>
+   <li><a href=#AllowLagCompensation>AllowLagCompensation</a>
+</ul>
+   
+<hr><h3><tt><a name="GameDLLInit">GameDLLInit</a></tt></h3>
+<i>from dlls/game.cpp:</i><br>
+<dd><tt>void GameDLLInit(void);</tt><p>
+<blockquote><tt>
+	Register your console variables here.<br>
+	This gets called one time when the game is initialied.<br>
+	Initialize the game (one-time call after loading of game .dll)<br>
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Called just after hlds reports "Dll loaded for mod Half-Life".
+</blockquote>
+
+<hr><h3><tt><a name="DispatchSpawn">DispatchSpawn</a></tt></h3>
+<i>from dlls/cbase.cpp</I>
+<dd><tt>int DispatchSpawn(edict_t *pent);</tt><p>
+<p><i>comments:</i><br>
+<blockquote>
+	0==Success, -1==Failure ?
+</blockquote>
+
+<hr><h3><tt><a name="DispatchThink">DispatchThink</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void DispatchThink(edict_t *pent);</tt><p>
+
+<hr><h3><tt><a name="DispatchUse">DispatchUse</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void DispatchUse(edict_t *pentUsed, edict_t *pentOther);</tt><p>
+
+<hr><h3><tt><a name="DispatchTouch">DispatchTouch</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void DispatchTouch(edict_t *pentTouched, edict_t *pentOther);</tt><p>
+
+<hr><h3><tt><a name="DispatchBlocked">DispatchBlocked</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void DispatchBlocked(edict_t *pentBlocked, edict_t *pentOther);</tt><p>
+
+<hr><h3><tt><a name="DispatchKeyValue">DispatchKeyValue</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void DispatchKeyValue(edict_t *pentKeyvalue, KeyValueData *pkvd);</tt><p>
+
+<hr><h3><tt><a name="DispatchSave">DispatchSave</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void DispatchSave(edict_t *pent, SAVERESTOREDATA *pSaveData);</tt><p>
+
+<hr><h3><tt><a name="DispatchRestore">DispatchRestore</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>int DispatchRestore(edict_t *pent, SAVERESTOREDATA *pSaveData, int globalEntity);</tt><p>
+<p><i>comments:</i><br>
+<blockquote>
+	0==Success, -1==Failure ?
+</blockquote>
+
+<hr><h3><tt><a name="DispatchObjectCollsionBox">DispatchObjectCollsionBox</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void DispatchObjectCollsionBox(edict_t *pent);</tt><p>
+
+<hr><h3><tt><a name="SaveWriteFields">SaveWriteFields</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void SaveWriteFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);</tt><p>
+
+<hr><h3><tt><a name="SaveReadFields">SaveReadFields</a></tt></h3>
+<i>from dlls/cbase.cpp</i><br>
+<dd><tt>void SaveReadFields(SAVERESTOREDATA *pSaveData, const char *pname, void *pBaseData, TYPEDESCRIPTION *pFields, int fieldCount);</tt><p>
+
+<hr><h3><tt><a name="SaveGlobalState">SaveGlobalState</a></tt></h3>
+<i>from dlls/world.cpp</i><br>
+<dd><tt>void SaveGlobalState(SAVERESTOREDATA *pSaveData);</tt><p>
+
+<hr><h3><tt><a name="RestoreGlobalState">RestoreGlobalState</a></tt></h3>
+<i>from dlls/world.cpp</i><br>
+<dd><tt>void RestoreGlobalState(SAVERESTOREDATA *pSaveData);</tt><p>
+
+<hr><h3><tt><a name="ResetGlobalState">ResetGlobalState</a></tt></h3>
+<i>from dlls/world.cpp</i><br>
+<dd><tt>void ResetGlobalState(void);</tt><p>
+
+<hr><h3><tt><a name="ClientConnect">ClientConnect</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>BOOL ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128]);</tt><p>
+<blockquote><tt>
+	Called when a player connects to a server.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Called on initial connect, just after hlds reports "connected", ie:
+	<pre>    <tt>"John&lt;1&gt;&lt;WON:9856723&gt;" connected, address "127.0.0.1:27005"</tt></pre>
+	This is before the user begins downloading, or anything else.
+</blockquote>
+
+<hr><h3><tt><a name="ClientDisconnect">ClientDisconnect</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void ClientDisconnect(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called when a player disconnects from a server.<br>
+	GLOBALS ASSUMED SET:  g_fGameOver
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	This is not the opposite of <tt><b>ClientConnect</b></tt>, despite the similar name.
+	It appears to only be called if the client was <tt><b>PutInServer</b></tt> first.  If
+	the client disconnects before being <tt><b>PutInServer</b></tt>, no API routine is
+	called.  This would be more appropriately named <tt><i><b>ClientRemoveFromServer</i></b></tt>.
+</blockquote>
+
+<hr><h3><tt><a name="ClientKill">ClientKill</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void ClientKill(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Player entered the suicide command.<br>
+	GLOBALS ASSUMED SET:  g_ulModelIndexPlayer
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	When the client typed "kill" in the console?
+</blockquote>
+
+<hr><h3><tt><a name="ClientPutInServer">ClientPutInServer</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void ClientPutInServer(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called each time a player is spawned.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Called after the client has uploaded/download all necessary resources,
+	just after hlds reports "entered the game", ie:
+	<pre>   "John&lt;1&gt;" has entered the game</pre>
+</blockquote>
+
+<hr><h3><tt><a name="ClientCommand">ClientCommand</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void ClientCommand(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called each time a player uses a "cmd" command.
+	Use CMD_ARGS, CMD_ARGV, and CMD_ARGC to get pointers to the character
+	string command.
+</tt></blockquote>
+
+<hr><h3><tt><a name="ClientUserInfoChanged">ClientUserInfoChanged</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void ClientUserInfoChanged(edict_t *pEntity, char *infobuffer);</tt><p>
+<blockquote><tt>
+	Called after the player changes userinfo - gives dll a chance to modify
+	it before it gets sent into the rest of the engine.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Called when user issues <tt>"<b>setinfo</b>"</tt> from the console.  Also appears to be
+	called whenever the user returns to the game from the ESC menu.
+</blockquote>
+
+<hr><h3><tt><a name="ServerActivate">ServerActivate</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void ServerActivate(edict_t *pEdictList, int edictCount, int clientMax);</tt><p>
+<blockquote><tt>
+	Every call to ServerActivate should be matched by a call to
+	ServerDeactivate.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+	Apparently called when the server has loaded the map, but before it
+	precaches from the <tt><b>.res</b></tt> file.
+</blockquote>
+
+<hr><h3><tt><a name="ServerDeactivate">ServerDeactivate</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void ServerDeactivate(void);</tt><p>
+<blockquote><tt>
+	Peform any shutdown operations here.<br>
+	It's possible that the engine will call this function more times than
+	is necessary.  Therefore, only run it one time for each call to
+	ServerActivate.<br>
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Called upon <tt>"<b>quit</b>"</tt> or <tt>"<b>changelevel</b>"</tt> .
+</blockquote>
+
+<hr><h3><tt><a name="PlayerPreThink">PlayerPreThink</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void PlayerPreThink(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called every frame before physics are run.
+</tt></blockquote>
+
+<hr><h3><tt><a name="PlayerPostThink">PlayerPostThink</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void PlayerPostThink(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called every frame after physics are run.
+</tt></blockquote>
+
+<hr><h3><tt><a name="StartFrame">StartFrame</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void StartFrame(void);</tt><p>
+<blockquote><tt>
+	GLOBALS ASSUMED SET:  g_ulFrameCount
+</tt></blockquote>
+
+<hr><h3><tt><a name="ParmsNewLevel">ParmsNewLevel</a></tt></h3>
+<i>from dlls/client.cpp</i><br>
+<dd><tt>void ParmsNewLevel(void);</tt><p>
+
+<hr><h3><tt><a name="ParmsChangeLevel">ParmsChangeLevel</a></tt></h3>
+<i>from dlls/client.cpp</i><br>
+<dd><tt>void ParmsChangeLevel(void);</tt><p>
+
+<hr><h3><tt><a name="GetGameDescription">GetGameDescription</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>const char *GetGameDescription(void);</tt><p>
+<blockquote><tt>
+	Returns string describing current .dll game.<br>
+	Returns the descriptive name of this .dll.  E.g., Half-Life, or Team
+	Fortress 2.<br>
+	This function might be called before the world has spawned, and the game
+	rules initialized.<br>
+</tt></blockquote>
+
+<hr><h3><tt><a name="PlayerCustomization">PlayerCustomization</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void PlayerCustomization(edict_t *pEntity, customization_t *pCust);</tt><p>
+<blockquote><tt>
+	Notifies .dll of new customization for player.<br>
+	A new player customization has been registered on the server. 
+	UNDONE: This only sets the # of frames of the spray can logo animation
+	right now.<br>
+</tt></blockquote>
+
+<hr><h3><tt><a name="SpectatorConnect">SpectatorConnect</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void SpectatorConnect(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called when spectator joins server.<br>
+	A spectator has joined the game.<br>
+</tt></blockquote>
+
+<hr><h3><tt><a name="SpectatorDisconnect">SpectatorDisconnect</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void SpectatorDisconnect(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called when spectator leaves the server.<br>
+	A spectator has left the game.<br>
+</tt></blockquote>
+
+<hr><h3><tt><a name="SpectatorThink">SpectatorThink</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void SpectatorThink(edict_t *pEntity);</tt><p>
+<blockquote><tt>
+	Called when spectator sends a command packet (usercmd_t).<br>
+	A spectator has sent a usercmd.<br>
+</tt></blockquote>
+
+<hr><h3><tt><a name="Sys_Error">Sys_Error</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void Sys_Error(const char *error_string);</tt><p>
+<blockquote><tt>
+	Called when engine has encountered an error.<br>
+	Notify game .dll that engine is going to shut down.<br>
+	Engine is going to shut down, allows setting a breakpoint in game dll
+	to catch that occasion.<br>
+	Add code ( e.g., _asm { int 3 }; here to cause a breakpoint for
+	debugging your game .dlls.<br>
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="PM_Move">PM_Move</a></tt></h3>
+<i>from pm_shared/pm_shared.c:</i><br>
+<dd><tt>void PM_Move(struct playermove_s *ppmove, int server);</tt><p>
+<blockquote><tt>
+	This modume implements the shared player physics code between
+	any particular game and the engine.  The same PM_Move routine is built
+	into the game .dll and the client .dll and is invoked by each side as
+	appropriate.  There should be no distinction, internally, between server
+	and client.  This will ensure that prediction behaves appropriately.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="PM_Init">PM_Init</a></tt></h3>
+<i>from pm_shared/pm_shared.c:</i>
+<dd><tt>void PM_Init(struct playermove_s *ppmove);</tt><p>
+<blockquote><tt>
+	Server version of player movement initialization.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="PM_FindTextureType">PM_FindTextureType</a></tt></h3>
+<i>from pm_shared/pm_shared.c</i><br>
+<dd><tt>char PM_FindTextureType(char *name);</tt><p>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="SetupVisibility">SetupVisibility</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void SetupVisibility(edict_t *pViewEntity, edict_t *pClient, unsigned char **pvs, unsigned char **pas);</tt><p>
+<i>from dlls/client.cpp:</i>
+<blockquote><tt>
+	Set up PVS and PAS for networking for this client.
+	<p>
+	A client can have a separate "view entity" indicating
+	that his/her view should depend on the origin of that view entity.  If
+	that's the case, then pViewEntity will be non-NULL and will be used.
+	Otherwise, the current entity's origin is used.  Either is offset by the
+	view_ofs to get the eye position.
+	<p>
+	From the eye position, we set up the PAS and PVS to use for filtering
+	network messages to the client.  At this point, we could override the
+	actual PAS or PVS values, or use a different origin.
+	<p>
+	NOTE:  Do not cache the values of pas and pvs, as they depend on
+	reusable memory in the engine, they are only good for this one frame
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="UpdateClientData">UpdateClientData</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void UpdateClientData (const struct edict_s *ent, int sendweapons, struct clientdata_s *cd);</tt><p>
+<blockquote><tt>
+	Set up data sent only to specific client.<br>
+	Data sent to current client only.<br>
+	Engine sets argument 'cd' to 0 before calling.<br>
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="AddToFullPack">AddToFullPack</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>int AddToFullPack(struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet);</tt><p>
+<blockquote><tt>
+	Return 1 if the entity state has been filled in for the ent and the
+	entity will be propagated to the client, 0 otherwise.
+	<p>
+	State is the server maintained copy of the state info that is
+	transmitted to the client.  A MOD could alter values copied into state
+	to send the "host" a different look for a particular entity update,
+	etc.  
+	<p>
+	Arguments 'e' and 'ent' are the entity that is being added to the
+	update, if 1 is returneds.  Host is the player's edict of the player
+	whom we are sending the update to.  Player is 1 if the ent/e is a
+	player and 0 otherwise.  Argument 'pSet' is either the PAS or PVS that
+	we previous set up.  We can use it to ask the engine to filter the
+	entity against the PAS or PVS.  
+	<p>
+	We could also use the pas/ pvs that we set in SetupVisibility, if we
+	wanted to.  Caching the value is valid in that case, but still only for
+	the current frame.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="CreateBaseline">CreateBaseline</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void CreateBaseline(int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec3_t player_mins, vec3_t player_maxs);</tt><p>
+<blockquote><tt>
+	Tweak entity baseline for network encoding, allows setup of player
+	baselines, too.<br>
+	Creates baselines used for network encoding, especially for player data
+	since players are not spawned until connect time.<br>
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="RegisterEncoders">RegisterEncoders</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void RegisterEncoders(void);</tt><p>
+<blockquote><tt>
+	Callbacks for network encoding.<br>
+	Allows game .dll to override network encoding of certain types of
+	entities and tweak values, etc.<br>
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="GetWeaponData">GetWeaponData</a></tt></h3>
+<i>from dlls/client.cpp</i><br>
+<dd><tt>int GetWeaponData(struct edict_s *player, struct weapon_data_s *info);</tt><p>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="CmdStart">CmdStart</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void CmdStart(const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed);</tt><p>
+<blockquote><tt>
+	We're about to run this usercmd for the specified player.  We can set
+	up groupinfo and masking here, etc.  This is the time to examine the
+	usercmd for anything extra.  This call happens even if think does not.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="CmdEnd">CmdEnd</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void CmdEnd (const edict_t *player);</tt><p>
+<blockquote><tt>
+	Each cmdstart is exactly matched with a cmd end, clean up any
+	group trace flags, etc. here.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="ConnectionlessPacket">ConnectionlessPacket</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>int	ConnectionlessPacket(const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size);</tt>
+<blockquote><tt>
+	Return 1 if the packet is valid.  Set response_buffer_size if you want
+	to send a response packet.  Incoming, it holds the max size of the
+	response_buffer, so you must zero it out if you choose not to respond.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="GetHullBounds">GetHullBounds</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>int GetHullBounds(int hullnumber, float *mins, float *maxs);</tt><p>
+<blockquote><tt>
+	Engine calls this to enumerate player collision hulls,
+	for prediction.  Return 0 if the hullnumber doesn't exist.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="CreateInstancedBaselines">CreateInstancedBaselines</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>void CreateInstancedBaselines (void);</tt><p>
+<blockquote><tt>
+	Tweak entity baseline for network encoding, allows setup of player baselines, too.<br>
+	Create pseudo-baselines for items that aren't placed in the map at
+	spawn time, but which are likely to be created during play (e.g.,
+	grenades, ammo packs, projectiles, corpses, etc.).<br>
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="InconsistentFile">InconsistentFile</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>int	InconsistentFile(const edict_t *player, const char *filename, char *disconnect_message);</tt>
+<blockquote><tt>
+	One of the ENGINE_FORCE_UNMODIFIED files failed the consistency check
+	for the specified player Return 0 to allow the client to continue, 1 to
+	force immediate disconnection (with an optional disconnect message of
+	up to 256 characters).
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<hr><h3><tt><a name="AllowLagCompensation">AllowLagCompensation</a></tt></h3>
+<i>from dlls/client.cpp:</i><br>
+<dd><tt>int AllowLagCompensation(void);</tt><p>
+<blockquote><tt>
+	The game .dll should return 1 if lag compensation should be allowed
+	(could also just set the sv_unlag cvar.  Most games right now should
+	return 0, until client-side weapon prediction code is written and
+	tested for them (note you can predict weapons, but not do lag
+	compensation, too, if you want.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.0.
+</blockquote>
+
+<p>
+<hr>
+
+</body>
+</HTML>

@@ -1,0 +1,55 @@
+HLSDK NEWAPI Notes
+=-=-=-=-=-=-=-=-=-=
+
+--------------------------------------------------------------------------
+
+  - OnFreeEntPrivateData
+  - GameShutdown
+  - ShouldCollide
+
+NOTE: No examples of these found in SDK...
+
+--------------------------------------------------------------------------
+
+OnFreeEntPrivateData
+
+void OnFreeEntPrivateData(edict_t pEnt);
+
+from engine/eiface.h:
+
+    Called right before the object's memory is freed. Calls its
+    destructor.
+
+comments:
+
+    See also Ken Birdwell on constructors, from the HLCoders list.
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+GameShutdown
+
+void GameShutdown(void);
+
+comments:
+
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------
+
+ShouldCollide
+
+int ShouldCollide(edict_t *pentTouched, edict_t *pentOther);
+
+from kenb@valvesoftware.com, via HLCoders:
+
+    ..a hook that can override if any two entities should collide when
+    they try to pass through each other.
+
+comments:
+
+    Mugsy from DoD indicates that the return value for normal operation is
+    1.
+    Added in SDK 2.0.
+
+--------------------------------------------------------------------------

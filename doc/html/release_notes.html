@@ -1,0 +1,127 @@
+<!-- vi: set ts=4 sw=4 : -->
+<!-- vim: set tw=75 : -->
+
+<HTML>
+<head>
+<title>Metamod Release Notes</title>
+</head>
+<body>
+
+<h1>Release Notes
+</h1>
+
+<a name=major.1.17>
+<h2>Major changes with Metamod 1.17
+</h2></a>
+
+<ul>
+
+<p><li> New cvar "<b><tt>metamod_version</tt></b>" that can be queried from
+client game browsers.
+
+<p><li> New console commands available to clients (much like the existing
+server console commands):
+
+	<p><ul>
+	<li> <b><tt>"meta version"</tt></b> prints out version information
+	(date, compile type, etc).
+	<li> <b><tt>"meta list"</tt></b> shows a list of the plugins running on 
+	the server (name, author, version, etc).
+	</ul>
+
+<p><li> New file <a
+href="metamod.html#config.ini"><tt><b>config.ini</b></tt></a> to provide a
+more reliable and flexible method of specifying configuration options.
+At the moment, the recognized options mirror those from <a
+href="metamod.html#localinfo">+localinfo</a>, ie:
+
+	<p>
+	<ul>
+	<li> <tt><b>debuglevel</b> <i>&lt;number&gt;</i></tt>
+	<li> <tt><b>gamedll</b> <i>&lt;path&gt;</i></tt>
+	<li> <tt><b>plugins_file</b> <i>&lt;path&gt;</i></tt>
+	<li> <tt><b>exec_cfg</b> <i>&lt;path&gt;</i></tt>
+	<li> <tt><b>autodetect</b> <i>&lt;yes/no&gt;</i></tt>
+	<li> <tt><b>clientmeta</b> <i>&lt;yes/no&gt;</i></tt>
+	</ul>
+
+<p>Default path is "<tt>addons/metamod/config.ini</tt>" but can be
+overridden with "<tt>+localinfo mm_configfile</tt>".
+
+<p>Also, new console command <tt><b>"meta config"</b></tt> to display this
+information.
+
+<p><li> New console command <tt><b>"meta require"</b></tt> to force the
+server to exit if the specified plugin isn't loaded/running.  Intended for
+use in server.cfg or metaexec.cfg, to keep the server from starting up if
+desired plugins don't load.  For example:
+
+	<p>
+	<ul>
+	<li> <tt>meta require adminmod</tt>
+	<li> <tt>meta require 1</tt>
+	</ul>
+
+<p>The former requires that a plugin with the substring "adminmod" is found
+loaded and running.  The latter requires that the plugin in slot 1 is
+loaded and running.
+
+<p><li> If an override gamedll is specified and found to be invalid or
+missing, Metamod will now exit with an appropriate error message, rather
+than just falling back to the auto-detected gamedll.  This should provide
+more immediate and useful feedback, and help prevent some confusion.
+
+</ul>
+
+<p>
+<hr>
+
+<a name=compat.1.13>
+<h2>Incompatible changes with Metamod 1.13
+</h2></a>
+
+<ul>
+
+<li> Config file <tt><b>metagame.ini</b></tt> is no longer supported.  This
+file was deprecated in Metamod 1.08 (2001/06/16).  Use instead the "<a
+href="metamod.html#localinfo">+localinfo mm_gamedll</a>" option.
+
+</ul>
+
+
+<a name=major.1.13>
+<h2>Major changes with Metamod 1.13
+</h2></a>
+
+<ul>
+
+<li> New config file names and locations, per the <a
+href="http://www.unitedadmins.com/info_addon_dev_standards.aspx">Addon
+Development Standard</a> rev 1.00, developed on the <a
+href="http://list.valvesoftware.com/mailman/listinfo/hlds_apps">hlds_apps</a>
+list.  
+
+	<p> Default config file locations are now:
+	<ul>
+	<li> $gamedir/addons/metamod/plugins.ini
+	<li> $gamedir/addons/metamod/exec.cfg
+	</ul>
+
+	<p> Previous config file locations are also supported for backwards
+	compability:
+
+	<ul>
+	<li> $gamedir/metamod.ini
+	<li> $gamedir/metaexec.cfg
+	</ul>
+
+	<p> Note that the pathnames in plugins.ini are unchanged, and are still
+	relative to the gamedir.
+
+</ul>
+
+<p>
+<hr>
+
+</body>
+</HTML>

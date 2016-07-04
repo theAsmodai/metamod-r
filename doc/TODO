@@ -1,0 +1,37 @@
+# vi: set ts=4 sw=4 :
+# vim: set tw=75 :
+
+ - event notification and log-parsing interface for plugins
+ - interaction between plugins
+ - rename trace functions to "tr_*" for easier debug breakpoints
+ - add meta console command to debug indiv functions, like mm_trace can
+ - catch register cmds/cvars from gameDLL and list then in "meta game"
+ - in win32, doesn't report parsed plugin line properly; says only:
+      [META] ini: Read plugin config for:
+ - use scanf for file parsing ?
+ - "meta cancel" command
+ - more documentation info
+ - don't refresh_ini on "quit"
+ - test more bot support for metagame.ini
+
+ - track "messages" for plugins and provide READ_* functions (usermsg.cpp)
+ - provide other "engine" functions to plugins
+	- is_connected
+	- is_ingame
+
+ x fix stat()-related code for linux only
+ x remake MSVC project
+   x use resources
+   x doublecheck DLLEXPORT and stuff
+ x txt files in "dos" format?
+ x separate zip/tgz files
+ x compat support for "admin.ini"
+ x support dir-specific "metamod.ini" files, similar to servercfgfile
+ x more documentation info: engineapi_info.txt
+ x html view of source
+ x handle RegUserMsg and allow lists of registered messages to be queried
+   by bot plugins or other plugins that want to catch these things, and to
+   allow these plugins to be loaded during a map (since after mapstart, the
+   plugin can't catch RegUserMsg calls, since they've all already been made).
+ x find some way to generally allow plugins to use LINK_ENTITY_TO_CLASS,
+   without requiring explicit support in metamod

@@ -1,0 +1,110 @@
+# vi: set ts=4 sw=4 :
+# vim: set tw=75 :
+
+After writing and testing under linux, I then tried to move the code to
+windows, and being unfamiliar with windows coding, I ran into several
+issues I wasn't aware of, which I describe here for posterity:
+
+
+ - Apparently the GiveFnptrsToDll() routine has to be declared "WINAPI",
+   which is a macro for "__stdcall".  Without this, the behavior I observed
+   was that the routine would be called, and would return seemingly okay,
+   but during the following call to GetNewDLLFunctions, the application
+   would crash.
+
+   This was especially confusing because, using SDK2.1 source for
+   reference, the use of EXPORT and DLLEXPORT macros seemed inconsistent.
+   Doing a simple grep for "define.*EXPORT" turns up these definitions:
+
+      cl_dll/cl_dll.h:	   #define EXPORT  _declspec( dllexport )
+	  cl_dll/hud_iface.h:  #define EXPORT  _declspec( dllexport )
+	  dlls/cbase.h:        #define EXPORT  _declspec( dllexport )
+
+	  cl_dll/in_defs.h:    #define DLLEXPORT __declspec( dllexport )
+	  engine/eiface.h:     #define DLLEXPORT __stdcall
+
+   Between "EXPORT", "DLLEXPORT", and "dllexport", and then "_declspec" and
+   "__declspec", they all seemed the same to me.  Of course, they aren't.
+
+   It seems "__declspec(dllexport)" (I'm still unsure about the single vs
+   double underscore) simply says that the routine should be visible
+   externally, outside the DLL.  The "__stdcall" specifier, however,
+   changes the way the stack is cleaned up when the routine returns, and no
+   doubt having the routine itself using a different convention than the
+   caller (the engine) caused memory corruption and thus application
+   crashes.  The specifier doesn't seem, to me, to be particularly relative
+   to DLL exporting per se, so I'd say the macro name was unfortunate and
+   confusing.  
+
+   The other confusion was that GiveFnptrsToDll is apparently the _only_
+   function that needs to be declared __stdcall; declaring the other
+   external functions (GetEntityAPI, etc) produced MSVC errors and other
+   problems (as might be expected).
+
+   Also, it seems "__declspec" has to be placed _before_ the return type,
+   whereas "__stdcall" is placed _after_ the return type.  Well, at least
+   in MSVC; mingw appears to be looser.
+
+   Further complicating this, the __stdcall generally causes the function
+   to be given an internal symbol with a trailing "@" and digits specifying
+   the number of bytes in the function arguments (in this case, "8").  At
+   least, this is true under the mingw GNU compiler; I couldn't tell if
+   MSVC was the same.  In any case, by default then, the function is
+   exported as "GiveFnptrsToDll@8()", and the engine can't resolve the name
+   properly.  
+   
+   In mingw you can apparently alias this to the non-@ name via ".def"
+   files, but it looked like that if I have a .def file, I'd also have to
+   list all the entities in linkfunc.cpp (which would be a pain to
+   maintain).  Under MSVC, this didn't appear to be a problem, as both the
+   SDK source and adminmod source use a ".def" file, but still export all
+   the other functions okay.  I'm not sure why the difference; I may be
+   missing a mingw link parameter/option.
+
+   There are, however, mingw link options (--add-stdcall-alias, --kill-at)
+   to handle the problem (the first appears to do the job; I'm unsure about
+   the second), while still exporting all the other necessary functions.
+   Now, reading MSDN:
+      http://msdn.microsoft.com/library/devprods/vs6/visualc/vccore/_core_determine_which_exporting_method_to_use.htm
+   
+   there's apparently an issue of an "export ordinal" and the order of the
+   list of exported functions, which is solved by using a .def file.
+   Perhaps this is why the SDK uses a .def file, in which case I may have
+   problems if I don't specify that GiveFnptrsToDll is the first function
+   (as the SDK .def file does).  Although, perhaps this isn't even an issue
+   given that the DLL functions are called by name explicitly
+   (dlsym/GetFuncPointer), rather than being resolved to an library offset
+   at link time.
+
+   In any case, apparently using the conventions in the SDK, and including
+   the same headers in the same order produces the correct result, but it
+   wasn't at all clear to me, when looking at the source.
+
+   This one was hard for me to track down, and I also found this page to 
+   be helpful:
+      http://www.geocities.com/Tokyo/Towers/6162/win32/dll/make.html
+
+
+ - Linux appears to be either (a) much more forgiving about improper
+   pointer references in memcpy, or (b) laying out its memory in a manner
+   that hides problems with that.  In my case, I had:
+      DLL_FUNCTIONS *dllapi_table;
+	  dllapi_table=malloc(...)
+	  memcpy(pFunctionTable, &dllapi_table, sizeof(DLL_FUNCTIONS));
+   
+   Since the argument is already a pointer, the extra "&" is improper, and
+   should instead be:
+	  memcpy(pFunctionTable, dllapi_table, sizeof(DLL_FUNCTIONS));
+
+   Under linux, it didn't seem to be a problem, and program operation was
+   (as far as I could tell) correct.  Under windows, though, I got program
+   crashes after calling the 4th or 5th entity in linkfunc.cpp.  It
+   wasn't at all obvious what the problem was, and took quite a while to
+   track down.
+   
+
+ - missing functions (strtok_r, snprintf)
+ - missing macros (PATH_MAX, NAME_MAX)
+ - dlerror, getlasterror
+ - LoadLibrary returning 0 on failure (vs dlclose returning 0 on success)
+ - limits.h under mingw

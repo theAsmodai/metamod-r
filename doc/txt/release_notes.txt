@@ -1,0 +1,79 @@
+Release Notes
+=-=-=-=-=-=-=
+
+Major changes with Metamod 1.17
+===============================
+
+  - New cvar "metamod_version" that can be queried from client game
+    browsers.
+   
+  - New console commands available to clients (much like the existing
+    server console commands):
+   
+      - "meta version" prints out version information (date, compile type,
+        etc).
+      - "meta list" shows a list of the plugins running on the server
+        (name, author, version, etc).
+   
+  - New file config.ini to provide a more reliable and flexible method of
+    specifying configuration options. At the moment, the recognized
+    options mirror those from +localinfo, ie:
+   
+      - debuglevel <number>
+      - gamedll <path>
+      - plugins_file <path>
+      - exec_cfg <path>
+      - autodetect <yes/no>
+      - clientmeta <yes/no>
+   
+    Default path is "addons/metamod/config.ini" but can be overridden with
+    "+localinfo mm_configfile".
+   
+    Also, new console command "meta config" to display this information.
+   
+  - New console command "meta require" to force the server to exit if the
+    specified plugin isn't loaded/running. Intended for use in server.cfg
+    or metaexec.cfg, to keep the server from starting up if desired
+    plugins don't load. For example:
+   
+      - meta require adminmod
+      - meta require 1
+   
+    The former requires that a plugin with the substring "adminmod" is
+    found loaded and running. The latter requires that the plugin in slot
+    1 is loaded and running.
+   
+  - If an override gamedll is specified and found to be invalid or
+    missing, Metamod will now exit with an appropriate error message,
+    rather than just falling back to the auto-detected gamedll. This
+    should provide more immediate and useful feedback, and help prevent
+    some confusion.
+
+--------------------------------------------------------------------------
+
+Incompatible changes with Metamod 1.13
+======================================
+
+  - Config file metagame.ini is no longer supported. This file was
+    deprecated in Metamod 1.08 (2001/06/16). Use instead the "+localinfo
+    mm_gamedll" option.
+
+Major changes with Metamod 1.13
+===============================
+
+  - New config file names and locations, per the Addon Development
+    Standard rev 1.00, developed on the hlds_apps list.
+   
+    Default config file locations are now:
+      - $gamedir/addons/metamod/plugins.ini
+      - $gamedir/addons/metamod/exec.cfg
+   
+    Previous config file locations are also supported for backwards
+    compability:
+      - $gamedir/metamod.ini
+      - $gamedir/metaexec.cfg
+   
+    Note that the pathnames in plugins.ini are unchanged, and are still
+    relative to the gamedir.
+
+--------------------------------------------------------------------------

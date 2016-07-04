@@ -1,0 +1,1705 @@
+<!-- vi: set ts=4 sw=4 : -->
+<!-- vim: set tw=75 : -->
+
+<HTML>
+<head>
+<title>HLSDK Engine Notes</title>
+</head>
+<body>
+
+<h1>HLSDK Engine Notes
+</h1>
+
+<hr>
+<ul>
+   <li><a href=#PrecacheModel>PrecacheModel</a>
+   <li><a href=#PrecacheSound>PrecacheSound</a>
+   <li><a href=#SetModel>SetModel</a>
+   <li><a href=#ModelIndex>ModelIndex</a>
+   <li><a href=#ModelFrames>ModelFrames</a>
+   <li><a href=#SetSize>SetSize</a>
+   <li><a href=#ChangeLevel>ChangeLevel</a>
+   <li><a href=#GetSpawnParms>GetSpawnParms</a>
+   <li><a href=#SaveSpawnParms>SaveSpawnParms</a>
+   <li><a href=#VecToYaw>VecToYaw</a>
+   <li><a href=#VecToAngles>VecToAngles</a>
+   <li><a href=#MoveToOrigin>MoveToOrigin</a>
+   <li><a href=#ChangeYaw>ChangeYaw</a>
+   <li><a href=#ChangePitch>ChangePitch</a>
+   <li><a href=#FindEntityByString>FindEntityByString</a>
+   <li><a href=#GetEntityIllum>GetEntityIllum</a>
+   <li><a href=#FindEntityInSphere>FindEntityInSphere</a>
+   <li><a href=#FindClientInPVS>FindClientInPVS</a>
+   <li><a href=#EntitiesInPVS>EntitiesInPVS</a>
+   <li><a href=#MakeVectors>MakeVectors</a>
+   <li><a href=#AngleVectors>AngleVectors</a>
+   <li><a href=#CreateEntity>CreateEntity</a>
+   <li><a href=#RemoveEntity>RemoveEntity</a>
+   <li><a href=#CreateNamedEntity>CreateNamedEntity</a>
+   <li><a href=#MakeStatic>MakeStatic</a>
+   <li><a href=#EntIsOnFloor>EntIsOnFloor</a>
+   <li><a href=#DropToFloor>DropToFloor</a>
+   <li><a href=#WalkMove>WalkMove</a>
+   <li><a href=#SetOrigin>SetOrigin</a>
+   <li><a href=#EmitSound>EmitSound</a>
+   <li><a href=#EmitAmbientSound>EmitAmbientSound</a>
+   <li><a href=#TraceLine>TraceLine</a>
+   <li><a href=#TraceToss>TraceToss</a>
+   <li><a href=#TraceMonsterHull>TraceMonsterHull</a>
+   <li><a href=#TraceHull>TraceHull</a>
+   <li><a href=#TraceModel>TraceModel</a>
+   <li><a href=#TraceTexture>TraceTexture</a>
+   <li><a href=#TraceSphere>TraceSphere</a>
+   <li><a href=#GetAimVector>GetAimVector</a>
+   <li><a href=#ServerCommand>ServerCommand</a>
+   <li><a href=#ServerExecute>ServerExecute</a>
+   <li><a href=#ClientCommand>ClientCommand</a>
+   <li><a href=#ParticleEffect>ParticleEffect</a>
+   <li><a href=#LightStyle>LightStyle</a>
+   <li><a href=#DecalIndex>DecalIndex</a>
+   <li><a href=#PointContents>PointContents</a>
+   <li><a href=#MessageBegin>MessageBegin</a>
+   <li><a href=#MessageEnd>MessageEnd</a>
+   <li><a href=#WriteByte>WriteByte</a>
+   <li><a href=#WriteChar>WriteChar</a>
+   <li><a href=#WriteShort>WriteShort</a>
+   <li><a href=#WriteLong>WriteLong</a>
+   <li><a href=#WriteAngle>WriteAngle</a>
+   <li><a href=#WriteCoord>WriteCoord</a>
+   <li><a href=#WriteString>WriteString</a>
+   <li><a href=#WriteEntity>WriteEntity</a>
+   <li><a href=#CVarRegister>CVarRegister</a>
+   <li><a href=#CVarGetFloat>CVarGetFloat</a>
+   <li><a href=#CVarGetString>CVarGetString</a>
+   <li><a href=#CVarSetFloat>CVarSetFloat</a>
+   <li><a href=#CVarSetString>CVarSetString</a>
+   <li><a href=#AlertMessage>AlertMessage</a>
+   <li><a href=#EngineFprintf>EngineFprintf</a>
+   <li><a href=#PvAllocEntPrivateData>PvAllocEntPrivateData</a>
+   <li><a href=#PvEntPrivateData>PvEntPrivateData</a>
+   <li><a href=#FreeEntPrivateData>FreeEntPrivateData</a>
+   <li><a href=#SzFromIndex>SzFromIndex</a>
+   <li><a href=#AllocString>AllocString</a>
+   <li><a href=#GetVarsOfEnt>GetVarsOfEnt</a>
+   <li><a href=#PEntityOfEntOffset>PEntityOfEntOffset</a>
+   <li><a href=#EntOffsetOfPEntity>EntOffsetOfPEntity</a>
+   <li><a href=#IndexOfEdict>IndexOfEdict</a>
+   <li><a href=#PEntityOfEntIndex>PEntityOfEntIndex</a>
+   <li><a href=#FindEntityByVars>FindEntityByVars</a>
+   <li><a href=#GetModelPtr>GetModelPtr</a>
+   <li><a href=#RegUserMsg>RegUserMsg</a>
+   <li><a href=#AnimationAutomove>AnimationAutomove</a>
+   <li><a href=#GetBonePosition>GetBonePosition</a>
+   <li><a href=#FunctionFromName>FunctionFromName</a>
+   <li><a href=#NameForFunction>NameForFunction</a>
+   <li><a href=#ClientPrintf>ClientPrintf</a>
+   <li><a href=#ServerPrint>ServerPrint</a>
+   <li><a href=#Cmd_Args>Cmd_Args</a>
+   <li><a href=#Cmd_Argv>Cmd_Argv</a>
+   <li><a href=#Cmd_Argc>Cmd_Argc</a>
+   <li><a href=#GetAttachment>GetAttachment</a>
+   <li><a href=#CRC32_Init>CRC32_Init</a>
+   <li><a href=#CRC32_ProcessBuffer>CRC32_ProcessBuffer</a>
+   <li><a href=#CRC32_ProcessByte>CRC32_ProcessByte</a>
+   <li><a href=#CRC32_Final>CRC32_Final</a>
+   <li><a href=#RandomLong>RandomLong</a>
+   <li><a href=#RandomFloat>RandomFloat</a>
+   <li><a href=#SetView>SetView</a>
+   <li><a href=#Time>Time</a>
+   <li><a href=#CrosshairAngle>CrosshairAngle</a>
+   <li><a href=#LoadFileForMe>LoadFileForMe</a>
+   <li><a href=#FreeFile>FreeFile</a>
+   <li><a href=#EndSection>EndSection</a>
+   <li><a href=#CompareFileTime>CompareFileTime</a>
+   <li><a href=#GetGameDir>GetGameDir</a>
+   <li><a href=#Cvar_RegisterVariable>Cvar_RegisterVariable</a>
+   <li><a href=#FadeClientVolume>FadeClientVolume</a>
+   <li><a href=#SetClientMaxspeed>SetClientMaxspeed</a>
+   <li><a href=#CreateFakeClient>CreateFakeClient</a>
+   <li><a href=#RunPlayerMove>RunPlayerMove</a>
+   <li><a href=#NumberOfEntities>NumberOfEntities</a>
+   <li><a href=#GetInfoKeyBuffer>GetInfoKeyBuffer</a>
+   <li><a href=#InfoKeyValue>InfoKeyValue</a>
+   <li><a href=#SetKeyValue>SetKeyValue</a>
+   <li><a href=#SetClientKeyValue>SetClientKeyValue</a>
+   <li><a href=#IsMapValid>IsMapValid</a>
+   <li><a href=#StaticDecal>StaticDecal</a>
+   <li><a href=#PrecacheGeneric>PrecacheGeneric</a>
+   <li><a href=#GetPlayerUserId>GetPlayerUserId</a>
+   <li><a href=#BuildSoundMsg>BuildSoundMsg</a>
+   <li><a href=#IsDedicatedServer>IsDedicatedServer</a>
+   <li><a href=#CVarGetPointer>CVarGetPointer</a>
+   <li><a href=#GetPlayerWONId>GetPlayerWONId</a>
+   <li><a href=#Info_RemoveKey>Info_RemoveKey</a>
+   <li><a href=#GetPhysicsKeyValue>GetPhysicsKeyValue</a>
+   <li><a href=#SetPhysicsKeyValue>SetPhysicsKeyValue</a>
+   <li><a href=#GetPhysicsInfoString>GetPhysicsInfoString</a>
+   <li><a href=#PrecacheEvent>PrecacheEvent</a>
+   <li><a href=#PlaybackEvent>PlaybackEvent</a>
+   <li><a href=#SetFatPVS>SetFatPVS</a>
+   <li><a href=#SetFatPAS>SetFatPAS</a>
+   <li><a href=#CheckVisibility>CheckVisibility</a>
+   <li><a href=#DeltaSetField>DeltaSetField</a>
+   <li><a href=#DeltaUnsetField>DeltaUnsetField</a>
+   <li><a href=#DeltaAddEncoder>DeltaAddEncoder</a>
+   <li><a href=#GetCurrentPlayer>GetCurrentPlayer</a>
+   <li><a href=#CanSkipPlayer>CanSkipPlayer</a>
+   <li><a href=#DeltaFindField>DeltaFindField</a>
+   <li><a href=#DeltaSetFieldByIndex>DeltaSetFieldByIndex</a>
+   <li><a href=#DeltaUnsetFieldByIndex>DeltaUnsetFieldByIndex</a>
+   <li><a href=#SetGroupMask>SetGroupMask</a>
+   <li><a href=#CreateInstancedBaseline>CreateInstancedBaseline</a>
+   <li><a href=#Cvar_DirectSet>Cvar_DirectSet</a>
+   <li><a href=#ForceUnmodified>ForceUnmodified</a>
+   <li><a href=#GetPlayerStats>GetPlayerStats</a>
+   <li><a href=#AddServerCommand>AddServerCommand</a>
+   <li><a href=#Voice_GetClientListening>Voice_GetClientListening</a>
+   <li><a href=#Voice_SetClientListening>Voice_SetClientListening</a>
+   <li><a href=#GetPlayerAuthId>GetPlayerAuthId</a>
+   <li><a href=#SequenceGet>SequenceGet</a>
+   <li><a href=#SequencePickSentence>SequencePickSentence</a>
+   <li><a href=#GetFileSize>GetFileSize</a>
+   <li><a href=#GetApproxWavePlayLen>GetApproxWavePlayLen</a>
+   <li><a href=#IsCareerMatch>IsCareerMatch</a>
+   <li><a href=#GetLocalizedStringLength>GetLocalizedStringLength</a>
+   <li><a href=#RegisterTutorMessageShown>RegisterTutorMessageShown</a>
+   <li><a href=#GetTimesTutorMessageShown>GetTimesTutorMessageShown</a>
+   <li><a href=#ProcessTutorMessageDecayBuffer>ProcessTutorMessageDecayBuffer</a>
+   <li><a href=#ConstructTutorMessageDecayBuffer>ConstructTutorMessageDecayBuffer</a>
+   <li><a href=#ResetTutorMessageDecayData>ResetTutorMessageDecayData</a>
+</ul>
+
+<hr><h3><tt><a name="PrecacheModel">PrecacheModel</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int PrecacheModel(char *s);</tt><br>
+<dd><tt>PRECACHE_MODEL()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PrecacheSound">PrecacheSound</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int PrecacheSound(char *s);</tt><br>
+<dd><tt>PRECACHE_SOUND()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetModel">SetModel</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetModel(edict_t *e, const char *m);</tt><br>
+<dd><tt>SET_MODEL()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ModelIndex">ModelIndex</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int ModelIndex(const char *m);</tt><br>
+<dd><tt>MODEL_INDEX()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ModelFrames">ModelFrames</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int ModelFrames(int modelIndex);</tt><br>
+<dd><tt>MODEL_FRAMES()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetSize">SetSize</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetSize(edict_t *e, const float *rgflMin, const float *rgflMax);</tt><br>
+<dd><tt>SET_SIZE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ChangeLevel">ChangeLevel</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ChangeLevel(char *s1, char *s2);</tt><br>
+<dd><tt>CHANGE_LEVEL()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetSpawnParms">GetSpawnParms</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void GetSpawnParms(edict_t *ent);</tt><br>
+<dd><tt>GET_SPAWN_PARMS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SaveSpawnParms">SaveSpawnParms</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SaveSpawnParms(edict_t *ent);</tt><br>
+<dd><tt>SAVE_SPAWN_PARMS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="VecToYaw">VecToYaw</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>float VecToYaw(const float *rgflVector);</tt><br>
+<dd><tt>VEC_TO_YAW()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="VecToAngles">VecToAngles</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void VecToAngles(const float *rgflVectorIn, float *rgflVectorOut);</tt><br>
+<dd><tt>VEC_TO_ANGLES()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="MoveToOrigin">MoveToOrigin</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void MoveToOrigin(edict_t *ent, const float *pflGoal, float dist, int iMoveType);</tt><br>
+<dd><tt>MOVE_TO_ORIGIN()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ChangeYaw">ChangeYaw</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ChangeYaw(edict_t *ent);</tt><br>
+<dd><tt>oldCHANGE_YAW()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ChangePitch">ChangePitch</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ChangePitch(edict_t *ent);</tt><br>
+<dd><tt>CHANGE_PITCH()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="FindEntityByString">FindEntityByString</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *FindEntityByString(edict_t *pEdictStartSearchAfter, const char *pszField, const char *pszValue);</tt><br>
+<dd><tt>FIND_ENTITY_BY_STRING()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetEntityIllum">GetEntityIllum</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int GetEntityIllum(edict_t *pEnt);</tt><br>
+<dd><tt>GETENTITYILLUM()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="FindEntityInSphere">FindEntityInSphere</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *org, float rad);</tt><br>
+<dd><tt>FIND_ENTITY_IN_SPHERE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="FindClientInPVS">FindClientInPVS</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *FindClientInPVS(edict_t *pEdict);</tt><br>
+<dd><tt>FIND_ENTITY_IN_PVS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="EntitiesInPVS">EntitiesInPVS</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *EntitiesInPVS(edict_t *pplayer);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="MakeVectors">MakeVectors</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void MakeVectors(const float *rgflVector);</tt><br>
+<dd><tt>MAKE_VECTORS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="AngleVectors">AngleVectors</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void AngleVectors(const float *rgflVector, float *forward, float *right, float *up);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CreateEntity">CreateEntity</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *CreateEntity(void);</tt><br>
+<dd><tt>CREATE_ENTITY()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="RemoveEntity">RemoveEntity</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void RemoveEntity(edict_t *e);</tt><br>
+<dd><tt>REMOVE_ENTITY()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CreateNamedEntity">CreateNamedEntity</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *CreateNamedEntity(int className);</tt><br>
+<dd><tt>CREATE_NAMED_ENTITY()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="MakeStatic">MakeStatic</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void MakeStatic(edict_t *ent);</tt><br>
+<dd><tt>MAKE_STATIC()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="EntIsOnFloor">EntIsOnFloor</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int EntIsOnFloor(edict_t *e);</tt><br>
+<dd><tt>ENT_IS_ON_FLOOR()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DropToFloor">DropToFloor</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int DropToFloor(edict_t *e);</tt><br>
+<dd><tt>DROP_TO_FLOOR()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WalkMove">WalkMove</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int WalkMove(edict_t *ent, float yaw, float dist, int iMode);</tt><br>
+<dd><tt>WALK_MOVE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetOrigin">SetOrigin</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetOrigin(edict_t *e, const float *rgflOrigin);</tt><br>
+<dd><tt>SET_ORIGIN()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="EmitSound">EmitSound</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void EmitSound(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch);</tt><br>
+<dd><tt>EMIT_SOUND_DYN2()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="EmitAmbientSound">EmitAmbientSound</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void EmitAmbientSound(edict_t *entity, float *pos, const char *samp, float vol, float attenuation, int fFlags, int pitch);</tt><br>
+<dd><tt>EMIT_AMBIENT_SOUND()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="TraceLine">TraceLine</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void TraceLine(const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr);</tt><br>
+<dd><tt>TRACE_LINE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="TraceToss">TraceToss</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void TraceToss(edict_t *pent, edict_t *pentToIgnore, TraceResult *ptr);</tt><br>
+<dd><tt>TRACE_TOSS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="TraceMonsterHull">TraceMonsterHull</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2, int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr);</tt><br>
+<dd><tt>TRACE_MONSTER_HULL()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="TraceHull">TraceHull</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void TraceHull(const float *v1, const float *v2, int fNoMonsters, int hullNumber, edict_t *pentToSkip, TraceResult *ptr);</tt><br>
+<dd><tt>TRACE_HULL()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="TraceModel">TraceModel</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void TraceModel(const float *v1, const float *v2, int hullNumber, edict_t *pent, TraceResult *ptr);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="TraceTexture">TraceTexture</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *TraceTexture(edict_t *pTextureEntity, const float *v1, const float *v2);</tt><br>
+<dd><tt>TRACE_TEXTURE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="TraceSphere">TraceSphere</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void TraceSphere(const float *v1, const float *v2, int fNoMonsters, float radius, edict_t *pentToSkip, TraceResult *ptr);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetAimVector">GetAimVector</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void GetAimVector(edict_t *ent, float speed, float *rgflReturn);</tt><br>
+<dd><tt>GET_AIM_VECTOR()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ServerCommand">ServerCommand</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ServerCommand(char *str);</tt><br>
+<dd><tt>SERVER_COMMAND()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Executes a server command, as if typed at the console (ie "exec
+	myconfig.cfg", or "quit").  Note that it appears no commands are
+	executed until <b>after</b> GameDLLInit is called.  If
+	ServerCommand is called earlier than that, the command is delayed until
+	then.
+</blockquote>
+
+<hr><h3><tt><a name="ServerExecute">ServerExecute</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ServerExecute(void);</tt><br>
+<dd><tt>SERVER_EXECUTE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ClientCommand">ClientCommand</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ClientCommand(edict_t *pEdict, char *szFmt, ...);</tt><br>
+<dd><tt>CLIENT_COMMAND()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ParticleEffect">ParticleEffect</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ParticleEffect(const float *org, const float *dir, float color, float count);</tt><br>
+<dd><tt>PARTICLE_EFFECT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="LightStyle">LightStyle</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void LightStyle(int style, char *val);</tt><br>
+<dd><tt>LIGHT_STYLE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DecalIndex">DecalIndex</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int DecalIndex(const char *name);</tt><br>
+<dd><tt>DECAL_INDEX()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PointContents">PointContents</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int PointContents(const float *rgflVector);</tt><br>
+<dd><tt>POINT_CONTENTS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="MessageBegin">MessageBegin</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void MessageBegin(int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);</tt><br>
+<dd><tt>MESSAGE_BEGIN()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Begin a network message to send to the client.
+	<br><b><tt>msg_type</tt></b> should be a number returned by <a
+	href="#RegUserMsg">RegUserMsg</a>.  
+	<br><b><tt>msg_dest</tt></b> is one of:
+	<ul>
+	<li> <b><tt>MSG_BROADCAST</tt></b> - "unreliable to all"
+	<li> <b><tt>MSG_ONE</tt></b> - "reliable to one (msg_entity)"
+	<li> <b><tt>MSG_ALL</tt></b> - "reliable to all"
+	<li> <b><tt>MSG_INIT</tt></b> - "write to the init string"
+	<li> <b><tt>MSG_PVS</tt></b> - "Ents in PVS of org" (PVS=potentially visible set)
+	<li> <b><tt>MSG_PAS</tt></b> - "Ents in PAS of org" (PAS=potentially audible set)
+	<li> <b><tt>MSG_PVS_R</tt></b> - "Reliable to PVS"
+	<li> <b><tt>MSG_PAS_R</tt></b> - "Reliable to PAS"
+	<li> <b><tt>MSG_ONE_UNRELIABLE</tt></b> - "Send to one client, but don't put in reliable stream, put in unreliable datagram (could be dropped)"
+	</ul>
+</blockquote>
+
+<hr><h3><tt><a name="MessageEnd">MessageEnd</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void MessageEnd(void);</tt><br>
+<dd><tt>MESSAGE_END()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteByte">WriteByte</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteByte(int iValue);</tt><br>
+<dd><tt>WRITE_BYTE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteChar">WriteChar</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteChar(int iValue);</tt><br>
+<dd><tt>WRITE_CHAR()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteShort">WriteShort</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteShort(int iValue);</tt><br>
+<dd><tt>WRITE_SHORT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteLong">WriteLong</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteLong(int iValue);</tt><br>
+<dd><tt>WRITE_LONG()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteAngle">WriteAngle</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteAngle(float flValue);</tt><br>
+<dd><tt>WRITE_ANGLE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteCoord">WriteCoord</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteCoord(float flValue);</tt><br>
+<dd><tt>WRITE_COORD()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteString">WriteString</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteString(const char *sz);</tt><br>
+<dd><tt>WRITE_STRING()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="WriteEntity">WriteEntity</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void WriteEntity(int iValue);</tt><br>
+<dd><tt>WRITE_ENTITY()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CVarRegister">CVarRegister</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void CVarRegister(cvar_t *pCvar);</tt><br>
+<dd><tt>CVAR_REGISTER()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Register a new cvar (server variable).
+</blockquote>
+
+<hr><h3><tt><a name="CVarGetFloat">CVarGetFloat</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>float CVarGetFloat(const char *szVarName);</tt><br>
+<dd><tt>CVAR_GET_FLOAT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Return the float value of a cvar.
+</blockquote>
+
+<hr><h3><tt><a name="CVarGetString">CVarGetString</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *CVarGetString(const char *szVarName);</tt><br>
+<dd><tt>CVAR_GET_STRING()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Return the string value of a cvar.
+</blockquote>
+
+<hr><h3><tt><a name="CVarSetFloat">CVarSetFloat</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void CVarSetFloat(const char *szVarName, float flValue);</tt><br>
+<dd><tt>CVAR_SET_FLOAT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Set the float value of a cvar.
+</blockquote>
+
+<hr><h3><tt><a name="CVarSetString">CVarSetString</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void CVarSetString(const char *szVarName, const char *szValue);</tt><br>
+<dd><tt>CVAR_SET_STRING()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Set the string value of a cvar.
+</blockquote>
+
+<hr><h3><tt><a name="AlertMessage">AlertMessage</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void AlertMessage(ALERT_TYPE atype, char *szFmt, ...);</tt><br>
+<dd><tt>ALERT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Print an alert message.
+	<br><b><tt>atype</tt></b> is one of:
+	<ul>
+	<li> <b><tt>at_notice</tt></b>
+	<li> <b><tt>at_console</tt></b> - "same as at_notice, but forces a ConPrintf, not a message box".  Prints output to server console, but only shown if 'developer' is set.
+	<li> <b><tt>at_aiconsole</tt></b> - "same as at_console, but only shown if developer level is 2!"
+	<li> <b><tt>at_warning</tt></b>
+	<li> <b><tt>at_error</tt></b>
+	<li> <b><tt>at_logged</tt></b> - "Server print to console (only in multiplayer games)."  Prints output to server logs and console.
+	</ul>
+</blockquote>
+
+<hr><h3><tt><a name="EngineFprintf">EngineFprintf</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void EngineFprintf(FILE *pfile, char *szFmt, ...);</tt><br>
+<dd><tt>ENGINE_FPRINTF()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PvAllocEntPrivateData">PvAllocEntPrivateData</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void *PvAllocEntPrivateData(edict_t *pEdict, long cb);</tt><br>
+<dd><tt>ALLOC_PRIVATE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PvEntPrivateData">PvEntPrivateData</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void *PvEntPrivateData(edict_t *pEdict);</tt><br>
+<dd><tt>GET_PRIVATE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns a pointer to the base class type of the given edict.  For
+	instance:
+	<pre>
+    CBaseEntity *pPlayer=(CBaseEntity *)GET_PRIVATE(pEntity);
+	</pre>
+</blockquote>
+
+<hr><h3><tt><a name="FreeEntPrivateData">FreeEntPrivateData</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void FreeEntPrivateData(edict_t *pEdict);</tt><br>
+<dd><tt>FREE_PRIVATE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SzFromIndex">SzFromIndex</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *SzFromIndex(int iString);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="AllocString">AllocString</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int AllocString(const char *szValue);</tt><br>
+<dd><tt>ALLOC_STRING()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetVarsOfEnt">GetVarsOfEnt</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>struct entvars_s *GetVarsOfEnt(edict_t *pEdict);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PEntityOfEntOffset">PEntityOfEntOffset</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *PEntityOfEntOffset(int iEntOffset);</tt><br>
+<dd><tt>ENT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="EntOffsetOfPEntity">EntOffsetOfPEntity</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int EntOffsetOfPEntity(const edict_t *pEdict);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="IndexOfEdict">IndexOfEdict</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int IndexOfEdict(const edict_t *pEdict);</tt><br>
+<dd><tt>ENTINDEX()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the server slot (ie 1 to maxplayers) of the given player edict.
+</blockquote>
+
+<hr><h3><tt><a name="PEntityOfEntIndex">PEntityOfEntIndex</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *PEntityOfEntIndex(int iEntIndex);</tt><br>
+<dd><tt>INDEXENT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the edict for the player in the given server slot (ie 1 to 
+	maxplayers).
+</blockquote>
+
+<hr><h3><tt><a name="FindEntityByVars">FindEntityByVars</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t *FindEntityByVars(struct entvars_s *pvars);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetModelPtr">GetModelPtr</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void *GetModelPtr(edict_t *pEdict);</tt><br>
+<dd><tt>GET_MODEL_PTR()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="RegUserMsg">RegUserMsg</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int RegUserMsg(const char *pszName, int iSize);</tt><br>
+<dd><tt>REG_USER_MSG()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Register a network message type with the given name, and size if known.
+	Returns the number assigned for the network message, to be used with <a
+	href="#MessageBegin">MessageBegin</a>.  It appears that message
+	ID's 1-63 are reserved for the Engine, and that GameDLL messages are
+	allocated IDs starting at 64.  The SDK <tt>dlls/util.h</tt> appears to 
+	define six Engine messages:
+	<ul>
+		<li> <tt>SVC_TEMPENTITY = 23</tt>
+		<li> <tt>SVC_INTERMISSION = 30</tt>
+		<li> <tt>SVC_CDTRACK = 32</tt>
+		<li> <tt>SVC_WEAPONANIM = 35</tt>
+		<li> <tt>SVC_ROOMTYPE = 37</tt>
+		<li> <tt>SVC_HLTV = 50</tt>
+	</ul>
+</blockquote>
+
+<hr><h3><tt><a name="AnimationAutomove">AnimationAutomove</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void AnimationAutomove(const edict_t *pEdict, float flTime);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetBonePosition">GetBonePosition</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void GetBonePosition(const edict_t *pEdict, int iBone, float *rgflOrigin, float *rgflAngles);</tt><br>
+<dd><tt>GET_BONE_POSITION()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="FunctionFromName">FunctionFromName</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>unsigned long FunctionFromName(const char *pName);</tt><br>
+<dd><tt>FUNCTION_FROM_NAME()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Apparently, this finds the given exported function name string in the
+	GameDLL, and returns a pointer to said function (much like unix dlsym
+	or win32 GetProcAddress?).  This appears to be used in GameDLL code for
+	loading savegames, as the savegames contain names of exported functions
+	in the GameDLL.  Basically, this is the opposite of <a
+	href="#NameForFunction">NameForFunction</a>.
+</blockquote>
+
+<hr><h3><tt><a name="NameForFunction">NameForFunction</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *NameForFunction(unsigned long function);</tt><br>
+<dd><tt>NAME_FOR_FUNCTION()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Basically, the opposite of <a
+	href="#FunctionFromName">FunctionFromName</a>.  Finds the given
+	function pointer address in the GameDLL, and returns the string name
+	for the corresponding function.  This appears to be used in GameDLL
+	code for saving games, taking known function pointers and converting
+	them to function name strings to be stored in the savegames, so that
+	they can be converted back to function pointers upon game load.
+</blockquote>
+
+<hr><h3><tt><a name="ClientPrintf">ClientPrintf</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg);</tt><br>
+<dd><tt>CLIENT_PRINTF()</tt>
+<blockquote><tt>
+	JOHN: engine callbacks so game DLL can print messages to individual
+	clients
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ServerPrint">ServerPrint</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ServerPrint(const char *szMsg);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Prints output to the server console.
+</blockquote>
+
+<hr><h3><tt><a name="Cmd_Args">Cmd_Args</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *Cmd_Args(void);</tt><br>
+<dd><tt>CMD_ARGS()</tt>
+<blockquote><tt>
+	these 3 added so game DLL can easily access client 'cmd' strings
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the arguments for a command, as a single string.  The command
+	string itself is not included, and must be queried with 
+	<a href="#Cmd_Argv"><tt>CMD_ARGV(0)</tt></a>.  For use in <a
+	href="dllapi_notes.html#ClientCommand">DLLAPI ClientCommand</a>, or in
+	the function provided to <a
+	href="#AddServerCommand">AddServerCommand</a>.
+</blockquote>
+
+<hr><h3><tt><a name="Cmd_Argv">Cmd_Argv</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *Cmd_Argv(int argc);</tt><br>
+<dd><tt>CMD_ARGV()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the <i>nth</i> argument to the command.  <tt>CMD_ARGV(0)</tt>
+	returns the command name itself.
+</blockquote>
+
+<hr><h3><tt><a name="Cmd_Argc">Cmd_Argc</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int Cmd_Argc(void);</tt><br>
+<dd><tt>CMD_ARGC()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the number of arguments given to the command.
+</blockquote>
+
+<hr><h3><tt><a name="GetAttachment">GetAttachment</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void GetAttachment(const edict_t *pEdict, int iAttachment, float *rgflOrigin, float *rgflAngles);</tt><br>
+<dd><tt>GET_ATTACHMENT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CRC32_Init">CRC32_Init</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void CRC32_Init(CRC32_t *pulCRC);</tt><br>
+<dd><tt>CRC32_INIT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CRC32_ProcessBuffer">CRC32_ProcessBuffer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void CRC32_ProcessBuffer(CRC32_t *pulCRC, void *p, int len);</tt><br>
+<dd><tt>CRC32_PROCESS_BUFFER()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CRC32_ProcessByte">CRC32_ProcessByte</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void CRC32_ProcessByte(CRC32_t *pulCRC, unsigned char ch);</tt><br>
+<dd><tt>CRC32_PROCESS_BYTE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CRC32_Final">CRC32_Final</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>CRC32_t CRC32_Final(CRC32_t pulCRC);</tt><br>
+<dd><tt>CRC32_FINAL()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="RandomLong">RandomLong</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>long RandomLong(long lLow, long lHigh);</tt><br>
+<dd><tt>RANDOM_LONG()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="RandomFloat">RandomFloat</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>float RandomFloat(float flLow, float flHigh);</tt><br>
+<dd><tt>RANDOM_FLOAT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetView">SetView</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetView(const edict_t *pClient, const edict_t *pViewent);</tt><br>
+<dd><tt>SET_VIEW() </tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="Time">Time</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>float Time(void);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CrosshairAngle">CrosshairAngle</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void CrosshairAngle(const edict_t *pClient, float pitch, float yaw);</tt><br>
+<dd><tt>SET_CROSSHAIRANGLE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="LoadFileForMe">LoadFileForMe</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>byte * LoadFileForMe(char *filename, int *pLength);</tt><br>
+<dd><tt>LOAD_FILE_FOR_ME()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Opens the given filename (relative to the gamedir, or relative to the
+	hlds directory, in that order), and returns a pointer to a byte array
+	(character string) with the contents of the file.  NULL-termination of
+	the array indicates end of file.  Length of the file in bytes is
+	returned in the given int pointer.
+</blockquote>
+
+<hr><h3><tt><a name="FreeFile">FreeFile</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void FreeFile(void *buffer);</tt><br>
+<dd><tt>FREE_FILE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Free the byte array of the given buffer which was returned by <a
+	href="#LoadFileForMe">LoadFileForMe</a>.
+</blockquote>
+
+<hr><h3><tt><a name="EndSection">EndSection</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void EndSection(const char *pszSectionName);</tt>
+<blockquote><tt>
+	trigger_endsection
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CompareFileTime">CompareFileTime</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int CompareFileTime(char *filename1, char *filename2, int *iCompare);</tt><br>
+<dd><tt>COMPARE_FILE_TIME()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetGameDir">GetGameDir</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void GetGameDir(char *szGetGameDir);</tt><br>
+<dd><tt>GET_GAME_DIR() </tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Copies the pathname of the game directory into the given buffer.  Note
+	that there's no way to inform the engine how big the buffer is, so be
+	forewarned.
+	<p>
+	Prior to HL 1.1.1.1 (CS 1.6), this gave the full pathname of the game
+	directory, ie "/usr/local/half-life/cstrike" or
+	"C:\Games\Half-Life\cstrike".  Now, it is only the string passed to
+	hlds as the argument to "-game", ie "cstrike".
+</blockquote>
+
+<hr><h3><tt><a name="Cvar_RegisterVariable">Cvar_RegisterVariable</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void Cvar_RegisterVariable(cvar_t *variable);</tt><br>
+<dd><tt>CVAR_CREATE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="FadeClientVolume">FadeClientVolume</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void FadeClientVolume(const edict_t *pEdict, int fadePercent, int fadeOutSeconds, int holdTime, int fadeInSeconds);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetClientMaxspeed">SetClientMaxspeed</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CreateFakeClient">CreateFakeClient</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>edict_t * CreateFakeClient(const char *netname);</tt>
+<blockquote><tt>
+	returns NULL if fake client can't be created
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Creates "bots" (?).
+</blockquote>
+
+<hr><h3><tt><a name="RunPlayerMove">RunPlayerMove</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void RunPlayerMove(edict_t *fakeclient, const float *viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, byte msec);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="NumberOfEntities">NumberOfEntities</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int NumberOfEntities(void);</tt><br>
+<dd><tt>NUMBER_OF_ENTITIES()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetInfoKeyBuffer">GetInfoKeyBuffer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>char *GetInfoKeyBuffer(edict_t *e);</tt>
+<blockquote><tt>
+	passing in NULL gets the serverinfo
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the InfoKeyBuffer for the given edict.  This is basically the
+	fields from "setinfo" at the client console, and includes things like
+	the player name.
+	<p>
+	The sourcecode comment ("<i>passing in NULL gets the serverinfo</i>")
+	isn't entirely accurate.  There appear to be two server-side info
+	buffers available, "<b>serverinfo</b>" and "<b>localinfo</b>", both
+	accessible from the console by those two commands, respectively.
+	<p>
+	Calling <tt>GetInfoKeyBuffer(NULL)</tt> will return the
+	<b>localinfo</b> buffer.  Calling 
+	<tt>GetInfoKeyBuffer(PEntityOfEntIndex(0))</tt>, ie passing the entity 
+	of slot 0, will return the <b>serverinfo</b> buffer.
+</blockquote>
+
+<hr><h3><tt><a name="InfoKeyValue">InfoKeyValue</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>char *InfoKeyValue(char *infobuffer, char *key);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the value for the given key in the given InfoKeyBuffer.
+</blockquote>
+
+<hr><h3><tt><a name="SetKeyValue">SetKeyValue</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetKeyValue(char *infobuffer, char *key, char *value);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Adds or sets a key/value pair in the given InfoKeyBuffer.  Appears to
+	work for only server info, and not client info.  For clients, use <a
+	href="#SetClientKeyValue">SetClientKeyValue</a>.
+</blockquote>
+
+<hr><h3><tt><a name="SetClientKeyValue">SetClientKeyValue</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetClientKeyValue(int clientIndex, char *infobuffer, char *key, char *value);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Adds or sets a key/value pair in a client's InfoKeyBuffer, by server
+	slot (ie 1 to maxplayers).
+</blockquote>
+
+<hr><h3><tt><a name="IsMapValid">IsMapValid</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int IsMapValid(char *filename);</tt><br>
+<dd><tt>IS_MAP_VALID()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="StaticDecal">StaticDecal</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void StaticDecal(const float *origin, int decalIndex, int entityIndex, int modelIndex);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PrecacheGeneric">PrecacheGeneric</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int PrecacheGeneric(char *s);</tt><br>
+<dd><tt>PRECACHE_GENERIC()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetPlayerUserId">GetPlayerUserId</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int GetPlayerUserId(edict_t *e);</tt><br>
+<dd><tt>GETPLAYERUSERID()
+<blockquote><tt>
+	returns the server assigned userid for this player.  useful for logging
+	frags, etc.  returns -1 if the edict couldn't be found in the list of
+	clients
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the session userid for the given player edict.  As of server
+	x106, this is constant for the life of the player connection, and
+	unique for the life of the server process.  Each time a client
+	connects, they are given a userid of 1 plus the userid of the previous
+	connecting client.  When the server starts/restarts, the server starts
+	again at userid 1.
+</blockquote>
+
+<hr><h3><tt><a name="BuildSoundMsg">BuildSoundMsg</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);</tt><br>
+<dd><tt>BUILD_SOUND_MSG()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="IsDedicatedServer">IsDedicatedServer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int IsDedicatedServer(void);</tt><br>
+<dd><tt>IS_DEDICATED_SERVER()
+<blockquote><tt>
+	is this a dedicated server?
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CVarGetPointer">CVarGetPointer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>cvar_t *CVarGetPointer(const char *szVarName);</tt><br>
+<dd><tt>CVAR_GET_POINTER()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns a pointer to a <tt>cvar_t</tt> struct for the given cvar
+	(server variable) name.
+</blockquote>
+
+<hr><h3><tt><a name="GetPlayerWONId">GetPlayerWONId</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>unsigned int GetPlayerWONId(edict_t *e);</tt>
+<dd><tt>GETPLAYERWONID()</tt>
+<blockquote><tt>
+	returns the server assigned WONid for this player.  useful for logging
+	frags, etc.  returns -1 if the edict couldn't be found in the list of
+	clients
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Returns the WON id for the given player edict.  As of server x106, this
+	should be unique per client CD KEY, and should be consistent across all
+	WON auth servers.
+</blockquote>
+
+<hr><h3><tt><a name="Info_RemoveKey">Info_RemoveKey</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void Info_RemoveKey(char *s, const char *key);</tt>
+<blockquote><tt>
+	YWB 8/1/99 TFF Physics additions
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetPhysicsKeyValue">GetPhysicsKeyValue</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *GetPhysicsKeyValue(const edict_t *pClient, const char *key);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetPhysicsKeyValue">SetPhysicsKeyValue</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetPhysicsKeyValue(const edict_t *pClient, const char *key, const char *value);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetPhysicsInfoString">GetPhysicsInfoString</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *GetPhysicsInfoString(const edict_t *pClient);</tt><br>
+<dd><tt>ENGINE_GETPHYSINFO()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PrecacheEvent">PrecacheEvent</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>unsigned short PrecacheEvent(int type, const char *psz);</tt><br>
+<dd><tt>PRECACHE_EVENT()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="PlaybackEvent">PlaybackEvent</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void PlaybackEvent(int flags, const edict_t *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2);</tt><br>
+<dd><tt>PLAYBACK_EVENT_FULL()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetFatPVS">SetFatPVS</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>unsigned char *SetFatPVS(float *org);</tt><br>
+<dd><tt>ENGINE_SET_PVS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetFatPAS">SetFatPAS</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>unsigned char *SetFatPAS(float *org);</tt><br>
+<dd><tt>ENGINE_SET_PAS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CheckVisibility">CheckVisibility</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int CheckVisibility(const edict_t *entity, unsigned char *pset);</tt><br>
+<dd><tt>ENGINE_CHECK_VISIBILITY()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DeltaSetField">DeltaSetField</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void DeltaSetField(struct delta_s *pFields, const char *fieldname);</tt><br>
+<dd><tt>DELTA_SET()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DeltaUnsetField">DeltaUnsetField</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void DeltaUnsetField(struct delta_s *pFields, const char *fieldname);</tt><br>
+<dd><tt>DELTA_UNSET()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DeltaAddEncoder">DeltaAddEncoder</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void DeltaAddEncoder(char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to) );</tt><br>
+<dd><tt>DELTA_ADDENCODER()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetCurrentPlayer">GetCurrentPlayer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int GetCurrentPlayer(void);</tt><br>
+<dd><tt>ENGINE_CURRENT_PLAYER()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CanSkipPlayer">CanSkipPlayer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int CanSkipPlayer(const edict_t *player);</tt><br>
+<dd><tt>ENGINE_CANSKIP()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DeltaFindField">DeltaFindField</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int DeltaFindField(struct delta_s *pFields, const char *fieldname);</tt><br>
+<dd><tt>DELTA_FINDFIELD()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DeltaSetFieldByIndex">DeltaSetFieldByIndex</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void DeltaSetFieldByIndex(struct delta_s *pFields, int fieldNumber);</tt><br>
+<dd><tt>DELTA_SETBYINDEX()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="DeltaUnsetFieldByIndex">DeltaUnsetFieldByIndex</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void DeltaUnsetFieldByIndex(struct delta_s *pFields, int fieldNumber);</tt><br>
+<dd><tt>DELTA_UNSETBYINDEX()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="SetGroupMask">SetGroupMask</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void SetGroupMask(int mask, int op);</tt><br>
+<dd><tt>ENGINE_SETGROUPMASK()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="CreateInstancedBaseline">CreateInstancedBaseline</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int CreateInstancedBaseline(int classname, struct entity_state_s *baseline);</tt><br>
+<dd><tt>ENGINE_INSTANCE_BASELINE()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="Cvar_DirectSet">Cvar_DirectSet</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void Cvar_DirectSet(struct cvar_s *var, char *value);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="ForceUnmodified">ForceUnmodified</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, const char *filename);</tt><br>
+<dd><tt>ENGINE_FORCE_UNMODIFIED()</tt>
+<blockquote><tt>
+	Forces the client and server to be running with the same version of the
+	specified file ( e.g., a player model ).  Calling this has no effect in
+	single player.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="GetPlayerStats">GetPlayerStats</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void GetPlayerStats(const edict_t *pClient, int *ping, int *packet_loss);</tt><br>
+<dd><tt>PLAYER_CNX_STATS()</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	.
+</blockquote>
+
+<hr><h3><tt><a name="AddServerCommand">AddServerCommand</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void AddServerCommand(char *cmd_name, void (*function) (void));</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Registers a new server console command.  When the given command string
+	is typed at the console, the given function will be called.  Arguments
+	for the command can be retrieved in the function with 
+	<a href="#Cmd_Args">Cmd_Args</a>, <a href="#Cmd_Argv">Cmd_Argv</a>, and
+	<a href="#Cmd_Argc">Cmd_Argc</a>.
+</blockquote>
+
+<hr><h3><tt><a name="Voice_GetClientListening">Voice_GetClientListening</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>qboolean Voice_GetClientListening)(int iReceiver, int iSender);</tt>
+<blockquote><tt>
+	For voice communications, set which clients hear each other.  NOTE: these 
+	functions take player entity indices (starting at 1).
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.2.
+</blockquote>
+
+<hr><h3><tt><a name="Voice_SetClientListening">Voice_SetClientListening</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>qboolean Voice_SetClientListening)(int iReceiver, int iSender, qboolean bListen);</tt>
+<blockquote><tt>
+	For voice communications, set which clients hear each other.  NOTE: these 
+	functions take player entity indices (starting at 1).
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added in SDK 2.2.
+</blockquote>
+
+<hr><h3><tt><a name="GetPlayerAuthId">GetPlayerAuthId</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>const char *GetPlayerAuthId(edict_t *e);</tt>
+<p><i>From Eric Smith &lt;EricS@valvesoftware.com&gt; on <a href="http://list.valvesoftware.com/pipermail/hlcoders/2002-April/002865.html">hlcoders</a>:</i> 
+<blockquote><tt>
+	The AuthID is a way for applications/mods to get the Authentication ID
+	(uniqueID) for a player.  The AuthID can be a WonID or a SteamID.  The
+	function I've written returns the AuthID as a string.  Calling <a
+	href="#GetPlayerWONId">GetPlayerWONId</a> will still work for Non-Steam
+	players just like it always has.  If applications/mods want to get a
+	jump start on getting ready to support Steam players, then they can
+	start using GetPlayerAuthId, which will still work for Non-Steam
+	players, but it will give the WonID as a string instead of an unsigned
+	int.
+</tt></blockquote>
+<p><i>From Eric Smith &lt;EricS@valvesoftware.com&gt; on <a href="http://list.valvesoftware.com/pipermail/servertest/2002-April/000567.html">servertest:</a></i>
+<blockquote><tt>
+	Only clients playing via Steam will have SteamIDs.  Clients who are not
+	using Steam will still have WonIDs (just like they always have).  The
+	server now supports WonIDs\SteamIDs and banning using either of them.
+	WonIDs have not changed.  SteamIDs use the format: STEAM_<#>:<#>  where
+	<#> is replaced by numbers.  An example SteamID would be
+	"STEAM_0:94534".
+</tt></blockquote>
+<p><i>From Eric Smith &lt;EricS@valvesoftware.com&gt; on <a href="http://list.valvesoftware.com/pipermail/hlcoders/2002-April/002925.html">hlcoders:</a></i>
+<blockquote><tt>
+	This function will now return the string "BOT" as the AuthID for fake
+	clients.
+</tt></blockquote>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1109; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="SequenceGet">SequenceGet</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void *SequenceGet(const char *fileName, const char *entryName);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="SequencePickSentence">SequencePickSentence</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void *SequencePickSentence(const char *groupName, int pickMethod,
+int *picked);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="GetFileSize">GetFileSize</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int GetFileSize(char *filename);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="GetApproxWavePlayLen">GetApproxWavePlayLen</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>unsigned int GetApproxWavePlayLen(const char *filepath);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="IsCareerMatch">IsCareerMatch</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int IsCareerMatch(void);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="GetLocalizedStringLength">GetLocalizedStringLength</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int GetLocalizedStringLength(const char *label);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="RegisterTutorMessageShown">RegisterTutorMessageShown</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void RegisterTutorMessageShown(int mid);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="GetTimesTutorMessageShown">GetTimesTutorMessageShown</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>int GetTimesTutorMessageShown(int mid);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="ProcessTutorMessageDecayBuffer">ProcessTutorMessageDecayBuffer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="ConstructTutorMessageDecayBuffer">ConstructTutorMessageDecayBuffer</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+<hr><h3><tt><a name="ResetTutorMessageDecayData">ResetTutorMessageDecayData</a></tt></h3>
+<i>from engine/eiface.h:</i><br>
+<dd><tt>void ResetTutorMessageDecayData(void);</tt>
+<p><i>comments:</i><br>
+<blockquote>
+	Added for HL 1xxx; no SDK update.  
+</blockquote>
+
+
+<p>
+<hr>
+
+</body>
+</HTML>

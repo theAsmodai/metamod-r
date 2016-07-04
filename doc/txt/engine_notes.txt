@@ -1,0 +1,2166 @@
+HLSDK Engine Notes
+=-=-=-=-=-=-=-=-=-=
+
+--------------------------------------------------------------------------
+
+  - PrecacheModel
+  - PrecacheSound
+  - SetModel
+  - ModelIndex
+  - ModelFrames
+  - SetSize
+  - ChangeLevel
+  - GetSpawnParms
+  - SaveSpawnParms
+  - VecToYaw
+  - VecToAngles
+  - MoveToOrigin
+  - ChangeYaw
+  - ChangePitch
+  - FindEntityByString
+  - GetEntityIllum
+  - FindEntityInSphere
+  - FindClientInPVS
+  - EntitiesInPVS
+  - MakeVectors
+  - AngleVectors
+  - CreateEntity
+  - RemoveEntity
+  - CreateNamedEntity
+  - MakeStatic
+  - EntIsOnFloor
+  - DropToFloor
+  - WalkMove
+  - SetOrigin
+  - EmitSound
+  - EmitAmbientSound
+  - TraceLine
+  - TraceToss
+  - TraceMonsterHull
+  - TraceHull
+  - TraceModel
+  - TraceTexture
+  - TraceSphere
+  - GetAimVector
+  - ServerCommand
+  - ServerExecute
+  - ClientCommand
+  - ParticleEffect
+  - LightStyle
+  - DecalIndex
+  - PointContents
+  - MessageBegin
+  - MessageEnd
+  - WriteByte
+  - WriteChar
+  - WriteShort
+  - WriteLong
+  - WriteAngle
+  - WriteCoord
+  - WriteString
+  - WriteEntity
+  - CVarRegister
+  - CVarGetFloat
+  - CVarGetString
+  - CVarSetFloat
+  - CVarSetString
+  - AlertMessage
+  - EngineFprintf
+  - PvAllocEntPrivateData
+  - PvEntPrivateData
+  - FreeEntPrivateData
+  - SzFromIndex
+  - AllocString
+  - GetVarsOfEnt
+  - PEntityOfEntOffset
+  - EntOffsetOfPEntity
+  - IndexOfEdict
+  - PEntityOfEntIndex
+  - FindEntityByVars
+  - GetModelPtr
+  - RegUserMsg
+  - AnimationAutomove
+  - GetBonePosition
+  - FunctionFromName
+  - NameForFunction
+  - ClientPrintf
+  - ServerPrint
+  - Cmd_Args
+  - Cmd_Argv
+  - Cmd_Argc
+  - GetAttachment
+  - CRC32_Init
+  - CRC32_ProcessBuffer
+  - CRC32_ProcessByte
+  - CRC32_Final
+  - RandomLong
+  - RandomFloat
+  - SetView
+  - Time
+  - CrosshairAngle
+  - LoadFileForMe
+  - FreeFile
+  - EndSection
+  - CompareFileTime
+  - GetGameDir
+  - Cvar_RegisterVariable
+  - FadeClientVolume
+  - SetClientMaxspeed
+  - CreateFakeClient
+  - RunPlayerMove
+  - NumberOfEntities
+  - GetInfoKeyBuffer
+  - InfoKeyValue
+  - SetKeyValue
+  - SetClientKeyValue
+  - IsMapValid
+  - StaticDecal
+  - PrecacheGeneric
+  - GetPlayerUserId
+  - BuildSoundMsg
+  - IsDedicatedServer
+  - CVarGetPointer
+  - GetPlayerWONId
+  - Info_RemoveKey
+  - GetPhysicsKeyValue
+  - SetPhysicsKeyValue
+  - GetPhysicsInfoString
+  - PrecacheEvent
+  - PlaybackEvent
+  - SetFatPVS
+  - SetFatPAS
+  - CheckVisibility
+  - DeltaSetField
+  - DeltaUnsetField
+  - DeltaAddEncoder
+  - GetCurrentPlayer
+  - CanSkipPlayer
+  - DeltaFindField
+  - DeltaSetFieldByIndex
+  - DeltaUnsetFieldByIndex
+  - SetGroupMask
+  - CreateInstancedBaseline
+  - Cvar_DirectSet
+  - ForceUnmodified
+  - GetPlayerStats
+  - AddServerCommand
+  - Voice_GetClientListening
+  - Voice_SetClientListening
+  - GetPlayerAuthId
+  - SequenceGet
+  - SequencePickSentence
+  - GetFileSize
+  - GetApproxWavePlayLen
+  - IsCareerMatch
+  - GetLocalizedStringLength
+  - RegisterTutorMessageShown
+  - GetTimesTutorMessageShown
+  - ProcessTutorMessageDecayBuffer
+  - ConstructTutorMessageDecayBuffer
+  - ResetTutorMessageDecayData
+
+--------------------------------------------------------------------------
+
+PrecacheModel
+
+from engine/eiface.h:
+int PrecacheModel(char *s);
+PRECACHE_MODEL()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PrecacheSound
+
+from engine/eiface.h:
+int PrecacheSound(char *s);
+PRECACHE_SOUND()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetModel
+
+from engine/eiface.h:
+void SetModel(edict_t *e, const char *m);
+SET_MODEL()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ModelIndex
+
+from engine/eiface.h:
+int ModelIndex(const char *m);
+MODEL_INDEX()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ModelFrames
+
+from engine/eiface.h:
+int ModelFrames(int modelIndex);
+MODEL_FRAMES()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetSize
+
+from engine/eiface.h:
+void SetSize(edict_t *e, const float *rgflMin, const float *rgflMax);
+SET_SIZE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ChangeLevel
+
+from engine/eiface.h:
+void ChangeLevel(char *s1, char *s2);
+CHANGE_LEVEL()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetSpawnParms
+
+from engine/eiface.h:
+void GetSpawnParms(edict_t *ent);
+GET_SPAWN_PARMS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SaveSpawnParms
+
+from engine/eiface.h:
+void SaveSpawnParms(edict_t *ent);
+SAVE_SPAWN_PARMS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+VecToYaw
+
+from engine/eiface.h:
+float VecToYaw(const float *rgflVector);
+VEC_TO_YAW()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+VecToAngles
+
+from engine/eiface.h:
+void VecToAngles(const float *rgflVectorIn, float *rgflVectorOut);
+VEC_TO_ANGLES()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+MoveToOrigin
+
+from engine/eiface.h:
+void MoveToOrigin(edict_t *ent, const float *pflGoal, float dist, int
+iMoveType);
+MOVE_TO_ORIGIN()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ChangeYaw
+
+from engine/eiface.h:
+void ChangeYaw(edict_t *ent);
+oldCHANGE_YAW()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ChangePitch
+
+from engine/eiface.h:
+void ChangePitch(edict_t *ent);
+CHANGE_PITCH()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+FindEntityByString
+
+from engine/eiface.h:
+edict_t *FindEntityByString(edict_t *pEdictStartSearchAfter, const char *
+pszField, const char *pszValue);
+FIND_ENTITY_BY_STRING()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetEntityIllum
+
+from engine/eiface.h:
+int GetEntityIllum(edict_t *pEnt);
+GETENTITYILLUM()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+FindEntityInSphere
+
+from engine/eiface.h:
+edict_t *FindEntityInSphere(edict_t *pEdictStartSearchAfter, const float *
+org, float rad);
+FIND_ENTITY_IN_SPHERE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+FindClientInPVS
+
+from engine/eiface.h:
+edict_t *FindClientInPVS(edict_t *pEdict);
+FIND_ENTITY_IN_PVS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+EntitiesInPVS
+
+from engine/eiface.h:
+edict_t *EntitiesInPVS(edict_t *pplayer);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+MakeVectors
+
+from engine/eiface.h:
+void MakeVectors(const float *rgflVector);
+MAKE_VECTORS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+AngleVectors
+
+from engine/eiface.h:
+void AngleVectors(const float *rgflVector, float *forward, float *right,
+float *up);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CreateEntity
+
+from engine/eiface.h:
+edict_t *CreateEntity(void);
+CREATE_ENTITY()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+RemoveEntity
+
+from engine/eiface.h:
+void RemoveEntity(edict_t *e);
+REMOVE_ENTITY()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CreateNamedEntity
+
+from engine/eiface.h:
+edict_t *CreateNamedEntity(int className);
+CREATE_NAMED_ENTITY()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+MakeStatic
+
+from engine/eiface.h:
+void MakeStatic(edict_t *ent);
+MAKE_STATIC()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+EntIsOnFloor
+
+from engine/eiface.h:
+int EntIsOnFloor(edict_t *e);
+ENT_IS_ON_FLOOR()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DropToFloor
+
+from engine/eiface.h:
+int DropToFloor(edict_t *e);
+DROP_TO_FLOOR()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WalkMove
+
+from engine/eiface.h:
+int WalkMove(edict_t *ent, float yaw, float dist, int iMode);
+WALK_MOVE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetOrigin
+
+from engine/eiface.h:
+void SetOrigin(edict_t *e, const float *rgflOrigin);
+SET_ORIGIN()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+EmitSound
+
+from engine/eiface.h:
+void EmitSound(edict_t *entity, int channel, const char *sample, /*int*/
+float volume, float attenuation, int fFlags, int pitch);
+EMIT_SOUND_DYN2()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+EmitAmbientSound
+
+from engine/eiface.h:
+void EmitAmbientSound(edict_t *entity, float *pos, const char *samp, float
+vol, float attenuation, int fFlags, int pitch);
+EMIT_AMBIENT_SOUND()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+TraceLine
+
+from engine/eiface.h:
+void TraceLine(const float *v1, const float *v2, int fNoMonsters, edict_t
+*pentToSkip, TraceResult *ptr);
+TRACE_LINE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+TraceToss
+
+from engine/eiface.h:
+void TraceToss(edict_t *pent, edict_t *pentToIgnore, TraceResult *ptr);
+TRACE_TOSS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+TraceMonsterHull
+
+from engine/eiface.h:
+int TraceMonsterHull(edict_t *pEdict, const float *v1, const float *v2,
+int fNoMonsters, edict_t *pentToSkip, TraceResult *ptr);
+TRACE_MONSTER_HULL()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+TraceHull
+
+from engine/eiface.h:
+void TraceHull(const float *v1, const float *v2, int fNoMonsters, int
+hullNumber, edict_t *pentToSkip, TraceResult *ptr);
+TRACE_HULL()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+TraceModel
+
+from engine/eiface.h:
+void TraceModel(const float *v1, const float *v2, int hullNumber, edict_t
+*pent, TraceResult *ptr);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+TraceTexture
+
+from engine/eiface.h:
+const char *TraceTexture(edict_t *pTextureEntity, const float *v1, const
+float *v2);
+TRACE_TEXTURE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+TraceSphere
+
+from engine/eiface.h:
+void TraceSphere(const float *v1, const float *v2, int fNoMonsters, float
+radius, edict_t *pentToSkip, TraceResult *ptr);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetAimVector
+
+from engine/eiface.h:
+void GetAimVector(edict_t *ent, float speed, float *rgflReturn);
+GET_AIM_VECTOR()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ServerCommand
+
+from engine/eiface.h:
+void ServerCommand(char *str);
+SERVER_COMMAND()
+
+comments:
+
+    Executes a server command, as if typed at the console (ie "exec
+    myconfig.cfg", or "quit"). Note that it appears no commands are
+    executed until after GameDLLInit is called. If ServerCommand is called
+    earlier than that, the command is delayed until then.
+
+--------------------------------------------------------------------------
+
+ServerExecute
+
+from engine/eiface.h:
+void ServerExecute(void);
+SERVER_EXECUTE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ClientCommand
+
+from engine/eiface.h:
+void ClientCommand(edict_t *pEdict, char *szFmt, ...);
+CLIENT_COMMAND()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ParticleEffect
+
+from engine/eiface.h:
+void ParticleEffect(const float *org, const float *dir, float color, float
+count);
+PARTICLE_EFFECT()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+LightStyle
+
+from engine/eiface.h:
+void LightStyle(int style, char *val);
+LIGHT_STYLE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DecalIndex
+
+from engine/eiface.h:
+int DecalIndex(const char *name);
+DECAL_INDEX()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PointContents
+
+from engine/eiface.h:
+int PointContents(const float *rgflVector);
+POINT_CONTENTS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+MessageBegin
+
+from engine/eiface.h:
+void MessageBegin(int msg_dest, int msg_type, const float *pOrigin,
+edict_t *ed);
+MESSAGE_BEGIN()
+
+comments:
+
+    Begin a network message to send to the client.
+    msg_type should be a number returned by RegUserMsg.
+    msg_dest is one of:
+      - MSG_BROADCAST - "unreliable to all"
+      - MSG_ONE - "reliable to one (msg_entity)"
+      - MSG_ALL - "reliable to all"
+      - MSG_INIT - "write to the init string"
+      - MSG_PVS - "Ents in PVS of org" (PVS=potentially visible set)
+      - MSG_PAS - "Ents in PAS of org" (PAS=potentially audible set)
+      - MSG_PVS_R - "Reliable to PVS"
+      - MSG_PAS_R - "Reliable to PAS"
+      - MSG_ONE_UNRELIABLE - "Send to one client, but don't put in
+        reliable stream, put in unreliable datagram (could be dropped)"
+
+--------------------------------------------------------------------------
+
+MessageEnd
+
+from engine/eiface.h:
+void MessageEnd(void);
+MESSAGE_END()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteByte
+
+from engine/eiface.h:
+void WriteByte(int iValue);
+WRITE_BYTE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteChar
+
+from engine/eiface.h:
+void WriteChar(int iValue);
+WRITE_CHAR()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteShort
+
+from engine/eiface.h:
+void WriteShort(int iValue);
+WRITE_SHORT()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteLong
+
+from engine/eiface.h:
+void WriteLong(int iValue);
+WRITE_LONG()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteAngle
+
+from engine/eiface.h:
+void WriteAngle(float flValue);
+WRITE_ANGLE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteCoord
+
+from engine/eiface.h:
+void WriteCoord(float flValue);
+WRITE_COORD()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteString
+
+from engine/eiface.h:
+void WriteString(const char *sz);
+WRITE_STRING()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+WriteEntity
+
+from engine/eiface.h:
+void WriteEntity(int iValue);
+WRITE_ENTITY()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CVarRegister
+
+from engine/eiface.h:
+void CVarRegister(cvar_t *pCvar);
+CVAR_REGISTER()
+
+comments:
+
+    Register a new cvar (server variable).
+
+--------------------------------------------------------------------------
+
+CVarGetFloat
+
+from engine/eiface.h:
+float CVarGetFloat(const char *szVarName);
+CVAR_GET_FLOAT()
+
+comments:
+
+    Return the float value of a cvar.
+
+--------------------------------------------------------------------------
+
+CVarGetString
+
+from engine/eiface.h:
+const char *CVarGetString(const char *szVarName);
+CVAR_GET_STRING()
+
+comments:
+
+    Return the string value of a cvar.
+
+--------------------------------------------------------------------------
+
+CVarSetFloat
+
+from engine/eiface.h:
+void CVarSetFloat(const char *szVarName, float flValue);
+CVAR_SET_FLOAT()
+
+comments:
+
+    Set the float value of a cvar.
+
+--------------------------------------------------------------------------
+
+CVarSetString
+
+from engine/eiface.h:
+void CVarSetString(const char *szVarName, const char *szValue);
+CVAR_SET_STRING()
+
+comments:
+
+    Set the string value of a cvar.
+
+--------------------------------------------------------------------------
+
+AlertMessage
+
+from engine/eiface.h:
+void AlertMessage(ALERT_TYPE atype, char *szFmt, ...);
+ALERT()
+
+comments:
+
+    Print an alert message.
+    atype is one of:
+      - at_notice
+      - at_console - "same as at_notice, but forces a ConPrintf, not a
+        message box". Prints output to server console, but only shown if
+        'developer' is set.
+      - at_aiconsole - "same as at_console, but only shown if developer
+        level is 2!"
+      - at_warning
+      - at_error
+      - at_logged - "Server print to console (only in multiplayer games)."
+        Prints output to server logs and console.
+
+--------------------------------------------------------------------------
+
+EngineFprintf
+
+from engine/eiface.h:
+void EngineFprintf(FILE *pfile, char *szFmt, ...);
+ENGINE_FPRINTF()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PvAllocEntPrivateData
+
+from engine/eiface.h:
+void *PvAllocEntPrivateData(edict_t *pEdict, long cb);
+ALLOC_PRIVATE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PvEntPrivateData
+
+from engine/eiface.h:
+void *PvEntPrivateData(edict_t *pEdict);
+GET_PRIVATE()
+
+comments:
+
+    Returns a pointer to the base class type of the given edict. For
+    instance:
+        CBaseEntity *pPlayer=(CBaseEntity *)GET_PRIVATE(pEntity);
+        
+
+--------------------------------------------------------------------------
+
+FreeEntPrivateData
+
+from engine/eiface.h:
+void FreeEntPrivateData(edict_t *pEdict);
+FREE_PRIVATE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SzFromIndex
+
+from engine/eiface.h:
+const char *SzFromIndex(int iString);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+AllocString
+
+from engine/eiface.h:
+int AllocString(const char *szValue);
+ALLOC_STRING()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetVarsOfEnt
+
+from engine/eiface.h:
+struct entvars_s *GetVarsOfEnt(edict_t *pEdict);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PEntityOfEntOffset
+
+from engine/eiface.h:
+edict_t *PEntityOfEntOffset(int iEntOffset);
+ENT()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+EntOffsetOfPEntity
+
+from engine/eiface.h:
+int EntOffsetOfPEntity(const edict_t *pEdict);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+IndexOfEdict
+
+from engine/eiface.h:
+int IndexOfEdict(const edict_t *pEdict);
+ENTINDEX()
+
+comments:
+
+    Returns the server slot (ie 1 to maxplayers) of the given player
+    edict.
+
+--------------------------------------------------------------------------
+
+PEntityOfEntIndex
+
+from engine/eiface.h:
+edict_t *PEntityOfEntIndex(int iEntIndex);
+INDEXENT()
+
+comments:
+
+    Returns the edict for the player in the given server slot (ie 1 to
+    maxplayers).
+
+--------------------------------------------------------------------------
+
+FindEntityByVars
+
+from engine/eiface.h:
+edict_t *FindEntityByVars(struct entvars_s *pvars);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetModelPtr
+
+from engine/eiface.h:
+void *GetModelPtr(edict_t *pEdict);
+GET_MODEL_PTR()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+RegUserMsg
+
+from engine/eiface.h:
+int RegUserMsg(const char *pszName, int iSize);
+REG_USER_MSG()
+
+comments:
+
+    Register a network message type with the given name, and size if
+    known. Returns the number assigned for the network message, to be used
+    with MessageBegin. It appears that message ID's 1-63 are reserved for
+    the Engine, and that GameDLL messages are allocated IDs starting at
+    64. The SDK dlls/util.h appears to define six Engine messages:
+      - SVC_TEMPENTITY = 23
+      - SVC_INTERMISSION = 30
+      - SVC_CDTRACK = 32
+      - SVC_WEAPONANIM = 35
+      - SVC_ROOMTYPE = 37
+      - SVC_HLTV = 50
+
+--------------------------------------------------------------------------
+
+AnimationAutomove
+
+from engine/eiface.h:
+void AnimationAutomove(const edict_t *pEdict, float flTime);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetBonePosition
+
+from engine/eiface.h:
+void GetBonePosition(const edict_t *pEdict, int iBone, float *rgflOrigin,
+float *rgflAngles);
+GET_BONE_POSITION()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+FunctionFromName
+
+from engine/eiface.h:
+unsigned long FunctionFromName(const char *pName);
+FUNCTION_FROM_NAME()
+
+comments:
+
+    Apparently, this finds the given exported function name string in the
+    GameDLL, and returns a pointer to said function (much like unix dlsym
+    or win32 GetProcAddress?). This appears to be used in GameDLL code for
+    loading savegames, as the savegames contain names of exported
+    functions in the GameDLL. Basically, this is the opposite of 
+    NameForFunction.
+
+--------------------------------------------------------------------------
+
+NameForFunction
+
+from engine/eiface.h:
+const char *NameForFunction(unsigned long function);
+NAME_FOR_FUNCTION()
+
+comments:
+
+    Basically, the opposite of FunctionFromName. Finds the given function
+    pointer address in the GameDLL, and returns the string name for the
+    corresponding function. This appears to be used in GameDLL code for
+    saving games, taking known function pointers and converting them to
+    function name strings to be stored in the savegames, so that they can
+    be converted back to function pointers upon game load.
+
+--------------------------------------------------------------------------
+
+ClientPrintf
+
+from engine/eiface.h:
+void ClientPrintf(edict_t *pEdict, PRINT_TYPE ptype, const char *szMsg);
+CLIENT_PRINTF()
+
+    JOHN: engine callbacks so game DLL can print messages to individual
+    clients
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ServerPrint
+
+from engine/eiface.h:
+void ServerPrint(const char *szMsg);
+
+comments:
+
+    Prints output to the server console.
+
+--------------------------------------------------------------------------
+
+Cmd_Args
+
+from engine/eiface.h:
+const char *Cmd_Args(void);
+CMD_ARGS()
+
+    these 3 added so game DLL can easily access client 'cmd' strings
+
+comments:
+
+    Returns the arguments for a command, as a single string. The command
+    string itself is not included, and must be queried with CMD_ARGV(0).
+    For use in DLLAPI ClientCommand, or in the function provided to 
+    AddServerCommand.
+
+--------------------------------------------------------------------------
+
+Cmd_Argv
+
+from engine/eiface.h:
+const char *Cmd_Argv(int argc);
+CMD_ARGV()
+
+comments:
+
+    Returns the nth argument to the command. CMD_ARGV(0) returns the
+    command name itself.
+
+--------------------------------------------------------------------------
+
+Cmd_Argc
+
+from engine/eiface.h:
+int Cmd_Argc(void);
+CMD_ARGC()
+
+comments:
+
+    Returns the number of arguments given to the command.
+
+--------------------------------------------------------------------------
+
+GetAttachment
+
+from engine/eiface.h:
+void GetAttachment(const edict_t *pEdict, int iAttachment, float *
+rgflOrigin, float *rgflAngles);
+GET_ATTACHMENT()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CRC32_Init
+
+from engine/eiface.h:
+void CRC32_Init(CRC32_t *pulCRC);
+CRC32_INIT()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CRC32_ProcessBuffer
+
+from engine/eiface.h:
+void CRC32_ProcessBuffer(CRC32_t *pulCRC, void *p, int len);
+CRC32_PROCESS_BUFFER()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CRC32_ProcessByte
+
+from engine/eiface.h:
+void CRC32_ProcessByte(CRC32_t *pulCRC, unsigned char ch);
+CRC32_PROCESS_BYTE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CRC32_Final
+
+from engine/eiface.h:
+CRC32_t CRC32_Final(CRC32_t pulCRC);
+CRC32_FINAL()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+RandomLong
+
+from engine/eiface.h:
+long RandomLong(long lLow, long lHigh);
+RANDOM_LONG()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+RandomFloat
+
+from engine/eiface.h:
+float RandomFloat(float flLow, float flHigh);
+RANDOM_FLOAT()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetView
+
+from engine/eiface.h:
+void SetView(const edict_t *pClient, const edict_t *pViewent);
+SET_VIEW()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+Time
+
+from engine/eiface.h:
+float Time(void);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CrosshairAngle
+
+from engine/eiface.h:
+void CrosshairAngle(const edict_t *pClient, float pitch, float yaw);
+SET_CROSSHAIRANGLE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+LoadFileForMe
+
+from engine/eiface.h:
+byte * LoadFileForMe(char *filename, int *pLength);
+LOAD_FILE_FOR_ME()
+
+comments:
+
+    Opens the given filename (relative to the gamedir, or relative to the
+    hlds directory, in that order), and returns a pointer to a byte array
+    (character string) with the contents of the file. NULL-termination of
+    the array indicates end of file. Length of the file in bytes is
+    returned in the given int pointer.
+
+--------------------------------------------------------------------------
+
+FreeFile
+
+from engine/eiface.h:
+void FreeFile(void *buffer);
+FREE_FILE()
+
+comments:
+
+    Free the byte array of the given buffer which was returned by 
+    LoadFileForMe.
+
+--------------------------------------------------------------------------
+
+EndSection
+
+from engine/eiface.h:
+void EndSection(const char *pszSectionName);
+
+    trigger_endsection
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CompareFileTime
+
+from engine/eiface.h:
+int CompareFileTime(char *filename1, char *filename2, int *iCompare);
+COMPARE_FILE_TIME()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetGameDir
+
+from engine/eiface.h:
+void GetGameDir(char *szGetGameDir);
+GET_GAME_DIR()
+
+comments:
+
+    Copies the pathname of the game directory into the given buffer. Note
+    that there's no way to inform the engine how big the buffer is, so be
+    forewarned.
+   
+    Prior to HL 1.1.1.1 (CS 1.6), this gave the full pathname of the game
+    directory, ie "/usr/local/half-life/cstrike" or "C:\Games\Half-Life\
+    cstrike". Now, it is only the string passed to hlds as the argument to
+    "-game", ie "cstrike".
+
+--------------------------------------------------------------------------
+
+Cvar_RegisterVariable
+
+from engine/eiface.h:
+void Cvar_RegisterVariable(cvar_t *variable);
+CVAR_CREATE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+FadeClientVolume
+
+from engine/eiface.h:
+void FadeClientVolume(const edict_t *pEdict, int fadePercent, int
+fadeOutSeconds, int holdTime, int fadeInSeconds);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetClientMaxspeed
+
+from engine/eiface.h:
+void SetClientMaxspeed(const edict_t *pEdict, float fNewMaxspeed);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CreateFakeClient
+
+from engine/eiface.h:
+edict_t * CreateFakeClient(const char *netname);
+
+    returns NULL if fake client can't be created
+
+comments:
+
+    Creates "bots" (?).
+
+--------------------------------------------------------------------------
+
+RunPlayerMove
+
+from engine/eiface.h:
+void RunPlayerMove(edict_t *fakeclient, const float *viewangles, float
+forwardmove, float sidemove, float upmove, unsigned short buttons, byte
+impulse, byte msec);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+NumberOfEntities
+
+from engine/eiface.h:
+int NumberOfEntities(void);
+NUMBER_OF_ENTITIES()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetInfoKeyBuffer
+
+from engine/eiface.h:
+char *GetInfoKeyBuffer(edict_t *e);
+
+    passing in NULL gets the serverinfo
+
+comments:
+
+    Returns the InfoKeyBuffer for the given edict. This is basically the
+    fields from "setinfo" at the client console, and includes things like
+    the player name.
+   
+    The sourcecode comment ("passing in NULL gets the serverinfo") isn't
+    entirely accurate. There appear to be two server-side info buffers
+    available, "serverinfo" and "localinfo", both accessible from the
+    console by those two commands, respectively.
+   
+    Calling GetInfoKeyBuffer(NULL) will return the localinfo buffer.
+    Calling GetInfoKeyBuffer(PEntityOfEntIndex(0)), ie passing the entity
+    of slot 0, will return the serverinfo buffer.
+
+--------------------------------------------------------------------------
+
+InfoKeyValue
+
+from engine/eiface.h:
+char *InfoKeyValue(char *infobuffer, char *key);
+
+comments:
+
+    Returns the value for the given key in the given InfoKeyBuffer.
+
+--------------------------------------------------------------------------
+
+SetKeyValue
+
+from engine/eiface.h:
+void SetKeyValue(char *infobuffer, char *key, char *value);
+
+comments:
+
+    Adds or sets a key/value pair in the given InfoKeyBuffer. Appears to
+    work for only server info, and not client info. For clients, use 
+    SetClientKeyValue.
+
+--------------------------------------------------------------------------
+
+SetClientKeyValue
+
+from engine/eiface.h:
+void SetClientKeyValue(int clientIndex, char *infobuffer, char *key, char
+*value);
+
+comments:
+
+    Adds or sets a key/value pair in a client's InfoKeyBuffer, by server
+    slot (ie 1 to maxplayers).
+
+--------------------------------------------------------------------------
+
+IsMapValid
+
+from engine/eiface.h:
+int IsMapValid(char *filename);
+IS_MAP_VALID()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+StaticDecal
+
+from engine/eiface.h:
+void StaticDecal(const float *origin, int decalIndex, int entityIndex, int
+modelIndex);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PrecacheGeneric
+
+from engine/eiface.h:
+int PrecacheGeneric(char *s);
+PRECACHE_GENERIC()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetPlayerUserId
+
+from engine/eiface.h:
+int GetPlayerUserId(edict_t *e);
+GETPLAYERUSERID()
+
+    returns the server assigned userid for this player. useful for logging
+    frags, etc. returns -1 if the edict couldn't be found in the list of
+    clients
+
+comments:
+
+    Returns the session userid for the given player edict. As of server
+    x106, this is constant for the life of the player connection, and
+    unique for the life of the server process. Each time a client
+    connects, they are given a userid of 1 plus the userid of the previous
+    connecting client. When the server starts/restarts, the server starts
+    again at userid 1.
+
+--------------------------------------------------------------------------
+
+BuildSoundMsg
+
+from engine/eiface.h:
+void BuildSoundMsg(edict_t *entity, int channel, const char *sample, /*int
+*/float volume, float attenuation, int fFlags, int pitch, int msg_dest,
+int msg_type, const float *pOrigin, edict_t *ed);
+BUILD_SOUND_MSG()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+IsDedicatedServer
+
+from engine/eiface.h:
+int IsDedicatedServer(void);
+IS_DEDICATED_SERVER()
+
+    is this a dedicated server?
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CVarGetPointer
+
+from engine/eiface.h:
+cvar_t *CVarGetPointer(const char *szVarName);
+CVAR_GET_POINTER()
+
+comments:
+
+    Returns a pointer to a cvar_t struct for the given cvar (server
+    variable) name.
+
+--------------------------------------------------------------------------
+
+GetPlayerWONId
+
+from engine/eiface.h:
+unsigned int GetPlayerWONId(edict_t *e);
+GETPLAYERWONID()
+
+    returns the server assigned WONid for this player. useful for logging
+    frags, etc. returns -1 if the edict couldn't be found in the list of
+    clients
+
+comments:
+
+    Returns the WON id for the given player edict. As of server x106, this
+    should be unique per client CD KEY, and should be consistent across
+    all WON auth servers.
+
+--------------------------------------------------------------------------
+
+Info_RemoveKey
+
+from engine/eiface.h:
+void Info_RemoveKey(char *s, const char *key);
+
+    YWB 8/1/99 TFF Physics additions
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetPhysicsKeyValue
+
+from engine/eiface.h:
+const char *GetPhysicsKeyValue(const edict_t *pClient, const char *key);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetPhysicsKeyValue
+
+from engine/eiface.h:
+void SetPhysicsKeyValue(const edict_t *pClient, const char *key, const
+char *value);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetPhysicsInfoString
+
+from engine/eiface.h:
+const char *GetPhysicsInfoString(const edict_t *pClient);
+ENGINE_GETPHYSINFO()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PrecacheEvent
+
+from engine/eiface.h:
+unsigned short PrecacheEvent(int type, const char *psz);
+PRECACHE_EVENT()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+PlaybackEvent
+
+from engine/eiface.h:
+void PlaybackEvent(int flags, const edict_t *pInvoker, unsigned short
+eventindex, float delay, float *origin, float *angles, float fparam1,
+float fparam2, int iparam1, int iparam2, int bparam1, int bparam2);
+PLAYBACK_EVENT_FULL()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetFatPVS
+
+from engine/eiface.h:
+unsigned char *SetFatPVS(float *org);
+ENGINE_SET_PVS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetFatPAS
+
+from engine/eiface.h:
+unsigned char *SetFatPAS(float *org);
+ENGINE_SET_PAS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CheckVisibility
+
+from engine/eiface.h:
+int CheckVisibility(const edict_t *entity, unsigned char *pset);
+ENGINE_CHECK_VISIBILITY()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DeltaSetField
+
+from engine/eiface.h:
+void DeltaSetField(struct delta_s *pFields, const char *fieldname);
+DELTA_SET()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DeltaUnsetField
+
+from engine/eiface.h:
+void DeltaUnsetField(struct delta_s *pFields, const char *fieldname);
+DELTA_UNSET()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DeltaAddEncoder
+
+from engine/eiface.h:
+void DeltaAddEncoder(char *name, void (*conditionalencode)( struct delta_s
+*pFields, const unsigned char *from, const unsigned char *to) );
+DELTA_ADDENCODER()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetCurrentPlayer
+
+from engine/eiface.h:
+int GetCurrentPlayer(void);
+ENGINE_CURRENT_PLAYER()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CanSkipPlayer
+
+from engine/eiface.h:
+int CanSkipPlayer(const edict_t *player);
+ENGINE_CANSKIP()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DeltaFindField
+
+from engine/eiface.h:
+int DeltaFindField(struct delta_s *pFields, const char *fieldname);
+DELTA_FINDFIELD()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DeltaSetFieldByIndex
+
+from engine/eiface.h:
+void DeltaSetFieldByIndex(struct delta_s *pFields, int fieldNumber);
+DELTA_SETBYINDEX()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+DeltaUnsetFieldByIndex
+
+from engine/eiface.h:
+void DeltaUnsetFieldByIndex(struct delta_s *pFields, int fieldNumber);
+DELTA_UNSETBYINDEX()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+SetGroupMask
+
+from engine/eiface.h:
+void SetGroupMask(int mask, int op);
+ENGINE_SETGROUPMASK()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+CreateInstancedBaseline
+
+from engine/eiface.h:
+int CreateInstancedBaseline(int classname, struct entity_state_s *
+baseline);
+ENGINE_INSTANCE_BASELINE()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+Cvar_DirectSet
+
+from engine/eiface.h:
+void Cvar_DirectSet(struct cvar_s *var, char *value);
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+ForceUnmodified
+
+from engine/eiface.h:
+void ForceUnmodified(FORCE_TYPE type, float *mins, float *maxs, const char
+*filename);
+ENGINE_FORCE_UNMODIFIED()
+
+    Forces the client and server to be running with the same version of
+    the specified file ( e.g., a player model ). Calling this has no
+    effect in single player.
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+GetPlayerStats
+
+from engine/eiface.h:
+void GetPlayerStats(const edict_t *pClient, int *ping, int *packet_loss);
+PLAYER_CNX_STATS()
+
+comments:
+
+    .
+
+--------------------------------------------------------------------------
+
+AddServerCommand
+
+from engine/eiface.h:
+void AddServerCommand(char *cmd_name, void (*function) (void));
+
+comments:
+
+    Registers a new server console command. When the given command string
+    is typed at the console, the given function will be called. Arguments
+    for the command can be retrieved in the function with Cmd_Args, 
+    Cmd_Argv, and Cmd_Argc.
+
+--------------------------------------------------------------------------
+
+Voice_GetClientListening
+
+from engine/eiface.h:
+qboolean Voice_GetClientListening)(int iReceiver, int iSender);
+
+    For voice communications, set which clients hear each other. NOTE:
+    these functions take player entity indices (starting at 1).
+
+comments:
+
+    Added in SDK 2.2.
+
+--------------------------------------------------------------------------
+
+Voice_SetClientListening
+
+from engine/eiface.h:
+qboolean Voice_SetClientListening)(int iReceiver, int iSender, qboolean
+bListen);
+
+    For voice communications, set which clients hear each other. NOTE:
+    these functions take player entity indices (starting at 1).
+
+comments:
+
+    Added in SDK 2.2.
+
+--------------------------------------------------------------------------
+
+GetPlayerAuthId
+
+from engine/eiface.h:
+const char *GetPlayerAuthId(edict_t *e);
+
+From Eric Smith <EricS@valvesoftware.com> on hlcoders
+(list.valvesoftware.com/pipermail/hlcoders/2002-April/002865.html):
+
+    The AuthID is a way for applications/mods to get the Authentication ID
+    (uniqueID) for a player. The AuthID can be a WonID or a SteamID. The
+    function I've written returns the AuthID as a string. Calling 
+    GetPlayerWONId will still work for Non-Steam players just like it
+    always has. If applications/mods want to get a jump start on getting
+    ready to support Steam players, then they can start using
+    GetPlayerAuthId, which will still work for Non-Steam players, but it
+    will give the WonID as a string instead of an unsigned int.
+
+From Eric Smith <EricS@valvesoftware.com> on servertest:
+(list.valvesoftware.com/pipermail/servertest/2002-April/000567.html)
+
+    Only clients playing via Steam will have SteamIDs. Clients who are not
+    using Steam will still have WonIDs (just like they always have). The
+    server now supports WonIDs\SteamIDs and banning using either of them.
+    WonIDs have not changed. SteamIDs use the format: STEAM_<#>:<#> where
+    <#> is replaced by numbers. An example SteamID would be "STEAM_0:
+    94534".
+
+From Eric Smith <EricS@valvesoftware.com> on hlcoders:
+(list.valvesoftware.com/pipermail/hlcoders/2002-April/002925.html)
+
+    This function will now return the string "BOT" as the AuthID for fake
+    clients.
+
+comments:
+
+    Added for HL 1109; no SDK update.
+
+--------------------------------------------------------------------------
+
+SequenceGet
+
+from engine/eiface.h:
+void *SequenceGet(const char *fileName, const char *entryName);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+SequencePickSentence
+
+from engine/eiface.h:
+void *SequencePickSentence(const char *groupName, int pickMethod, int *
+picked);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+GetFileSize
+
+from engine/eiface.h:
+int GetFileSize(char *filename);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+GetApproxWavePlayLen
+
+from engine/eiface.h:
+unsigned int GetApproxWavePlayLen(const char *filepath);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+IsCareerMatch
+
+from engine/eiface.h:
+int IsCareerMatch(void);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+GetLocalizedStringLength
+
+from engine/eiface.h:
+int GetLocalizedStringLength(const char *label);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+RegisterTutorMessageShown
+
+from engine/eiface.h:
+void RegisterTutorMessageShown(int mid);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+GetTimesTutorMessageShown
+
+from engine/eiface.h:
+int GetTimesTutorMessageShown(int mid);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+ProcessTutorMessageDecayBuffer
+
+from engine/eiface.h:
+void ProcessTutorMessageDecayBuffer(int *buffer, int bufferLength);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+ConstructTutorMessageDecayBuffer
+
+from engine/eiface.h:
+void ConstructTutorMessageDecayBuffer(int *buffer, int bufferLength);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
+
+ResetTutorMessageDecayData
+
+from engine/eiface.h:
+void ResetTutorMessageDecayData(void);
+
+comments:
+
+    Added for HL 1xxx; no SDK update.
+
+--------------------------------------------------------------------------
