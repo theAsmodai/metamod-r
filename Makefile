@@ -22,7 +22,7 @@ INCLUDE = -I. -I$(DIRSRC) -I$(SDKSRC)/common -I$(SDKSRC)/engine -I$(SDKSRC)/dlls
 BIN_DIR = Release
 CFLAGS = $(OPT_FLAGS)
 
-CFLAGS += -g -fvisibility=hidden -fvisibility-inlines-hidden -DNDEBUG -Dlinux -D__linux__ -std=c++0x -shared -wd147,274 -fasm-blocks
+CFLAGS += -g -DNDEBUG -Dlinux -D__linux__ -std=c++0x -shared -wd147,274 -fasm-blocks
 
 OBJ_LINUX := $(OBJECTS:%.c=$(BIN_DIR)/%.o)
 

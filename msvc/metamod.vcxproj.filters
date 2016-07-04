@@ -57,9 +57,6 @@
     <ClCompile Include="..\src\metamod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\mhook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\mlist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

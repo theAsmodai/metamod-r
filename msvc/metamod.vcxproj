@@ -105,7 +105,6 @@
     <ClCompile Include="..\src\log_meta.cpp" />
     <ClCompile Include="..\src\metamod.cpp" />
     <ClCompile Include="..\src\meta_eiface.cpp" />
-    <ClCompile Include="..\src\mhook.cpp" />
     <ClCompile Include="..\src\mlist.cpp" />
     <ClCompile Include="..\src\mplayer.cpp" />
     <ClCompile Include="..\src\mplugin.cpp" />
