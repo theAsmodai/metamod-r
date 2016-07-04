@@ -41,7 +41,7 @@ mBOOL DLLINTERNAL MConfig::set(const char *key, const char *value) {
 }
 
 mBOOL DLLINTERNAL MConfig::set(option_t *setp, const char *setstr) {
-	char pathbuf[PATH_MAX];
+	//char pathbuf[PATH_MAX];
 	int *optval = (int *) setp->dest;
 	char **optstr = (char **) setp->dest;
 	// cvar_t *optcvar = (cvar_t *) setp->dest;
@@ -85,11 +85,17 @@ mBOOL DLLINTERNAL MConfig::set(option_t *setp, const char *setstr) {
 			META_DEBUG(3, ("set config string: %s = %s", setp->name, *optstr));
 			break;
 		case CF_PATH:
+
+	/* force load
+
 			if(*optstr)
 				free(*optstr);
 			full_gamedir_path(setstr, pathbuf);
 			*optstr=strdup(pathbuf);
 			META_DEBUG(3, ("set config path: %s = %s", setp->name, *optstr));
+
+	*/
+
 			break;
 #if 0
 		case CF_CVAR:

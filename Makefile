@@ -4,13 +4,12 @@ DIRSRC = src
 NAME = metamod
 
 SRCFILES = src/api_hook.cpp src/api_info.cpp src/commands_meta.cpp src/conf_meta.cpp \
-	src/dllapi.cpp src/engine_api.cpp src/engineinfo.cpp src/game_support.cpp \
-	src/game_autodetect.cpp src/h_export.cpp src/linkplug.cpp \
+	src/dllapi.cpp src/engine_api.cpp src/engineinfo.cpp src/game_support.cpp src/h_export.cpp src/linkplug.cpp \
 	src/log_meta.cpp src/meta_eiface.cpp src/metamod.cpp src/mlist.cpp src/mplayer.cpp \
 	src/mplugin.cpp src/mreg.cpp src/mutil.cpp src/osdep.cpp src/osdep_p.cpp src/reg_support.cpp src/sdk_util.cpp \
 	src/support_meta.cpp src/vdate.cpp src/osdep_linkent_linux.cpp src/osdep_detect_gamedll_linux.cpp
 
-OBJECTS = $(SRCFILES) lib/libirc.a lib/linux32/libaelf32.a
+OBJECTS = $(SRCFILES) lib/linux32/libaelf32.a
 
 LINK = -lm -ldl -static-intel -static-libgcc -no-intel-extensions
 

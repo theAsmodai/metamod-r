@@ -4,7 +4,6 @@
 #include "log_meta.h"		// META_LOG, etc
 #include "types_meta.h"		// mBOOL
 #include "osdep.h"			// win32 snprintf, etc
-#include "game_autodetect.h"	// autodetect_gamedll
 #include "support_meta.h"	// MIN
 
 // Adapted from adminmod h_export.cpp:
@@ -18,7 +17,10 @@ const game_modlist_t known_games = {
 	// separate file, generated based on game information stored in a 
 	// convenient db.
 	//
-#include "games.h"
+
+	{ "cstrike", "cs.so", "mp.dll", "Counter-Strike" },
+	{ "czero", "cs.so", "mp.dll", "Counter-Strike:Condition Zero" },
+
 	// End of list terminator:
 	{NULL, NULL, NULL, NULL}
 };
@@ -200,19 +202,15 @@ mBOOL DLLINTERNAL setup_gamedll(gamedll_t *gamedll) {
 		}
 	}
 		
-	// Then, autodetect gamedlls in "gamedir/dlls/"
-	// autodetect_gamedll returns 0 if knownfn exists and is valid gamedll.
-	if(Config->autodetect && (autofn=autodetect_gamedll(gamedll, knownfn))) {
-		// If knownfn is set and autodetect_gamedll returns non-null
-		// then knownfn doesn't exists and we should use autodetected
-		// dll instead.
-		if(knownfn) {
-			// Whine loud about fact that known-list dll doesn't exists!
-			//META_LOG(plapla);
-			knownfn = autofn;
-		}
-	}
-	
+
+	//force load
+#ifdef linux
+	knownfn = "cs.so";
+#else
+	knownfn = "mp.dll";
+#endif
+
+
 	// Neither override nor known-list nor auto-detect found a gamedll.
 	if(!known && !Config->gamedll && !autofn)
 			RETURN_ERRNO(mFALSE, ME_NOTFOUND);

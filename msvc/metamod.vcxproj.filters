@@ -36,9 +36,6 @@
     <ClCompile Include="..\src\engineinfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\game_autodetect.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\game_support.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -122,13 +119,7 @@
     <ClInclude Include="..\src\engineinfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\game_autodetect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\game_support.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\games.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\h_export.h">

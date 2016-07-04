@@ -67,7 +67,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>psapi.lib;$(ProjectDir)../lib/libirc.lib;$(ProjectDir)../lib/libacof32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>psapi.lib$(ProjectDir)../lib/libacof32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -87,7 +87,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>psapi.lib;$(ProjectDir)../lib/libirc.lib;$(ProjectDir)../lib/libacof32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>psapi.lib;$(ProjectDir)../lib/libacof32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -98,7 +98,6 @@
     <ClCompile Include="..\src\dllapi.cpp" />
     <ClCompile Include="..\src\engineinfo.cpp" />
     <ClCompile Include="..\src\engine_api.cpp" />
-    <ClCompile Include="..\src\game_autodetect.cpp" />
     <ClCompile Include="..\src\game_support.cpp" />
     <ClCompile Include="..\src\h_export.cpp" />
     <ClCompile Include="..\src\linkplug.cpp" />
@@ -128,8 +127,6 @@
     <ClInclude Include="..\src\dllapi.h" />
     <ClInclude Include="..\src\engineinfo.h" />
     <ClInclude Include="..\src\engine_api.h" />
-    <ClInclude Include="..\src\games.h" />
-    <ClInclude Include="..\src\game_autodetect.h" />
     <ClInclude Include="..\src\game_support.h" />
     <ClInclude Include="..\src\h_export.h" />
     <ClInclude Include="..\src\info_name.h" />
