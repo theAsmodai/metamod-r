@@ -1,2 +1,13 @@
-#temporary files
-*~
+.idea
+*.iml
+**/msvc/Debug*
+**/msvc/Release*
+**/msvc/*.sdf
+**/msvc/*.opensdf
+**/msvc/*.user
+**/msvc/*.suo
+**/msvc/*.aps
+**/msvc/*.pch
+**/msvc/*.txt
+**/msvc/ipch
+**/*.log
