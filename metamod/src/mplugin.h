@@ -1,67 +1,24 @@
-// vi: set ts=4 sw=4 :
-// vim: set tw=75 :
+#pragma once
 
-// mplugin.h - class and types to describe an individual plugin
-
-/*
- * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
- *
- *    This file is part of Metamod.
- *
- *    Metamod is free software; you can redistribute it and/or modify it
- *    under the terms of the GNU General Public License as published by the
- *    Free Software Foundation; either version 2 of the License, or (at
- *    your option) any later version.
- *
- *    Metamod is distributed in the hope that it will be useful, but
- *    WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with Metamod; if not, write to the Free Software Foundation,
- *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *    In addition, as a special exception, the author gives permission to
- *    link the code of this program with the Half-Life Game g_engine ("HL
- *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
- *    L.L.C ("Valve").  You must obey the GNU General Public License in all
- *    respects for all of the code used other than the HL g_engine and MODs
- *    from Valve.  If you modify this file, you may extend this exception
- *    to your version of the file, but you are not obligated to do so.  If
- *    you do not wish to do so, delete this exception statement from your
- *    version.
- *
- */
-
-#ifndef MPLUGIN_H
-#define MPLUGIN_H
-
-#include <time.h>			// time_t, etc
-
-#include <eiface.h>			// DLL_FUNCTIONS, etc
-
-#include "types_meta.h"		// mBOOL
-#include "meta_api.h"		// GETENTITYAPI_FN, etc
-#include "api_info.h"		// dllapi_info, etc
-#include "support_meta.h"	// MAX_DESC_LEN
-
+#include "api_info.h"
+#include "support_meta.h"
 
 // Flags to indicate current "load" state of plugin.
 // NOTE: order is important, as greater/less comparisons are made.
-typedef enum {
-	PL_EMPTY = 0,		// empty slot
+enum PLUG_STATUS
+{
+	PL_EMPTY = 0,			// empty slot
 	PL_VALID,			// has valid info in it
-	PL_BADFILE,			// nonexistent file (open failed), 
-						//    or not a valid plugin file (query failed)
+	PL_BADFILE,			// nonexistent file (open failed), or not a valid plugin file (query failed)
 	PL_OPENED,			// dlopened and queried
 	PL_FAILED,			// opened, but failed to attach or unattach
 	PL_RUNNING,			// attached and running
 	PL_PAUSED,			// attached but paused
-} PLUG_STATUS;
+};
 
 // Action to take for plugin at next opportunity.
-typedef enum {
+enum PLUG_ACTION
+{
 	PA_NULL = 0,
 	PA_NONE,			// no action needed right now
 	PA_KEEP,			// keep, after ini refresh
@@ -69,138 +26,140 @@ typedef enum {
 	PA_ATTACH,			// attach
 	PA_UNLOAD,			// unload (detach, dlclose)
 	PA_RELOAD,			// unload and load again
-} PLUG_ACTION;
+};
 
 // Flags to indicate from where the plugin was loaded.
-typedef enum {
+enum PLOAD_SOURCE
+{
 	PS_INI = 0,			// was loaded from the plugins.ini
 	PS_CMD,				// was loaded via a server command
-	PS_PLUGIN,			// was loaded via a plugin
-} PLOAD_SOURCE;
+	PS_PLUGIN,			// was loaded by other plugin
+};
 
 // Flags for how to word description of plugin loadtime.
-typedef enum {
-	SL_SIMPLE = 0,		// single word
+enum STR_LOADTIME
+{
+	SL_SIMPLE = 0,			// single word
 	SL_SHOW,			// for "show" output, 5 chars
 	SL_ALLOWED,			// when plugin is allowed to load/unload
 	SL_NOW,				// current situation
-} STR_LOADTIME;
+};
 
 // Flags for how to format description of status.
-typedef enum {
-	ST_SIMPLE = 0,		// single word
+enum STR_STATUS
+{
+	ST_SIMPLE = 0,			// single word
 	ST_SHOW,			// for "show" output, 4 chars
-} STR_STATUS;
+};
 
 // Flags for how to format description of action.
-typedef enum {
-	SA_SIMPLE = 0,		// single word
+enum STR_ACTION
+{
+	SA_SIMPLE = 0,			// single word
 	SA_SHOW,			// for "show" output, 4 chars
-} STR_ACTION;
+};
 
 // Flags for how to format description of source.
-typedef enum {
-	SO_SIMPLE = 0,		// two words
+enum STR_SOURCE
+{
+	SO_SIMPLE = 0,			// two words
 	SO_SHOW,			// for "list" output, 3 chars
-} STR_SOURCE;
+};
 
 // An individual plugin.
 class MPlugin {
-	private:
-		mBOOL query(void);
-		mBOOL attach(PLUG_LOADTIME now);
-		mBOOL detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
-		gamedll_funcs_t gamedll_funcs;
-		mutil_funcs_t mutil_funcs;
-	public:
-	// data:
-		int index;							// 1-based
-		char filename[PATH_MAX];			// ie "dlls/mm_test_i386.so", from inifile
-		char *file;							// ie "mm_test_i386.so", ptr from filename
-		char desc[MAX_DESC_LEN];			// ie "Test metamod plugin", from inifile
-		char pathname[PATH_MAX];	// UNIQUE, ie "/home/willday/half-life/cstrike/dlls/mm_test_i386.so", built with GameDLL.gamedir
-		int pfspecific;                     // level of specific platform affinity, used during load time
-		PLUG_STATUS status;					// current status of plugin (loaded, etc)
-		PLUG_ACTION action;					// what to do with plugin (load, unload, etc)
-		PLOAD_SOURCE source;				// source of the request to load the plugin
+private:
+	mBOOL query();
+	mBOOL attach(PLUG_LOADTIME now);
+	mBOOL detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
+	gamedll_funcs_t gamedll_funcs;
+	mutil_funcs_t mutil_funcs;
 
-		DLHANDLE handle;					// handle for dlopen, dlsym, etc
-		plugin_info_t *info;				// information plugin provides about itself
-		time_t time_loaded;					// when plugin was loaded
-		int source_plugin_index;			// who loaded this plugin
-		int unloader_index;
-		mBOOL is_unloader;				// fix to prevent other plugins unload active unloader.
+public:
+	int index;					// 1-based
+	char filename[PATH_MAX];			// ie "dlls/mm_test_i386.so", from inifile
+	char *file;					// ie "mm_test_i386.so", ptr from filename
+	char desc[MAX_DESC_LEN];			// ie "Test metamod plugin", from inifile
+	char pathname[PATH_MAX];			// UNIQUE, ie "/home/willday/half-life/cstrike/dlls/mm_test_i386.so", built with GameDLL.gamedir
+	int pfspecific;					// level of specific platform affinity, used during load time
+	PLUG_STATUS status;				// current status of plugin (loaded, etc)
+	PLUG_ACTION action;				// what to do with plugin (load, unload, etc)
+	PLOAD_SOURCE source;				// source of the request to load the plugin
 
-		DLL_FUNCTIONS *dllapi_table;
-		DLL_FUNCTIONS *dllapi_post_table;
-		NEW_DLL_FUNCTIONS *newapi_table;
-		NEW_DLL_FUNCTIONS *newapi_post_table;
-		enginefuncs_t *engine_table;
-		enginefuncs_t *engine_post_table;
+	DLHANDLE handle;				// handle for dlopen, dlsym, etc
+	plugin_info_t *info;				// information plugin provides about itself
+	time_t time_loaded;				// when plugin was loaded
+	int source_plugin_index;			// who loaded this plugin
+	int unloader_index;
+	mBOOL is_unloader;				// fix to prevent other plugins unload active unloader.
 
-	// functions:
-		
-		mBOOL ini_parseline(char *line);	// parse line from inifile
-		mBOOL cmd_parseline(const char *line);	// parse from console command
-		mBOOL plugin_parseline(const char *fname, int loader_index); // parse from plugin
-		mBOOL check_input(void);
+	DLL_FUNCTIONS *dllapi_table;
+	DLL_FUNCTIONS *dllapi_post_table;
+	NEW_DLL_FUNCTIONS *newapi_table;
+	NEW_DLL_FUNCTIONS *newapi_post_table;
+	enginefuncs_t *engine_table;
+	enginefuncs_t *engine_post_table;
 
-		mBOOL resolve(void);				// find a matching file on disk
-		char *resolve_dirs(char *path);
-		char *resolve_prefix(char *path);
-		char *resolve_suffix(char *path);
+	mBOOL ini_parseline(char *line);				// parse line from inifile
+	mBOOL cmd_parseline(const char *line);				// parse from console command
+	mBOOL plugin_parseline(const char *fname, int loader_index); 	// parse from plugin
+	mBOOL check_input();
 
-		mBOOL platform_match(MPlugin* plugin);
-		
-		mBOOL load(PLUG_LOADTIME now);
-		mBOOL unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASON real_reason);
-		mBOOL reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
-		mBOOL pause(void);
-		mBOOL unpause(void);
-		mBOOL retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);	// if previously failed
-		mBOOL clear(void);
-		mBOOL plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON reason); // other plugin unloading
-		void show(void);					// print info about plugin to console
+	mBOOL resolve();						// find a matching file on disk
+	char *resolve_dirs(char *path);
+	char *resolve_prefix(char *path);
+	char *resolve_suffix(char *path);
 
-		mBOOL newer_file(void);				// check for newer file on disk
+	mBOOL platform_match(MPlugin* plugin);
 
-	// output string functions
-		const char *str_status(STR_STATUS fmt);
-		const char *str_action(STR_ACTION fmt);
-		const char *str_source(STR_SOURCE fmt);
+	mBOOL load(PLUG_LOADTIME now);
+	mBOOL unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASON real_reason);
+	mBOOL reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
+	mBOOL pause();
+	mBOOL unpause();
+	mBOOL retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);			// if previously failed
+	mBOOL clear();
+	mBOOL plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON reason);	// other plugin unloading
+	void show();									// print info about plugin to console
 
-		const char *str_reason(PL_UNLOAD_REASON preason, PL_UNLOAD_REASON preal_reason);
-		const char *str_loadtime(PLUG_LOADTIME pallow, STR_LOADTIME fmt);
+	mBOOL newer_file();								// check for newer file on disk
 
-		const char *str_status(void)		{ return(str_status(ST_SIMPLE)); };
-		const char *str_action(void)		{ return(str_action(SA_SIMPLE)); };
-		const char *str_source(void)		{ return(str_source(SO_SIMPLE)); };
+	const char *str_status(STR_STATUS fmt);
+	const char *str_action(STR_ACTION fmt);
+	const char *str_source(STR_SOURCE fmt);
 
-		const char *str_loadable(void) { 
-			if(info) return(str_loadtime(info->loadable, SL_SIMPLE)); 
-			else return(" -");
-		};
-		const char *str_unloadable(void) { 
-			if(info) return(str_loadtime(info->unloadable, SL_SIMPLE)); 
-			else return(" -");
-		};
-		const char *str_loadable(STR_LOADTIME fmt) { 
-			if(info) return(str_loadtime(info->loadable, fmt)); 
-			else return(" -");
-		};
-		const char *str_unloadable(STR_LOADTIME fmt) { 
-			if(info) return(str_loadtime(info->unloadable, fmt)); 
-			else return(" -");
-		};
+	const char *str_reason(PL_UNLOAD_REASON preason, PL_UNLOAD_REASON preal_reason);
+	const char *str_loadtime(PLUG_LOADTIME pallow, STR_LOADTIME fmt);
+
+	const char *str_status()		{ return str_status(ST_SIMPLE); };
+	const char *str_action()		{ return str_action(SA_SIMPLE); };
+	const char *str_source()		{ return str_source(SO_SIMPLE); };
+
+	const char *str_loadable() {
+		if (info) return str_loadtime(info->loadable, SL_SIMPLE);
+		else return " -";
+	};
+	const char *str_unloadable() {
+		if (info) return str_loadtime(info->unloadable, SL_SIMPLE);
+		else return " -";
+	};
+	const char *str_loadable(STR_LOADTIME fmt) {
+		if (info) return str_loadtime(info->loadable, fmt);
+		else return " -";
+	};
+	const char *str_unloadable(STR_LOADTIME fmt) {
+		if (info) return str_loadtime(info->unloadable, fmt);
+		else return " -";
+	};
 };
 
 // Macros used by MPlugin::show(), to list the functions that the plugin
 // catches.
 #define SHOW_IFDEF(api_table, info_table, pfnName, pre_str, post_str) \
-	if(api_table->pfnName) { META_CONS("%s%s%s", pre_str, info_table.pfnName.name, post_str); n++;}
+	if (api_table->pfnName) { META_CONS("%s%s%s", pre_str, info_table.pfnName.name, post_str); n++;}
 
 #define SHOW_DEF_DLLAPI(api_table, pre_str, post_str) \
-	n=0; \
+	n = 0; \
 	SHOW_IFDEF(api_table, dllapi_info, pfnGameInit, 	pre_str, post_str); \
 	SHOW_IFDEF(api_table, dllapi_info, pfnSpawn, 		pre_str, post_str); \
 	SHOW_IFDEF(api_table, dllapi_info, pfnThink, 		pre_str, post_str); \
@@ -253,14 +212,14 @@ class MPlugin {
 	SHOW_IFDEF(api_table, dllapi_info, pfnAllowLagCompensation, 		pre_str, post_str);
 
 #define SHOW_DEF_NEWAPI(api_table, pre_str, post_str) \
-	n=0; \
+	n = 0; \
 	SHOW_IFDEF(api_table, newapi_info, pfnOnFreeEntPrivateData,	pre_str, post_str); \
 	SHOW_IFDEF(api_table, newapi_info, pfnGameShutdown,		pre_str, post_str); \
 	SHOW_IFDEF(api_table, newapi_info, pfnShouldCollide,	pre_str, post_str); \
 	SHOW_IFDEF(api_table, newapi_info, pfnCvarValue,		pre_str, post_str);
 
 #define SHOW_DEF_ENGINE(api_table, pre_str, post_str) \
-	n=0; \
+	n = 0; \
 	SHOW_IFDEF(api_table, engine_info, pfnPrecacheModel, 	pre_str, post_str); \
 	SHOW_IFDEF(api_table, engine_info, pfnPrecacheSound, 	pre_str, post_str); \
 	SHOW_IFDEF(api_table, engine_info, pfnSetModel, 		pre_str, post_str); \
@@ -418,6 +377,3 @@ class MPlugin {
 	SHOW_IFDEF(api_table, engine_info, pfnResetTutorMessageDecayData,		pre_str, post_str); \
 	SHOW_IFDEF(api_table, engine_info, pfnQueryClientCvarValue,				pre_str, post_str); \
 	SHOW_IFDEF(api_table, engine_info, pfnEngCheckParm,			pre_str, post_str);
-
-
-#endif /* MPLUGIN_H */

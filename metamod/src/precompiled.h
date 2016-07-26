@@ -1,31 +1,20 @@
 #pragma once
 
+#include "version/appversion.h"
+
 #if defined(linux) || defined(__APPLE__)
 // enable extra routines in system header files, like dladdr
-#  ifndef _GNU_SOURCE
-#    define _GNU_SOURCE
-#  endif
-#include <dlfcn.h>			// dlopen, dladdr, etc
+#ifndef _GNU_SOURCE
+	#define _GNU_SOURCE
+#endif
 #include <signal.h>			// sigaction, etc
-#include <setjmp.h>			// sigsetjmp, longjmp, etc
-#endif /* linux */
-
-#if defined(_MSC_VER) && (_MSC_VER < 1300)
-#   include <new.h>         // set_new_handler()
-#else
-#   include <new>			// set_new_handler()
 #endif
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <errno.h>
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+#include <new.h>		// set_new_handler()
+#else
+#include <new>			// set_new_handler()
+#endif
 
 #include <extdll.h>
 #include <studio.h>
@@ -36,9 +25,6 @@
 #include "commands_meta.h"
 #include "metamod.h"
 #include "log_meta.h"
-#include "info_name.h"
-#include "vdate.h"
-#include "vers_meta.h"
 #include "conf_meta.h"
 #include "support_meta.h"
 #include "dllapi.h"

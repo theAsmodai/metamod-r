@@ -39,7 +39,7 @@ void setupToolchain(NativeBinarySpec b)
 {
 	ToolchainConfig cfg = rootProject.createToolchainConfig(b)
 	cfg.projectInclude(project, '', '/src', '/include/common', '/include/dlls', '/include/engine', '/include/game_shared', '/include/pm_shared', '/include/public')
-	cfg.singleDefines '__METAMOD_BUILD__', '__BUILD_FAST_METAMOD__';
+	cfg.singleDefines 'METAMOD_CORE';
 
 	if (cfg instanceof MsvcToolchainConfig) {
 		cfg.compilerOptions.pchConfig = new MsvcToolchainConfig.PrecompiledHeadersConfig(
@@ -59,8 +59,12 @@ void setupToolchain(NativeBinarySpec b)
 			'_strnicmp': 'strncasecmp',
 			'_strdup': 'strdup',
 			'_unlink': 'unlink',
+			'_write' : 'write',
+			'_close' : 'close',
+			'_getcwd' : 'getcwd',
 			'_vsnprintf': 'vsnprintf',
-			'_vsnwprintf' : 'vswprintf',
+			'_vsnwprintf': 'vswprintf',
+			'_snprintf': 'snprintf'
 		])
 
 		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-msse2', '-fomit-frame-pointer', '-inline-forceinline', '-fvisibility=default', '-fvisibility-inlines-hidden', '-fno-rtti', '-g0', '-s'
@@ -113,12 +117,6 @@ model {
 						srcDir "src"
 						srcDir "version"
 						include "**/*.cpp"
-
-						if (GradleCppUtils.windows) {
-							exclude "osdep_linkent_linux.cpp"
-						} else {
-							exclude "osdep_linkent_win32.cpp"
-						}
 
 						exclude "precompiled.cpp"
 					}

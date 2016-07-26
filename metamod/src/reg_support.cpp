@@ -1,48 +1,4 @@
-// vi: set ts=4 sw=4 :
-// vim: set tw=75 :
-
-// reg_support.cpp - support for things "registered" by plugins (console
-//                   cmds, cvars, msgs, etc)
-
-/*
- * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
- *
- *    This file is part of Metamod.
- *
- *    Metamod is free software; you can redistribute it and/or modify it
- *    under the terms of the GNU General Public License as published by the
- *    Free Software Foundation; either version 2 of the License, or (at
- *    your option) any later version.
- *
- *    Metamod is distributed in the hope that it will be useful, but
- *    WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with Metamod; if not, write to the Free Software Foundation,
- *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *    In addition, as a special exception, the author gives permission to
- *    link the code of this program with the Half-Life Game g_engine ("HL
- *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
- *    L.L.C ("Valve").  You must obey the GNU General Public License in all
- *    respects for all of the code used other than the HL g_engine and MODs
- *    from Valve.  If you modify this file, you may extend this exception
- *    to your version of the file, but you are not obligated to do so.  If
- *    you do not wish to do so, delete this exception statement from your
- *    version.
- *
- */
-
 #include "precompiled.h"
-
-#ifdef linux
-// enable extra routines in system header files, like strsignal
-#  ifndef _GNU_SOURCE
-#    define _GNU_SOURCE
-#  endif
-#endif /* linux */
 
 // "Register" support.
 //
@@ -86,29 +42,30 @@
 // Windows didn't seem to have a similar routine, and I couldn't find
 // another way to get the information..
 
-
 // Generic command handler, passed to the engine for any AddServerCommand
 // calls made by the plugin.  It finds the appropriate plugin function
 // pointer to call based on CMD_ARGV(0).
-void meta_command_handler(void)
+void meta_command_handler()
 {
-	MRegCmd* icmd;
-	const char* cmd;
-
 	META_DEBUG(5, ("called: meta_command_handler; arg0=%s args='%s'", CMD_ARGV(0), CMD_ARGS()));
-	cmd = CMD_ARGV(0);
-	if (!cmd) {
+	const char *cmd = CMD_ARGV(0);
+	if (!cmd)
+	{
 		META_ERROR("Null command name in meta_command_handler() ??");
 		return;
 	}
 
-	icmd = g_regCmds->find(cmd);
-	if (!icmd) {
+	MRegCmd *icmd = g_regCmds->find(cmd);
+	if (!icmd)
+	{
 		META_ERROR("Couldn't find registered plugin command: %s", cmd);
 		return;
 	}
+
 	if (icmd->call() != mTRUE)
+	{
 		META_CONS("[metamod: command '%s' unavailable; plugin unloaded]", cmd);
+	}
 }
 
 
@@ -118,18 +75,19 @@ void meta_command_handler(void)
 // engine a command string and function pointer allocated locally (in the
 // metamod DLL).
 //
-// The string handed to the engine is just a _strdup() of the plugin's
+// The string handed to the engine is just a Q_strdup() of the plugin's
 // string.  The function pointer handed to the engine is actually a pointer
 // to a generic command-handler function (see above).
-void meta_AddServerCommand(char* cmd_name, void (*function)(void))
+void meta_AddServerCommand(char *cmd_name, void (*function)())
 {
-	MPlugin* iplug = NULL;
-	MRegCmd* icmd = NULL;
+	MPlugin *iplug = NULL;
+	MRegCmd *icmd = NULL;
 
 	META_DEBUG(4, ("called: meta_AddServerCommand; cmd_name=%s, function=%d", cmd_name, function));
 
 	// try to find which plugin is registering this command
-	if (!(iplug = g_plugins->find_memloc((void *)function))) {
+	if (!(iplug = g_plugins->find_memloc((void *)function)))
+	{
 		// if this isn't supported on this OS, don't log an error
 		if (meta_errno != ME_OSNOTSUP)
 			META_ERROR("Failed to find memloc for regcmd '%s'", cmd_name);
@@ -137,13 +95,16 @@ void meta_AddServerCommand(char* cmd_name, void (*function)(void))
 
 	// See if this command was previously registered, ie a "reloaded" plugin.
 	icmd = g_regCmds->find(cmd_name);
-	if (!icmd) {
+	if (!icmd)
+	{
 		// If not found, add.
 		icmd = g_regCmds->add(cmd_name);
-		if (!icmd) {
+		if (!icmd)
+		{
 			// error details logged in add()
 			return;
 		}
+
 		// Only register if not previously registered..
 		REG_SVR_COMMAND(icmd->name, meta_command_handler);
 	}
@@ -165,47 +126,51 @@ void meta_AddServerCommand(char* cmd_name, void (*function)(void))
 // locally (in the metamod DLL).
 //
 // The cvar handed to the engine is globally allocated in the metamod.dll;
-// the "name" and "string" fields are _strdup()'s of the plugin's strings.
+// the "name" and "string" fields are Q_strdup()'s of the plugin's strings.
 // Note that, once this is done, the cvar_t allocated in the plugin is no
 // longer used for _anything_.  As long as everything sets/gets the cvar
 // values via the engine functions, this will work fine.  If the plugin
 // code tries to _directly_ read/set the fields of its own cvar structures,
 // it will fail to work properly.
-void meta_CVarRegister(cvar_t* pCvar)
+void meta_CVarRegister(cvar_t *pCvar)
 {
-	MPlugin* iplug = NULL;
-	MRegCvar* icvar = NULL;
+	MPlugin *iplug = nullptr;
+	MRegCvar *icvar = nullptr;
 
 	META_DEBUG(4, ("called: meta_CVarRegister; name=%s", pCvar->name));
 
 	// try to find which plugin is registering this cvar
-	if (!(iplug = g_plugins->find_memloc((void *)pCvar))) {
+	if (!(iplug = g_plugins->find_memloc((void *)pCvar)))
+	{
 		// if this isn't supported on this OS, don't log an error
 		if (meta_errno != ME_OSNOTSUP)
 		// Note: if cvar_t was malloc'd by the plugin, we can't
 		// determine the calling plugin.  Thus, this becomes a Debug
 		// rather than Error message.
-		META_DEBUG(1, ("Failed to find memloc for regcvar '%s'",
-			pCvar->name));
+		META_DEBUG(1, ("Failed to find memloc for regcvar '%s'", pCvar->name));
 	}
 
 	// See if this cvar was previously registered, ie a "reloaded" plugin.
 	icvar = g_regCvars->find(pCvar->name);
-	if (!icvar) {
+	if (!icvar)
+	{
 		// If not found, add.
 		icvar = g_regCvars->add(pCvar->name);
-		if (!icvar) {
+		if (!icvar)
+		{
 			// error details logged in add()
 			return;
 		}
+
 		// Reset to given value
 		icvar->set(pCvar);
 		CVAR_REGISTER(icvar->data);
 	}
+
 	// Note: if not a new cvar, then we don't set the values, and just keep
 	// the pre-existing value.
-
 	icvar->status = RG_VALID;
+
 	// Store which plugin this is for, if we know.  Use '0' for unknown
 	// plugin, as plugin index starts at 1.
 	if (iplug)
@@ -213,7 +178,6 @@ void meta_CVarRegister(cvar_t* pCvar)
 	else
 		icvar->plugid = 0;
 }
-
 
 // Replacement for engine routine RegUserMsg; called by plugins.  Rather
 // than handing the engine the plugin's string (which is allocated in the
@@ -228,20 +192,15 @@ void meta_CVarRegister(cvar_t* pCvar)
 // commands and cvars).  This merely provides differently located storage
 // for the string.
 
-int meta_RegUserMsg(const char* pszName, int iSize)
+int meta_RegUserMsg(const char *pszName, int iSize)
 {
-	char* cp;
-
-	cp = _strdup(pszName);
-	return (REG_USER_MSG(cp, iSize));
+	char *cp = Q_strdup(pszName);
+	return REG_USER_MSG(cp, iSize);
 }
 
 // Intercept and record queries
-void meta_QueryClientCvarValue(const edict_t* player, const char* cvarName)
+void meta_QueryClientCvarValue(const edict_t *player, const char *cvarName)
 {
 	g_Players.set_player_cvar_query(player, cvarName);
-
 	(*g_engfuncs.pfnQueryClientCvarValue)(player, cvarName);
 }
-
-

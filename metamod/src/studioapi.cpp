@@ -1,39 +1,3 @@
-// vi: set ts=4 sw=4 :
-// vim: set tw=75 :
-
-// studio.cpp - player model blending interfaces
-
-/*
- * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
- *
- *    This file is part of Metamod.
- *
- *    Metamod is free software; you can redistribute it and/or modify it
- *    under the terms of the GNU General Public License as published by the
- *    Free Software Foundation; either version 2 of the License, or (at
- *    your option) any later version.
- *
- *    Metamod is distributed in the hope that it will be useful, but
- *    WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with Metamod; if not, write to the Free Software Foundation,
- *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *    In addition, as a special exception, the author gives permission to
- *    link the code of this program with the Half-Life Game g_engine ("HL
- *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
- *    L.L.C ("Valve").  You must obey the GNU General Public License in all
- *    respects for all of the code used other than the HL g_engine and MODs
- *    from Valve.  If you modify this file, you may extend this exception
- *    to your version of the file, but you are not obligated to do so.  If
- *    you do not wish to do so, delete this exception statement from your
- *    version.
- *
- */
-
 #include "precompiled.h"
 
 // Another GET-API routine, another interface version.
@@ -56,8 +20,8 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version,
 		float (*rotationmatrix)[3][4],
 		float (*bonetransform)[MAXSTUDIOBONES][3][4]) 
 {
-	static GETBLENDAPI_FN getblend=NULL;
-	static int missing=0;
+	static GETBLENDAPI_FN getblend = NULL;
+	static int missing = 0;
 
 	// Note that we're not checking if
 	// (version==SV_BLENDING_INTERFACE_VERSION) because at this point, we
@@ -72,21 +36,24 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version,
 	// mismatch?", but this will only show in "developer" (-dev) mode.
 
 	META_DEBUG(6, ("called: Server_GetBlendingInterface; version=%d", version));
-	if(missing) {
+	if (missing)
+	{
 		META_DEBUG(6, ("Skipping Server_GetBlendingInterface; was previously found missing"));
-		return(0);
+		return 0;
 	}
-	if(!getblend) {
+	if (!getblend)
+	{
 		META_DEBUG(6, ("Looking up Server_GetBlendingInterface"));
 		getblend = (GETBLENDAPI_FN) DLSYM(GameDLL.handle, 
 				"Server_GetBlendingInterface");
 	}
-	if(!getblend) {
+	if (!getblend)
+	{
 		META_DEBUG(6, ("Couldn't find Server_GetBlendingInterface in game DLL '%s': %s", GameDLL.name, DLERROR()));
-		missing=1;
-		return(0);
+		missing = 1;
+		return 0;
 	}
+
 	META_DEBUG(6, ("Calling Server_GetBlendingInterface"));
-	return((getblend)(version, ppinterface, pstudio, rotationmatrix, 
-			bonetransform));
+	return (getblend)(version, ppinterface, pstudio, rotationmatrix, bonetransform);
 }

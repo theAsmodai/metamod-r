@@ -1,36 +1,4 @@
-// vi: set ts=4 sw=4 :
-// vim: set tw=75 :
-
-// h_export.cpp - main exported DLL functionality
-
-// From SDK dlls/h_export.cpp:
-
-/***
-*
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
-*
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
-*
-****/
-/*
-
-===== h_export.cpp ========================================================
-
-  Entity classes exported by Halflife.
-
-*/
-
 #include "precompiled.h"
-
-// From SDK dlls/h_export.cpp:
-
 
 #ifdef _WIN32
 //! Required DLL entry point
@@ -39,10 +7,12 @@
 // completeness.
 BOOL WINAPI DllMain(HINSTANCE /* hinstDLL */, DWORD fdwReason, LPVOID /* lpvReserved */)
 {
-	if (fdwReason == DLL_PROCESS_ATTACH) {
+	if (fdwReason == DLL_PROCESS_ATTACH)
+	{
 		/* nothing */
 	}
-	else if (fdwReason == DLL_PROCESS_DETACH) {
+	else if (fdwReason == DLL_PROCESS_DETACH)
+	{
 		/* nothing */
 	}
 	return TRUE;
@@ -53,11 +23,13 @@ BOOL WINAPI DllMain(HINSTANCE /* hinstDLL */, DWORD fdwReason, LPVOID /* lpvRese
 // just in case we come across a need to do something at dll load or
 // unload.
 // NOTE: These aren't actually called. Needs investigation.
-void _init(void) {
-// called before dlopen() returns
+void _init()
+{
+	// called before dlopen() returns
 }
-void _fini(void) {
-// called before dlclose() returns
+void _fini()
+{
+	// called before dlclose() returns
 }
 #endif
 
@@ -71,7 +43,7 @@ engine_t g_engine;
 // This appears to be the _first_ DLL routine called by the engine, so this
 // is where we hook to load all the other DLLs (game, plugins, etc), which
 // is actually all done in meta_startup().
-void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t* pGlobals)
+void WINAPI GiveFnptrsToDll(enginefuncs_t *pengfuncsFromEngine, globalvars_t *pGlobals)
 {
 	gpGlobals = pGlobals;
 	g_engine.funcs = &g_engfuncs;
@@ -94,22 +66,22 @@ extern "C" void __cxa_pure_virtual(void)
 
 void *operator new(size_t size)
 {
-	return malloc(size);
+	return Q_malloc(size);
 }
 
 void *operator new[](size_t size)
 {
-	return malloc(size);
+	return Q_malloc(size);
 }
 
 void operator delete(void *ptr)
 {
-	free(ptr);
+	Q_free(ptr);
 }
 
 void operator delete[](void * ptr)
 {
-	free(ptr);
+	Q_free(ptr);
 }
 #endif
 

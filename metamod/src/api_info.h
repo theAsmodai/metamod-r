@@ -1,58 +1,20 @@
-// vi: set ts=4 sw=4 :
-// vim: set tw=75 :
+#pragma once
 
-// api_info.h - structures to store info about api routines
-
-/*
- * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
- *
- *    This file is part of Metamod.
- *
- *    Metamod is free software; you can redistribute it and/or modify it
- *    under the terms of the GNU General Public License as published by the
- *    Free Software Foundation; either version 2 of the License, or (at
- *    your option) any later version.
- *
- *    Metamod is distributed in the hope that it will be useful, but
- *    WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with Metamod; if not, write to the Free Software Foundation,
- *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *    In addition, as a special exception, the author gives permission to
- *    link the code of this program with the Half-Life Game g_engine ("HL
- *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
- *    L.L.C ("Valve").  You must obey the GNU General Public License in all
- *    respects for all of the code used other than the HL g_engine and MODs
- *    from Valve.  If you modify this file, you may extend this exception
- *    to your version of the file, but you are not obligated to do so.  If
- *    you do not wish to do so, delete this exception statement from your
- *    version.
- *
- */
-
-#ifndef API_INFO_H
-#define API_INFO_H
-
-#include "types_meta.h"			// mBOOL
-
+#include "types_meta.h"
 
 #define P_PRE 0		// plugin function called before gamedll
 #define P_POST 1	// plugin function called after gamedll
 
-
-typedef struct api_info_s {
+struct api_info_t
+{
 	mBOOL trace;		// if true, log info about this function
 	int loglevel;		// level at which to log info about this function
 	const char *name;	// string representation of function name
-} api_info_t;
-
+};
 
 // DLL api functions
-typedef struct dllapi_info_s {
+struct dllapi_info_t
+{
 	api_info_t pfnGameInit;
 	api_info_t pfnSpawn;
 	api_info_t pfnThink;
@@ -103,25 +65,27 @@ typedef struct dllapi_info_s {
 	api_info_t pfnCreateInstancedBaselines;
 	api_info_t pfnInconsistentFile;
 	api_info_t pfnAllowLagCompensation;
-	api_info_t END;
-} dllapi_info_t;
 
+	// end
+	api_info_t END;
+};
 
 // "New" api functions
-typedef struct newapi_info_s {
+struct newapi_info_t
+{
 	api_info_t pfnOnFreeEntPrivateData;
 	api_info_t pfnGameShutdown;
 	api_info_t pfnShouldCollide;
-	// Added 2005/08/11 (no SDK update)
 	api_info_t pfnCvarValue;
-	// Added 2005/11/22 (no SDK update)
 	api_info_t pfnCvarValue2;
-	api_info_t END;
-} newapi_info_t;
 
+	// end
+	api_info_t END;
+};
 
 // g_engine functions
-typedef struct engine_info_s {
+struct engine_info_t
+{
 	api_info_t pfnPrecacheModel;
 	api_info_t pfnPrecacheSound;
 	api_info_t pfnSetModel;
@@ -263,12 +227,9 @@ typedef struct engine_info_s {
 	api_info_t pfnForceUnmodified;
 	api_info_t pfnGetPlayerStats;
 	api_info_t pfnAddServerCommand;
-	// Added in SDK 2.2:
 	api_info_t pfnVoice_GetClientListening;
 	api_info_t pfnVoice_SetClientListening;
-	// Added for HL 1109 (no SDK update):
 	api_info_t pfnGetPlayerAuthId;
-	// Added 2003/11/10 (no SDK update):
 	api_info_t pfnSequenceGet;
 	api_info_t pfnSequencePickSentence;
 	api_info_t pfnGetFileSize;
@@ -280,19 +241,14 @@ typedef struct engine_info_s {
 	api_info_t pfnProcessTutorMessageDecayBuffer;
 	api_info_t pfnConstructTutorMessageDecayBuffer;
 	api_info_t pfnResetTutorMessageDecayData;
-	// Added 2005/08/11 (no SDK update)
 	api_info_t pfnQueryClientCvarValue;
-	// Added 2005/11/22 (no SDK update)
 	api_info_t pfnQueryClientCvarValue2;
-	// Added 2009/06/17 (no SDK update)
 	api_info_t pfnEngCheckParm;
+
 	// end
 	api_info_t END;
-} engine_info_t;
-
+};
 
 extern dllapi_info_t dllapi_info;
 extern newapi_info_t newapi_info;
 extern engine_info_t engine_info;
-
-#endif /* API_INFO_H */
