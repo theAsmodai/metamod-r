@@ -1,3 +1,39 @@
+// vi: set ts=4 sw=4 :
+// vim: set tw=75 :
+
+// support_meta.cpp - generic support routines
+
+/*
+ * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
+ *
+ *    This file is part of Metamod.
+ *
+ *    Metamod is free software; you can redistribute it and/or modify it
+ *    under the terms of the GNU General Public License as published by the
+ *    Free Software Foundation; either version 2 of the License, or (at
+ *    your option) any later version.
+ *
+ *    Metamod is distributed in the hope that it will be useful, but
+ *    WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Metamod; if not, write to the Free Software Foundation,
+ *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *    In addition, as a special exception, the author gives permission to
+ *    link the code of this program with the Half-Life Game g_engine ("HL
+ *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *    L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *    respects for all of the code used other than the HL g_engine and MODs
+ *    from Valve.  If you modify this file, you may extend this exception
+ *    to your version of the file, but you are not obligated to do so.  If
+ *    you do not wish to do so, delete this exception statement from your
+ *    version.
+ *
+ */
+
 #include "precompiled.h"
 
 META_ERRNO meta_errno;
@@ -15,51 +51,47 @@ void do_exit(int exitval)
 // Also, formerly named just "valid_file".
 //
 // Special-case-recognize "/dev/null" as a valid file.
-int valid_gamedir_file(const char *path)
+int valid_gamedir_file(const char* path)
 {
-	char buf[PATH_MAX];
+	char buf[PATH_MAX ];
 	struct stat st;
 	int ret, reg, size;
 
 	if (!path)
-		return FALSE;
+		return (FALSE);
 
-	if (!Q_strcmp(path, "/dev/null"))
-		return TRUE;
+	if (!strcmp(path, "/dev/null"))
+		return (TRUE);
 
-	if (is_absolute_path(path))
-	{
-		Q_strncpy(buf, path, sizeof(buf) - 1);
-		buf[sizeof(buf) - 1] = '\0';
+	if (is_absolute_path(path)) {
+		strncpy(buf, path, sizeof(buf));
+		buf[sizeof buf - 1] = '\0';
 	}
 	else
-		safevoid_snprintf(buf, sizeof(buf), "%s/%s", GameDLL.gamedir, path);
+	snprintf(buf, sizeof(buf), "%s/%s", GameDLL.gamedir, path);
 
 	ret = stat(buf, &st);
-	if (ret != 0)
-	{
+	if (ret != 0) {
 		META_DEBUG(5, ("Unable to stat '%s': %s", buf, strerror(errno)));
-		return FALSE;
+		return (FALSE);
 	}
 
 	reg = S_ISREG(st.st_mode);
-	if (!reg)
-	{
+	if (!reg) {
 		META_DEBUG(5, ("Not a regular file: %s", buf));
-		return FALSE;
+		return (FALSE);
 	}
 
 	size = st.st_size;
-	if (!size)
-	{
+	if (!size) {
 		META_DEBUG(5, ("Empty file: %s", buf));
-		return FALSE;
+		return (FALSE);
 	}
 
 	if (ret == 0 && reg && size)
-		return TRUE;
+		return (TRUE);
 	else
-		return FALSE;
+		return (FALSE);
 }
 
 // Turns path into a full path:
@@ -67,29 +99,26 @@ int valid_gamedir_file(const char *path)
 //  - calls realpath() to collapse ".." and such
 //  - calls normalize_pathname() to fix backslashes, etc
 //
-// Much like realpath, buffer pointed to by fullpath is assumed to be
+// Much like realpath, buffer pointed to by fullpath is assumed to be 
 // able to store a string of PATH_MAX length.
-char *full_gamedir_path(const char *path, char *fullpath) {
-	char buf[PATH_MAX];
+char* full_gamedir_path(const char* path, char* fullpath)
+{
+	char buf[PATH_MAX ];
 
 	// Build pathname from filename, plus gamedir if relative path.
-	if (is_absolute_path(path))
-	{
-		Q_strncpy(buf, path, sizeof(buf) - 1);
-		buf[sizeof(buf) - 1] = '\0';
+	if (is_absolute_path(path)) {
+		strncpy(buf, path, sizeof buf - 1);
+		buf[sizeof buf - 1] = '\0';
 	}
 	else
-		safevoid_snprintf(buf, sizeof(buf), "%s/%s", GameDLL.gamedir, path);
-
+	snprintf(buf, sizeof(buf), "%s/%s", GameDLL.gamedir, path);
 	// Remove relative path components, if possible.
-	if (!realpath(buf, fullpath))
-	{
+	if (!realpath(buf, fullpath)) {
 		META_DEBUG(4, ("Unable to get realpath for '%s': %s", buf, str_os_error()));
-
-		Q_strncpy(fullpath, path, sizeof(fullpath) - 1);
-		fullpath[sizeof(fullpath) - 1] = '\0';
+		strncpy(fullpath, path, PATH_MAX - 1);
+		fullpath[PATH_MAX - 1] = '\0';
 	}
 	// Replace backslashes, etc.
 	normalize_pathname(fullpath);
-	return fullpath;
+	return (fullpath);
 }

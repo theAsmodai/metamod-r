@@ -1,10 +1,10 @@
 // vi: set ts=4 sw=4 :
 // vim: set tw=75 :
 
-// reg_support.h - functions for "registered" cmd/cvar/msg support
+// info_name.h - name, desc, author, etc
 
 /*
- * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
+ * Copyright (c) 2001-2013 Will Day <willday@hpgx.net>
  *
  *    This file is part of Metamod.
  *
@@ -23,10 +23,10 @@
  *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *    In addition, as a special exception, the author gives permission to
- *    link the code of this program with the Half-Life Game g_engine ("HL
- *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *    link the code of this program with the Half-Life Game Engine ("HL
+ *    Engine") and Modified Game Libraries ("MODs") developed by Valve,
  *    L.L.C ("Valve").  You must obey the GNU General Public License in all
- *    respects for all of the code used other than the HL g_engine and MODs
+ *    respects for all of the code used other than the HL Engine and MODs
  *    from Valve.  If you modify this file, you may extend this exception
  *    to your version of the file, but you are not obligated to do so.  If
  *    you do not wish to do so, delete this exception statement from your
@@ -34,15 +34,21 @@
  *
  */
 
-#ifndef REG_SUPPORT_H
-#define REG_SUPPORT_H
+#ifndef INFO_NAME_H
+#define INFO_NAME_H
 
-#include "mreg.h"			// REG_CMD_FN, etc
+#define VNAME		"Metamod"
+#define VAUTHOR		"Will Day <willday@metamod.org>"
+#define VURL		"http://www.metamod.org/"
 
-void meta_command_handler(void);
-void meta_AddServerCommand(char *cmd_name, REG_CMD_FN function);
-void meta_CVarRegister(cvar_t *pCvar);
-int meta_RegUserMsg(const char *pszName, int iSize);
-void meta_QueryClientCvarValue(const edict_t *player, const char *cvarName);
+#define COPYRIGHT_YEAR "2013"
 
-#endif /* REG_SUPPORT_H */
+// Various strings for the Windows DLL Resources in res_meta.rc
+#define RC_COMMENTS		"Metamod allows running multiple mod-like plugin DLLs, to add functionality or change the behavior of the running HLDS game mod.  See " VURL
+#define RC_DESC			"Metamod Half-Life MOD DLL"
+#define RC_FILENAME		"METAMOD.DLL"
+#define RC_INTERNAL		"METAMOD"
+#define RC_COPYRIGHT	"Copyright© 2001-" COPYRIGHT_YEAR  " Will Day; GPL licensed"
+#define RC_LICENSE      "Licensed under the GNU General Public License"
+
+#endif /* INFO_NAME_H */

@@ -1,7 +1,7 @@
 // vi: set ts=4 sw=4 :
 // vim: set tw=75 :
 
-// reg_support.h - functions for "registered" cmd/cvar/msg support
+// vdate.cpp - compile-time version date
 
 /*
  * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
@@ -34,15 +34,23 @@
  *
  */
 
-#ifndef REG_SUPPORT_H
-#define REG_SUPPORT_H
+#include "precompiled.h"
 
-#include "mreg.h"			// REG_CMD_FN, etc
+// Grab date/time of compile.  The Makefile is set up to recompile this
+// module before each link, so that this will always indicate the time the
+// library was compiled and linked.
 
-void meta_command_handler(void);
-void meta_AddServerCommand(char *cmd_name, REG_CMD_FN function);
-void meta_CVarRegister(cvar_t *pCvar);
-int meta_RegUserMsg(const char *pszName, int iSize);
-void meta_QueryClientCvarValue(const edict_t *player, const char *cvarName);
+// This is in a separate file from vers_*, so it can be generically used by
+// multiple projects.
 
-#endif /* REG_SUPPORT_H */
+char const *COMPILE_TIME=__DATE__ ", " __TIME__;
+
+#ifndef COMPILE_TZ
+#  define COMPILE_TZ ""
+#endif
+
+char const *COMPILE_TZONE = COMPILE_TZ;
+
+// Include a string for /usr/bin/ident.
+
+char const *vstring="\n$Pg: " VNAME " -- " VVERSION " | " __DATE__ " - " __TIME__ " $\n";

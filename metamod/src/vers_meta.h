@@ -1,10 +1,11 @@
 // vi: set ts=4 sw=4 :
 // vim: set tw=75 :
 
-// reg_support.h - functions for "registered" cmd/cvar/msg support
+// vers_meta.h - version info, intended to be common among DLLs distributed
+// with metamod.
 
 /*
- * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
+ * Copyright (c) 2001-2013 Will Day <willday@hpgx.net>
  *
  *    This file is part of Metamod.
  *
@@ -34,15 +35,21 @@
  *
  */
 
-#ifndef REG_SUPPORT_H
-#define REG_SUPPORT_H
+#ifndef VERS_META_H
+#define VERS_META_H
 
-#include "mreg.h"			// REG_CMD_FN, etc
+#ifndef OPT_TYPE
+# if defined(_MSC_VER) && defined(_DEBUG)
+#  define OPT_TYPE		"msc debugging"
+# elif defined(_MSC_VER) && defined(NDEBUG)
+#  define OPT_TYPE		"msc optimized"
+# else
+#  define OPT_TYPE		"default"
+# endif /* _MSC_VER */
+#endif /* not OPT_TYPE */
 
-void meta_command_handler(void);
-void meta_AddServerCommand(char *cmd_name, REG_CMD_FN function);
-void meta_CVarRegister(cvar_t *pCvar);
-int meta_RegUserMsg(const char *pszName, int iSize);
-void meta_QueryClientCvarValue(const edict_t *player, const char *cvarName);
+#define VDATE			"2013-09-26"
+#define VVERSION		"1.21.1-am"
+#define RC_VERS_DWORD	1,21,1,0	// Version Windows DLL Resources in res_meta.rc
 
-#endif /* REG_SUPPORT_H */
+#endif /* VERS_META_H */

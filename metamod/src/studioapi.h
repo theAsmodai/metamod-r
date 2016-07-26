@@ -1,7 +1,7 @@
 // vi: set ts=4 sw=4 :
 // vim: set tw=75 :
 
-// reg_support.h - functions for "registered" cmd/cvar/msg support
+// studio.cpp - player model blending interfaces
 
 /*
  * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
@@ -34,15 +34,23 @@
  *
  */
 
-#ifndef REG_SUPPORT_H
-#define REG_SUPPORT_H
+#ifndef STUDIOAPI_H
+#define STUDIOAPI_H
 
-#include "mreg.h"			// REG_CMD_FN, etc
+#include <studio.h>		// MAXSTUDIOBONES
 
-void meta_command_handler(void);
-void meta_AddServerCommand(char *cmd_name, REG_CMD_FN function);
-void meta_CVarRegister(cvar_t *pCvar);
-int meta_RegUserMsg(const char *pszName, int iSize);
-void meta_QueryClientCvarValue(const edict_t *player, const char *cvarName);
+// Typedef for Server_GetBlendingInterface() from Eric Smith on the hlcoders 
+// mailing list.
+typedef int (*GETBLENDAPI_FN) (int version,
+		struct sv_blending_interface_s **ppinterface,
+		struct engine_studio_api_s *pstudio,
+		float (*rotationmatrix)[3][4],
+		float (*bonetransform)[MAXSTUDIOBONES][3][4]);
 
-#endif /* REG_SUPPORT_H */
+extern int mm_Server_GetBlendingInterface(int version,
+		struct sv_blending_interface_s **ppinterface,
+		struct engine_studio_api_s *pstudio,
+		float (*rotationmatrix)[3][4],
+		float (*bonetransform)[MAXSTUDIOBONES][3][4]);
+
+#endif /* STUDIOAPI_H */

@@ -1,59 +1,61 @@
 #pragma once
 
-#include "version/appversion.h"
+#if defined(linux) || defined(__APPLE__)
+// enable extra routines in system header files, like dladdr
+#  ifndef _GNU_SOURCE
+#    define _GNU_SOURCE
+#  endif
+#include <dlfcn.h>			// dlopen, dladdr, etc
+#include <signal.h>			// sigaction, etc
+#include <setjmp.h>			// sigsetjmp, longjmp, etc
+#endif /* linux */
 
-#include <stdarg.h>
-#include <stdlib.h>
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+#   include <new.h>         // set_new_handler()
+#else
+#   include <new>			// set_new_handler()
+#endif
+
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#include <ctype.h>
 #include <stdio.h>
-#include <string.h>			// for strncpy(), etc
+#include <stdlib.h>
+#include <stdarg.h>
+#include <string.h>
+#include <errno.h>
 
 #include <extdll.h>
-#include <eiface.h>
+#include <studio.h>
+#include <studioapi.h>
 
-#include "osconfig.h"
-#include "h_export.h"
-
-#include "osdep.h"			// win32 vsnprintf, etc
-#include "sdk_util.h"
-
-#include "eiface.h"			// engfuncs_t, globalvars_t
-#include "meta_api.h"			// meta_globals_t, etc
-
-#include "linkent.h"	// LINK_ENTITY_TO_PLUGIN
-
-#include "ret_type.h"
-#include "types_meta.h"
+#include "osdep.h"
 #include "api_info.h"
-#include "api_hook.h"
-#include "mplugin.h"
+#include "commands_meta.h"
 #include "metamod.h"
-
-#include "commands_meta.h"	// me
-#include "log_meta.h"		// META_CONS, etc
-
-#include "conf_meta.h"		// me
-#include "support_meta.h"	// strmatch
-
-
-// #include <malloc.h>			// alloca, etc	??????????
-
-
-	// Don't include winspool.h; clashes with SERVER_EXECUTE from engine
-//	#define _WINSPOOL_H	
-//	#include <windows.h>
-//	#include <winnt.h>     // Header structures
-
-
-#include "osdep_p.h"				// is_gamedll, ...
-#include "game_support.h"			// lookup_game, etc
-#include "reg_support.h"		// meta_AddServerCommand, etc
-#include "mm_pextensions.h"
-
-
-
-
-
-
-
-
-
+#include "log_meta.h"
+#include "info_name.h"
+#include "vdate.h"
+#include "vers_meta.h"
+#include "conf_meta.h"
+#include "support_meta.h"
+#include "dllapi.h"
+#include "engine_api.h"
+#include "game_support.h"
+#include "h_export.h"
+#include "linkent.h"
+#include "meta_eiface.h"
+#include "mreg.h"
+#include "meta_api.h"
+#include "mutil.h"
+#include "reg_support.h"
+#include "types_meta.h"
+#include "mlist.h"
+#include "mplugin.h"
+#include "plinfo.h"
+#include "mplayer.h"
+#include "sdk_util.h"
+#include "enginecallbacks.h"
+#include "utils.h"

@@ -1,188 +1,80 @@
+// vi: set ts=4 sw=4 :
+// vim: set tw=75 :
+
+// osdep.cpp - routines for operating system differences
+
+/*
+ * Copyright (c) 2001-2003 Will Day <willday@hpgx.net>
+ *
+ *    This file is part of Metamod.
+ *
+ *    Metamod is free software; you can redistribute it and/or modify it
+ *    under the terms of the GNU General Public License as published by the
+ *    Free Software Foundation; either version 2 of the License, or (at
+ *    your option) any later version.
+ *
+ *    Metamod is distributed in the hope that it will be useful, but
+ *    WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Metamod; if not, write to the Free Software Foundation,
+ *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ *    In addition, as a special exception, the author gives permission to
+ *    link the code of this program with the Half-Life Game g_engine ("HL
+ *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *    L.L.C ("Valve").  You must obey the GNU General Public License in all
+ *    respects for all of the code used other than the HL g_engine and MODs
+ *    from Valve.  If you modify this file, you may extend this exception
+ *    to your version of the file, but you are not obligated to do so.  If
+ *    you do not wish to do so, delete this exception statement from your
+ *    version.
+ *
+ */
+
 #include "precompiled.h"
 
 mBOOL dlclose_handle_invalid;
 
+// To keep the rest of the sources clean and keep not only OS but also
+// compiler dependant differences in this file, we define a local function
+// to set the new handler.
+void mm_set_new_handler( void )
+{
+#if defined(_MSC_VER) && (_MSC_VER < 1300)
+    _set_new_handler(meta_new_handler);
+#else
+    std::set_new_handler(meta_new_handler);
+#endif
+}
+
 #ifdef _WIN32
-
-#ifdef _MSC_VER
-#pragma comment(lib, "psapi.lib") // Process Status API
-#endif // _MSC_VER
-
 // Since windows doesn't provide a verison of strtok_r(), we include one
 // here.  This may or may not operate exactly like strtok_r(), but does
 // what we need it it do.
-char *my_strtok_r(char *s, const char *delim, char **ptrptr)
-{
-	char *begin = nullptr;
-	char *end = nullptr;
-	char *rest = nullptr;
-
-	if (s)
-		begin = s;
+char *my_strtok_r(char *s, const char *delim, char **ptrptr) {
+	char *begin=NULL;
+	char *end=NULL;
+	char *rest=NULL;
+	if(s)
+		begin=s;
 	else
-		begin = *ptrptr;
-
-	if (!begin)
-		return nullptr;
-
-	end = strpbrk(begin, delim);
-	if (end)
-	{
+		begin=*ptrptr;
+	if(!begin)
+		return(NULL);
+	end=strpbrk(begin, delim);
+	if(end) {
 		*end='\0';
-		rest = end + 1;
-		*ptrptr = rest + strspn(rest, delim);
+		rest=end+1;
+		*ptrptr=rest+strspn(rest, delim);
 	}
 	else
-		*ptrptr = nullptr;
-
-	return begin;
+		*ptrptr=NULL;
+	return(begin);
 }
-#endif // _WIN32
-
-#ifndef _WIN32
-char *my_strlwr(char *s)
-{
-	char *c;
-	if (!s)
-		return 0;
-	for (c=s;*c;c++)
-		*c = tolower(*c);
-	return s;
-}
-#endif
-
-#ifndef DO_NOT_FIX_VARARG_ENGINE_API_WARPERS
-// Microsoft's msvcrt.dll:vsnprintf is buggy and so is vsnprintf on some glibc versions.
-// We use wrapper function to fix bugs.
-//  from: http://sourceforge.net/tracker/index.php?func=detail&aid=1083721&group_id=2435&atid=102435
-int safe_vsnprintf(char *s, size_t n, const char *format, va_list src_ap)
-{
-	va_list ap;
-	int res;
-	char *tmpbuf;
-	size_t bufsize = n;
-
-	if (s && n > 0)
-		s[0] = 0;
-
-	// If the format string is empty, nothing to do.
-	if (!format || !*format)
-		return 0;
-
-	// The supplied count may be big enough. Try to use the library
-     	// vsnprintf, fixing up the case where the library function
-	// neglects to terminate with '/0'.
-	if (n > 0)
-	{
-		// A NULL destination will cause a segfault with vsnprintf.
-		// if n > 0.  Nor do we want to copy our tmpbuf to NULL later.
-		if (!s)
-			return -1;
-
-		va_copy(ap, src_ap);
-		res = Q_vsnprintf(s, n, format, ap);
-		va_end(ap);
-
-		if (res > 0)
-		{
-			if ((unsigned)res == n)
-				s[res - 1] = 0;
-	  		return res;
-		}
-
-		// If n is already larger than INT_MAX, increasing it won't
-		// help.
-		if (n > INT_MAX)
-			return -1;
-
-		// Try a larger buffer.
-		bufsize *= 2;
-	}
-
-	if (bufsize < 1024)
-		bufsize = 1024;
-
-	tmpbuf = (char *)malloc(bufsize * sizeof(char));
-	if (!tmpbuf)
-		return -1;
-
-	va_copy(ap, src_ap);
-  	res = Q_vsnprintf(tmpbuf, bufsize, format, ap);
-  	va_end(ap);
-
-	// The test for bufsize limit is probably not necesary
-	// with 2GB address space limit, since, in practice, malloc will
-	// fail well before INT_MAX.
-	while (res < 0 && bufsize <= INT_MAX)
-	{
-		char *newbuf;
-
-		bufsize *= 2;
-		newbuf = (char *)realloc(tmpbuf, bufsize * sizeof(char));
-
-		if (!newbuf)
-			break;
-
-		tmpbuf = newbuf;
-
-		va_copy(ap, src_ap);
-		res = Q_vsnprintf(tmpbuf, bufsize, format, ap);
-		va_end(ap);
-	}
-
-	if (res > 0 && n > 0)
-	{
-		if (n > (unsigned)res)
-			Q_memcpy(s, tmpbuf, (res + 1) * sizeof (char));
-		else
-		{
-			Q_memcpy(s, tmpbuf, (n - 1) * sizeof (char));
-			s[n - 1] = 0;
-		}
-	}
-
-	free(tmpbuf);
-	return res;
-}
-
-int safe_snprintf(char *s, size_t n, const char *format, ...)
-{
-	int res;
-	va_list ap;
-	va_start(ap, format);
-	res = safe_vsnprintf(s, n, format, ap);
-	va_end(ap);
-	return res;
-}
-#endif
-
-void safevoid_vsnprintf(char *s, size_t n, const char *format, va_list ap)
-{
-	int res;
-	if (!s || n <= 0)
-		return;
-
-	// If the format string is empty, nothing to do.
-	if (!format || !*format)
-	{
-		s[0] = 0;
-		return;
-	}
-
-	res = Q_vsnprintf(s, n, format, ap);
-	// w32api returns -1 on too long write, glibc returns number of bytes it could have written if there were enough space
-	// w32api doesn't write null at all, some buggy glibc don't either
-	if (res < 0 || (size_t)res >= n)
-		s[n - 1] = 0;
-}
-
-void safevoid_snprintf(char *s, size_t n, const char *format, ...)
-{
-	va_list ap;
-	va_start(ap, format);
-	safevoid_vsnprintf(s, n, format, ap);
-	va_end(ap);
-}
+#endif /* _WIN32 */
 
 
 #ifdef _WIN32
@@ -191,32 +83,31 @@ void safevoid_snprintf(char *s, size_t n, const char *format, ...)
 //    http://msdn.microsoft.com/library/en-us/debug/errors_0sdh.asp
 // except without FORMAT_MESSAGE_ALLOCATE_BUFFER, since we use a local
 // static buffer.
-char *str_GetLastError()
-{
+const char *str_GetLastError(void) {
 	static char buf[MAX_STRBUF_LEN];
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &buf, MAX_STRBUF_LEN - 1, NULL);
-	return buf;
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
+			NULL, GetLastError(), 
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), //! Default language 
+			(LPTSTR) &buf, MAX_STRBUF_LEN-1, NULL);
+	return(buf);
 }
-
-#endif // _WIN32
+#endif /* _WIN32 */
 
 
 // Find the filename of the DLL/shared-lib where the given memory location
 // exists.
-#ifndef _WIN32
+#if defined(linux) || defined(__APPLE__)
 // Errno values:
 //  - ME_NOTFOUND	couldn't find a sharedlib that contains memory location
-const char *DLFNAME(void *memptr)
-{
+const char *DLFNAME(void *memptr) {
 	Dl_info dli;
-	Q_memset(&dli, 0, sizeof(dli));
-	if (dladdr(memptr, &dli))
-		return dli.dli_fname;
+	memset(&dli, 0, sizeof(dli));
+	if(dladdr(memptr, &dli))
+		return(dli.dli_fname);
 	else
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
 }
-
-#else
+#elif defined(_WIN32)
 // Implementation for win32 provided by Jussi Kivilinna <kijuhe00@rhea.otol.fi>:
 //
 //    1. Get memory location info on memptr with VirtualQuery.
@@ -238,136 +129,88 @@ const char *DLFNAME(void *memptr)
 //
 // Errno values:
 //  - ME_NOTFOUND	couldn't find a DLL that contains memory location
-const char *DLFNAME(void *memptr)
-{
+const char *DLFNAME(void *memptr) {
 	MEMORY_BASIC_INFORMATION MBI;
 	static char fname[PATH_MAX];
 
-	Q_memset(fname, 0, sizeof(fname));
+	memset(fname, 0, sizeof(fname));
 
 	if (!VirtualQuery(memptr, &MBI, sizeof(MBI)))
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
 	if (MBI.State != MEM_COMMIT)
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
-	if (!MBI.AllocationBase)
+	if(!MBI.AllocationBase)
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
+	
 	// MSDN indicates that GetModuleFileName will leave string
 	// null-terminated, even if it's truncated because buffer is too small.
-	if (!GetModuleFileNameA((HMODULE)MBI.AllocationBase, fname, sizeof(fname) - 1))
+	if(!GetModuleFileName((HMODULE)MBI.AllocationBase, fname, 
+				sizeof(fname)-1))
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
-	if (!fname[0])
+	if(!fname[0])
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
+	
 	normalize_pathname(fname);
-	return fname;
+	return(fname);
 }
-#endif // _WIN32
+#endif /* _WIN32 */
 
-#ifdef _WIN32
-// Normalize/standardize a pathname.
-//  - For win32, this involves:
-//    - Turning backslashes (\) into slashes (/), so that config files and
-//      Metamod internal code can be simpler and just use slashes (/).
-//    - Turning upper/mixed case into lowercase, since windows is
-//      non-case-sensitive.
-//  - For linux, this requires no work, as paths uses slashes (/) natively,
-//    and pathnames are case-sensitive.
-void normalize_pathname(char *path)
-{
-	char *cp;
-
-	META_DEBUG(8, ("normalize: %s", path));
-	for (cp = path; *cp; cp++)
-	{
-		/*if (isupper(*cp))*/
-			*cp=tolower(*cp);
-
-		if (*cp == '\\')
-			*cp = '/';
-	}
-
-	META_DEBUG(8, ("normalized: %s", path));
-}
-
-// Buffer pointed to by resolved_name is assumed to be able to store a
-// string of PATH_MAX length.
-char *realpath(const char *file_name, char *resolved_name)
-{
-	int ret;
-	ret = GetFullPathNameA(file_name, PATH_MAX, resolved_name, NULL);
-
-	if (ret > PATH_MAX)
-	{
-		errno=ENAMETOOLONG;
-		return nullptr;
-	}
-	else if (ret > 0)
-	{
-		HANDLE handle;
-		WIN32_FIND_DATAA find_data;
-		handle = FindFirstFileA(resolved_name, &find_data);
-		if (INVALID_HANDLE_VALUE == handle)
-		{
-			errno = ENOENT;
-			return nullptr;
-		}
-
-		FindClose(handle);
-		normalize_pathname(resolved_name);
-		return resolved_name;
-	}
-	else
-		return nullptr;
-}
-#endif // _WIN32
 
 // Determine whether the given memory location is valid (ie whether we
 // should expect to be able to reference strings or functions at this
 // location without segfaulting).
-#ifndef _WIN32
+#if defined(linux) || defined(__APPLE__)
 // Simulate this with dladdr.  I'm not convinced this will be as generally
 // applicable as the native windows routine below, but it should do what
 // we need it for in this particular situation.
 // meta_errno values:
 //  - ME_NOTFOUND	couldn't find a matching sharedlib for this ptr
-mBOOL IS_VALID_PTR(void *memptr)
-{
+mBOOL IS_VALID_PTR(void *memptr) {
 	Dl_info dli;
-	Q_memset(&dli, 0, sizeof(dli));
-	if (dladdr(memptr, &dli))
-		return mTRUE;
+	memset(&dli, 0, sizeof(dli));
+	if(dladdr(memptr, &dli))
+		return(mTRUE);
 	else
 		RETURN_ERRNO(mFALSE, ME_NOTFOUND);
 }
-#else
+#elif defined(_WIN32)
 // Use the native windows routine IsBadCodePtr.
 // meta_errno values:
 //  - ME_BADMEMPTR	not a valid memory pointer
-mBOOL IS_VALID_PTR(void *memptr)
-{
-	if (IsBadCodePtr((FARPROC) memptr))
+mBOOL IS_VALID_PTR(void *memptr) {
+	if(IsBadCodePtr((FARPROC) memptr))
 		RETURN_ERRNO(mFALSE, ME_BADMEMPTR);
 	else
-		return mTRUE;
+		return(mTRUE);
 }
-#endif // _WIN32
+#endif /* _WIN32 */
 
 // This used to be OS-dependent, as it used a SEGV signal handler under
 // linux, but that was removed because (a) it masked legitimate segfaults
 // in plugin commands and produced confusing output ("plugin has been
 // unloaded", when really it segfaultd), and (b) wasn't necessary since
 // IS_VALID_PTR() should cover the situation.
-mBOOL os_safe_call(REG_CMD_FN pfn)
-{
+mBOOL os_safe_call(REG_CMD_FN pfn) {
 	// try and see if this is a valid memory location
-	if (!IS_VALID_PTR((void *)pfn))
+	if(!IS_VALID_PTR((void *) pfn))
 		// meta_errno should be already set in is_valid_ptr()
-		return mFALSE;
+		return(mFALSE);
 
 	pfn();
-	return mTRUE;
+	return(mTRUE);
 }
+
+// See comments in osdep.h.
+#if defined(__GNUC__) || (defined(_MSC_VER) && (_MSC_VER >= 1300))
+void MM_CDECL meta_new_handler(void) {
+	// This merely because we don't want the program to exit if new()
+	// fails..
+	return;
+}
+#elif defined(_MSC_VER)
+int meta_new_handler(size_t size) {
+	// This merely because we don't want the program to exit if new()
+	// fails..
+	return(0);
+}
+#endif /* _MSC_VER */

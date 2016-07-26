@@ -23,10 +23,10 @@
  *    Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *    In addition, as a special exception, the author gives permission to
- *    link the code of this program with the Half-Life Game Engine ("HL
- *    Engine") and Modified Game Libraries ("MODs") developed by Valve,
+ *    link the code of this program with the Half-Life Game g_engine ("HL
+ *    g_engine") and Modified Game Libraries ("MODs") developed by Valve,
  *    L.L.C ("Valve").  You must obey the GNU General Public License in all
- *    respects for all of the code used other than the HL Engine and MODs
+ *    respects for all of the code used other than the HL g_engine and MODs
  *    from Valve.  If you modify this file, you may extend this exception
  *    to your version of the file, but you are not obligated to do so.  If
  *    you do not wish to do so, delete this exception statement from your
@@ -47,30 +47,30 @@
 // "hack" our way around that by using a flag METAMOD_CORE which is set 
 // when compiling Metamod proper.
 
-#ifdef __METAMOD_BUILD__
-#include "meta_eiface.h"	// HL_enginefuncs_t
+#ifdef METAMOD_CORE
+#  include "meta_eiface.h"        // HL_enginefuncs_t
 
 // Use a #define to bend the enginefuncs_t type to our HL_enginefuncs_t
 // type instead as we now use that for the global object g_engfuncs.
-#define enginefuncs_t HL_enginefuncs_t
+#  define enginefuncs_t HL_enginefuncs_t
 #endif /* METAMOD_CORE */
 
 #include <enginecallback.h>		// ALERT, etc
 
-#ifdef __METAMOD_BUILD__
-#undef enginefuncs_t
+#ifdef METAMOD_CORE
+#  undef enginefuncs_t
 #endif /* METAMOD_CORE */
 
 // Also, create some additional macros for engine callback functions, which
 // weren't in SDK dlls/enginecallbacks.h but probably should have been.
 
-#define GET_INFOKEYBUFFER		(*g_engfuncs.pfnGetInfoKeyBuffer)
-#define INFOKEY_VALUE			(*g_engfuncs.pfnInfoKeyValue)
-#define SET_CLIENT_KEYVALUE		(*g_engfuncs.pfnSetClientKeyValue)
-#define REG_SVR_COMMAND			(*g_engfuncs.pfnAddServerCommand)
-#define SERVER_PRINT			(*g_engfuncs.pfnServerPrint)
-#define SET_SERVER_KEYVALUE		(*g_engfuncs.pfnSetKeyValue)
-#define QUERY_CLIENT_CVAR_VALUE		(*g_engfuncs.pfnQueryClientCvarValue)
+#define GET_INFOKEYBUFFER	    	(*g_engfuncs.pfnGetInfoKeyBuffer)
+#define INFOKEY_VALUE			    (*g_engfuncs.pfnInfoKeyValue)
+#define SET_CLIENT_KEYVALUE	    	(*g_engfuncs.pfnSetClientKeyValue)
+#define REG_SVR_COMMAND	    		(*g_engfuncs.pfnAddServerCommand)
+#define SERVER_PRINT			    (*g_engfuncs.pfnServerPrint)
+#define SET_SERVER_KEYVALUE	    	(*g_engfuncs.pfnSetKeyValue)
+#define QUERY_CLIENT_CVAR_VALUE	    (*g_engfuncs.pfnQueryClientCvarValue)
 #define QUERY_CLIENT_CVAR_VALUE2	(*g_engfuncs.pfnQueryClientCvarValue2)
 
 

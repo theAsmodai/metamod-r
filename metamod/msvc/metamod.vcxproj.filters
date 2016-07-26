@@ -2,18 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+      <UniqueIdentifier>{a2511622-7e99-4c67-845f-0751105c3bde}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+      <UniqueIdentifier>{dfc6c7bb-cea4-43c5-bb1b-b8145cf93dd5}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\api_hook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\api_info.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -35,7 +32,10 @@
     <ClCompile Include="..\src\h_export.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\linkplug.cpp">
+    <ClCompile Include="..\src\linkent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\linkgame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\log_meta.cpp">
@@ -65,10 +65,7 @@
     <ClCompile Include="..\src\osdep.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\osdep_linkent_win32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\osdep_p.cpp">
+    <ClCompile Include="..\src\precompiled.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\reg_support.cpp">
@@ -77,40 +74,24 @@
     <ClCompile Include="..\src\sdk_util.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\studioapi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\support_meta.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\precompiled.cpp">
+    <ClCompile Include="..\src\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\vdate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="metamod.def">
-      <Filter>Resource Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="metamod.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\src\precompiled.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\types_meta.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\api_hook.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\api_info.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\commands_meta.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\comp_dep.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\conf_meta.h">
@@ -131,10 +112,10 @@
     <ClInclude Include="..\src\game_support.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\h_export.h">
+    <ClInclude Include="..\src\games.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\info_name.h">
+    <ClInclude Include="..\src\h_export.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\linkent.h">
@@ -152,10 +133,10 @@
     <ClInclude Include="..\src\metamod.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mlist.h">
+    <ClInclude Include="..\src\mhook.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mm_pextensions.h">
+    <ClInclude Include="..\src\mlist.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mplayer.h">
@@ -164,34 +145,46 @@
     <ClInclude Include="..\src\mplugin.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\mqueue.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\mreg.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mutil.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\new_baseclass.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\osdep.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\osdep_p.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\plinfo.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\reg_support.h">
+    <ClInclude Include="..\src\precompiled.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ret_type.h">
+    <ClInclude Include="..\src\reg_support.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\sdk_util.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\studioapi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\support_meta.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\types_meta.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\utils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vdate.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\vers_meta.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
