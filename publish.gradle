@@ -1,0 +1,38 @@
+import org.doomedsociety.gradlecpp.GradleCppUtils
+import org.apache.commons.io.FilenameUtils
+
+void _copyFileToDir(String from, String to) {
+	def dst = new File(project.file(to), FilenameUtils.getName(from))
+	GradleCppUtils.copyFile(project.file(from), dst, false)
+}
+
+void _copyFile(String from, String to) {
+	GradleCppUtils.copyFile(project.file(from), project.file(to), false)
+}
+
+task publishPrepareFiles << {
+	def pubRootDir = project.file('publish/publishRoot')
+	if (pubRootDir.exists()) {
+		if (!pubRootDir.deleteDir()) {
+			throw new RuntimeException("Failed to delete ${pubRootDir}")
+		}
+	}
+
+	pubRootDir.mkdirs()
+	project.file('publish/publishRoot/metamod/addons/metamod').mkdirs()
+
+	_copyFileToDir('publish/metamod_mm.dll', 'publish/publishRoot/metamod/addons/metamod/')
+	//_copyFileToDir('publish/metamod_mm.pdb', 'publish/publishRoot/metamod/addons/metamod/')
+	_copyFile('publish/libmetamod_mm_i386.so', 'publish/publishRoot/metamod/addons/metamod/metamod_mm_i386.so')
+}
+
+task publishPackage(type: Zip, dependsOn: 'publishPrepareFiles') {
+	baseName = "metamod_${project.version}"
+	destinationDir file('publish')
+	from 'publish/publishRoot/metamod'
+}
+
+task doPackage {
+	dependsOn 'publishPackage'
+
+}

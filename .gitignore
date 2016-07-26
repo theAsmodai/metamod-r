@@ -1,3 +1,5 @@
+**/build
+**/.gradle
 .idea
 *.iml
 **/msvc/Debug*
@@ -9,5 +11,10 @@
 **/msvc/*.aps
 **/msvc/*.pch
 **/msvc/*.txt
+**/msvc/start*.bat
 **/msvc/ipch
+**/PublishPath*.txt
 **/*.log
+
+publish
+**/appversion.h
