@@ -11,31 +11,37 @@ mBOOL dlclose_handle_invalid;
 // Since windows doesn't provide a verison of strtok_r(), we include one
 // here.  This may or may not operate exactly like strtok_r(), but does
 // what we need it it do.
-char *my_strtok_r(char *s, const char *delim, char **ptrptr) {
-	char *begin=NULL;
-	char *end=NULL;
-	char *rest=NULL;
+char *my_strtok_r(char *s, const char *delim, char **ptrptr)
+{
+	char *begin = nullptr;
+	char *end = nullptr;
+	char *rest = nullptr;
+
 	if (s)
-		begin=s;
+		begin = s;
 	else
-		begin=*ptrptr;
+		begin = *ptrptr;
+
 	if (!begin)
-		return NULL;
-	end=strpbrk(begin, delim);
-	if (end) {
+		return nullptr;
+
+	end = strpbrk(begin, delim);
+	if (end)
+	{
 		*end='\0';
-		rest=end+1;
-		*ptrptr=rest+strspn(rest, delim);
+		rest = end + 1;
+		*ptrptr = rest + strspn(rest, delim);
 	}
 	else
-		*ptrptr=NULL;
+		*ptrptr = nullptr;
+
 	return begin;
 }
-#endif /* _WIN32 */
+#endif // _WIN32
 
-
-#ifdef linux
-char *my_strlwr(char *s) {
+#ifndef _WIN32
+char *my_strlwr(char *s)
+{
 	char *c;
 	if (!s)
 		return 0;
@@ -45,19 +51,19 @@ char *my_strlwr(char *s) {
 }
 #endif
 
-
 #ifndef DO_NOT_FIX_VARARG_ENGINE_API_WARPERS
 // Microsoft's msvcrt.dll:vsnprintf is buggy and so is vsnprintf on some glibc versions.
 // We use wrapper function to fix bugs.
 //  from: http://sourceforge.net/tracker/index.php?func=detail&aid=1083721&group_id=2435&atid=102435
-int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap) {
+int safe_vsnprintf(char *s, size_t n, const char *format, va_list src_ap)
+{
 	va_list ap;
 	int res;
 	char *tmpbuf;
 	size_t bufsize = n;
 
-	if (s && n>0)
-		s[0]=0;
+	if (s && n > 0)
+		s[0] = 0;
 
 	// If the format string is empty, nothing to do.
 	if (!format || !*format)
@@ -77,7 +83,8 @@ int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap) {
 		res = Q_vsnprintf(s, n, format, ap);
 		va_end(ap);
 
-		if (res > 0) {
+		if (res > 0)
+		{
 			if ((unsigned)res == n)
 				s[res - 1] = 0;
 	  		return res;
@@ -108,10 +115,10 @@ int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap) {
 	// fail well before INT_MAX.
 	while (res < 0 && bufsize <= INT_MAX)
 	{
-		char * newbuf;
+		char *newbuf;
 
 		bufsize *= 2;
-		newbuf = (char*)realloc(tmpbuf, bufsize * sizeof(char));
+		newbuf = (char *)realloc(tmpbuf, bufsize * sizeof(char));
 
 		if (!newbuf)
 			break;
@@ -123,10 +130,12 @@ int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap) {
 		va_end(ap);
 	}
 
-	if (res > 0 && n > 0) {
+	if (res > 0 && n > 0)
+	{
 		if (n > (unsigned)res)
 			Q_memcpy(s, tmpbuf, (res + 1) * sizeof (char));
-		else {
+		else
+		{
 			Q_memcpy(s, tmpbuf, (n - 1) * sizeof (char));
 			s[n - 1] = 0;
 		}
@@ -136,7 +145,8 @@ int safe_vsnprintf(char* s, size_t n, const char *format, va_list src_ap) {
 	return res;
 }
 
-int safe_snprintf(char* s, size_t n, const char* format, ...) {
+int safe_snprintf(char *s, size_t n, const char *format, ...)
+{
 	int res;
 	va_list ap;
 	va_start(ap, format);
@@ -146,23 +156,28 @@ int safe_snprintf(char* s, size_t n, const char* format, ...) {
 }
 #endif
 
-void safevoid_vsnprintf(char* s, size_t n, const char *format, va_list ap) {
+void safevoid_vsnprintf(char *s, size_t n, const char *format, va_list ap)
+{
 	int res;
 	if (!s || n <= 0)
 		return;
+
 	// If the format string is empty, nothing to do.
-	if (!format || !*format) {
-		s[0]=0;
+	if (!format || !*format)
+	{
+		s[0] = 0;
 		return;
 	}
+
 	res = Q_vsnprintf(s, n, format, ap);
 	// w32api returns -1 on too long write, glibc returns number of bytes it could have written if there were enough space
 	// w32api doesn't write null at all, some buggy glibc don't either
 	if (res < 0 || (size_t)res >= n)
-		s[n-1]=0;
+		s[n - 1] = 0;
 }
 
-void safevoid_snprintf(char* s, size_t n, const char* format, ...) {
+void safevoid_snprintf(char *s, size_t n, const char *format, ...)
+{
 	va_list ap;
 	va_start(ap, format);
 	safevoid_vsnprintf(s, n, format, ap);
@@ -176,23 +191,23 @@ void safevoid_snprintf(char* s, size_t n, const char* format, ...) {
 //    http://msdn.microsoft.com/library/en-us/debug/errors_0sdh.asp
 // except without FORMAT_MESSAGE_ALLOCATE_BUFFER, since we use a local
 // static buffer.
-char *str_GetLastError() {
+char *str_GetLastError()
+{
 	static char buf[MAX_STRBUF_LEN];
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL, GetLastError(),
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), //! Default language
-			(LPTSTR) &buf, MAX_STRBUF_LEN-1, NULL);
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &buf, MAX_STRBUF_LEN - 1, NULL);
 	return buf;
 }
-#endif /* _WIN32 */
+
+#endif // _WIN32
 
 
 // Find the filename of the DLL/shared-lib where the given memory location
 // exists.
-#ifdef linux
+#ifndef _WIN32
 // Errno values:
 //  - ME_NOTFOUND	couldn't find a sharedlib that contains memory location
-const char *DLFNAME(void *memptr) {
+const char *DLFNAME(void *memptr)
+{
 	Dl_info dli;
 	Q_memset(&dli, 0, sizeof(dli));
 	if (dladdr(memptr, &dli))
@@ -200,7 +215,8 @@ const char *DLFNAME(void *memptr) {
 	else
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
 }
-#elif defined(_WIN32)
+
+#else
 // Implementation for win32 provided by Jussi Kivilinna <kijuhe00@rhea.otol.fi>:
 //
 //    1. Get memory location info on memptr with VirtualQuery.
@@ -222,7 +238,8 @@ const char *DLFNAME(void *memptr) {
 //
 // Errno values:
 //  - ME_NOTFOUND	couldn't find a DLL that contains memory location
-const char *DLFNAME(void *memptr) {
+const char *DLFNAME(void *memptr)
+{
 	MEMORY_BASIC_INFORMATION MBI;
 	static char fname[PATH_MAX];
 
@@ -230,23 +247,25 @@ const char *DLFNAME(void *memptr) {
 
 	if (!VirtualQuery(memptr, &MBI, sizeof(MBI)))
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
+
 	if (MBI.State != MEM_COMMIT)
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
+
 	if (!MBI.AllocationBase)
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
 
 	// MSDN indicates that GetModuleFileName will leave string
 	// null-terminated, even if it's truncated because buffer is too small.
-	if (!GetModuleFileNameA((HMODULE)MBI.AllocationBase, fname, sizeof(fname)-1))
+	if (!GetModuleFileNameA((HMODULE)MBI.AllocationBase, fname, sizeof(fname) - 1))
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
+
 	if (!fname[0])
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
 
 	normalize_pathname(fname);
 	return fname;
 }
-#endif /* _WIN32 */
-
+#endif // _WIN32
 
 #ifdef _WIN32
 // Normalize/standardize a pathname.
@@ -257,37 +276,46 @@ const char *DLFNAME(void *memptr) {
 //      non-case-sensitive.
 //  - For linux, this requires no work, as paths uses slashes (/) natively,
 //    and pathnames are case-sensitive.
-void normalize_pathname(char *path) {
+void normalize_pathname(char *path)
+{
 	char *cp;
 
 	META_DEBUG(8, ("normalize: %s", path));
-	for (cp=path; *cp; cp++) {
+	for (cp = path; *cp; cp++)
+	{
 		/*if (isupper(*cp))*/
 			*cp=tolower(*cp);
 
-		if (*cp=='\\')
-			*cp='/';
+		if (*cp == '\\')
+			*cp = '/';
 	}
+
 	META_DEBUG(8, ("normalized: %s", path));
 }
 
 // Buffer pointed to by resolved_name is assumed to be able to store a
 // string of PATH_MAX length.
-char *realpath(const char *file_name, char *resolved_name) {
+char *realpath(const char *file_name, char *resolved_name)
+{
 	int ret;
-	ret=GetFullPathNameA(file_name, PATH_MAX, resolved_name, NULL);
-	if (ret > PATH_MAX) {
+	ret = GetFullPathNameA(file_name, PATH_MAX, resolved_name, NULL);
+
+	if (ret > PATH_MAX)
+	{
 		errno=ENAMETOOLONG;
 		return nullptr;
 	}
-	else if (ret > 0) {
+	else if (ret > 0)
+	{
 		HANDLE handle;
 		WIN32_FIND_DATAA find_data;
-		handle=FindFirstFileA(resolved_name, &find_data);
-		if (INVALID_HANDLE_VALUE == handle) {
-			errno=ENOENT;
+		handle = FindFirstFileA(resolved_name, &find_data);
+		if (INVALID_HANDLE_VALUE == handle)
+		{
+			errno = ENOENT;
 			return nullptr;
 		}
+
 		FindClose(handle);
 		normalize_pathname(resolved_name);
 		return resolved_name;
@@ -295,19 +323,19 @@ char *realpath(const char *file_name, char *resolved_name) {
 	else
 		return nullptr;
 }
-#endif /*_WIN32*/
-
+#endif // _WIN32
 
 // Determine whether the given memory location is valid (ie whether we
 // should expect to be able to reference strings or functions at this
 // location without segfaulting).
-#ifdef linux
+#ifndef _WIN32
 // Simulate this with dladdr.  I'm not convinced this will be as generally
 // applicable as the native windows routine below, but it should do what
 // we need it for in this particular situation.
 // meta_errno values:
 //  - ME_NOTFOUND	couldn't find a matching sharedlib for this ptr
-mBOOL IS_VALID_PTR(void *memptr) {
+mBOOL IS_VALID_PTR(void *memptr)
+{
 	Dl_info dli;
 	Q_memset(&dli, 0, sizeof(dli));
 	if (dladdr(memptr, &dli))
@@ -315,26 +343,28 @@ mBOOL IS_VALID_PTR(void *memptr) {
 	else
 		RETURN_ERRNO(mFALSE, ME_NOTFOUND);
 }
-#elif defined(_WIN32)
+#else
 // Use the native windows routine IsBadCodePtr.
 // meta_errno values:
 //  - ME_BADMEMPTR	not a valid memory pointer
-mBOOL IS_VALID_PTR(void *memptr) {
+mBOOL IS_VALID_PTR(void *memptr)
+{
 	if (IsBadCodePtr((FARPROC) memptr))
 		RETURN_ERRNO(mFALSE, ME_BADMEMPTR);
 	else
 		return mTRUE;
 }
-#endif /* _WIN32 */
+#endif // _WIN32
 
 // This used to be OS-dependent, as it used a SEGV signal handler under
 // linux, but that was removed because (a) it masked legitimate segfaults
 // in plugin commands and produced confusing output ("plugin has been
 // unloaded", when really it segfaultd), and (b) wasn't necessary since
 // IS_VALID_PTR() should cover the situation.
-mBOOL os_safe_call(REG_CMD_FN pfn) {
+mBOOL os_safe_call(REG_CMD_FN pfn)
+{
 	// try and see if this is a valid memory location
-	if (!IS_VALID_PTR((void *) pfn))
+	if (!IS_VALID_PTR((void *)pfn))
 		// meta_errno should be already set in is_valid_ptr()
 		return mFALSE;
 

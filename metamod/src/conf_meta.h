@@ -1,8 +1,7 @@
 #pragma once
 
-#include "types_meta.h"		// mBOOL
+#include "types_meta.h"
 #include "new_baseclass.h"
-#include "comp_dep.h"
 
 // Max length of line in config file.
 #define MAX_CONF_LEN	1024

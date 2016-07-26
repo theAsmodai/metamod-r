@@ -1,29 +1,24 @@
-#ifndef API_HOOK_H
-#define API_HOOK_H
+#pragma once
 
 #include "ret_type.h"
 #include "api_info.h"
-#include "meta_api.h"
-#include "osdep.h"		//OPEN_ARGS
 
 // Compine 4 parts for single name
 #define _COMBINE4(w,x,y,z) w##x##y##z
 #define _COMBINE2(x,y) x##y
 
 // simplified 'void' version of main hook function
-void main_hook_function_void(unsigned int api_info_offset, enum_api_t api, unsigned int func_offset, const void * packed_args);
+void main_hook_function_void(unsigned int api_info_offset, enum_api_t api, unsigned int func_offset, const void *packed_args);
 
 // full return typed version of main hook function
-void *main_hook_function(const class_ret_t ret_init, unsigned int api_info_offset, enum_api_t api, unsigned int func_offset, const void * packed_args);
+void *main_hook_function(const class_ret_t ret_init, unsigned int api_info_offset, enum_api_t api, unsigned int func_offset, const void *packed_args);
 
-//
 // API function args structures/classes
-//
-#define API_PACK_ARGS(type, args) \
+#define API_PACK_ARGS(type, args)\
 	_COMBINE2(pack_args_type_, type) packed_args args;
 
-#define PACK_ARGS_CLASS_HEADER(type, constructor_args) \
-	class _COMBINE2(pack_args_type_, type) : public class_metamod_new { \
+#define PACK_ARGS_CLASS_HEADER(type, constructor_args)\
+	class _COMBINE2(pack_args_type_, type): public class_metamod_new {\
 		public: inline _COMBINE2(pack_args_type_, type) constructor_args
 
 #define PACK_ARGS_END };
@@ -363,5 +358,3 @@ EXTERN_API_CALLER_FUNCTION(void, pip);
 EXTERN_API_CALLER_FUNCTION(ptr, pip);
 EXTERN_API_CALLER_FUNCTION(void, pip2f2i);
 EXTERN_API_CALLER_FUNCTION(void, pip2f4i2p);
-
-#endif /*API_HOOK_H*/

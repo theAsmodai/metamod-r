@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types_meta.h"		// mBOOL
-#include "comp_dep.h"		//
 #include "new_baseclass.h"
 
 // Number of entries to add to reglists when they need to grow. Typically
@@ -49,14 +48,14 @@ private:
 };
 
 // A list of registered commands.
-class MRegCmdList : public class_metamod_new {
+class MRegCmdList: public class_metamod_new {
 public:
 	MRegCmdList();
 
 	MRegCmd *find(const char *findname);	// find by MRegCmd->name
 	MRegCmd *add(const char *addname);
 	void disable(int plugin_id);		// change status to Invalid
-	void show();			// list all funcs to console
+	void show();				// list all funcs to console
 	void show(int plugin_id);		// list given plugin's funcs to console
 
 private:
@@ -71,7 +70,7 @@ private:
 };
 
 // An individual registered cvar.
-class MRegCvar : public class_metamod_new {
+class MRegCvar: public class_metamod_new {
 public:
 	friend class MRegCvarList;
 
@@ -128,7 +127,7 @@ public:
 	MRegMsg *add(const char *addname, int addmsgid, int addsize);
 	MRegMsg *find(const char *findname);
 	MRegMsg *find(int findmsgid);
-	void show();						// list all msgs to console
+	void show();					// list all msgs to console
 
 private:
 	MRegMsg mlist[MAX_REG_MSGS];			// array of registered msgs

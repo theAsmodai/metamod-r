@@ -1,7 +1,5 @@
 #pragma once
 
-#include "comp_dep.h"
-
 // Plugin's GetEngineFunctions, called by metamod.
 typedef int (*GET_ENGINE_FUNCTIONS_FN)(enginefuncs_t *pengfuncsFromEngine, int *interfaceVersion);
 

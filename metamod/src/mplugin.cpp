@@ -143,7 +143,8 @@ mBOOL MPlugin::cmd_parseline(const char *line)
 	// Grab description.
 	// Specify no delimiter chars, as we just want the rest of the line.
 	token=strtok_r(NULL, "", &ptr_token);
-	if (token) {
+	if (token)
+	{
 		token = token + strspn(token, " \t");			// skip whitespace
 
 		Q_strncpy(desc, token, sizeof(desc) - 1);
@@ -255,7 +256,8 @@ mBOOL MPlugin::resolve()
 	char *found;
 	char *cp;
 	int len;
-	if (!check_input()) {
+	if (!check_input())
+	{
 		// details logged, meta_errno set in check_input()
 		return mFALSE;
 	}
@@ -306,7 +308,8 @@ mBOOL MPlugin::resolve()
 //     GAMEDIR/dlls/filename
 // meta_errno values:
 //  - none
-char *MPlugin::resolve_dirs(const char *path) {
+char *MPlugin::resolve_dirs(const char *path)
+{
 	struct stat st;
 	static char buf[PATH_MAX];
 	char *found;
@@ -336,7 +339,8 @@ char *MPlugin::resolve_dirs(const char *path) {
 //     dir/file
 // meta_errno values:
 //  - none
-char *MPlugin::resolve_prefix(const char *path) {
+char *MPlugin::resolve_prefix(const char *path)
+{
 	struct stat st;
 	char *cp, *fname;
 	char dname[PATH_MAX];
@@ -383,36 +387,38 @@ char *MPlugin::resolve_prefix(const char *path) {
 //     path_i386.so, path_i486.so, etc (if linux)
 // meta_errno values:
 //  - none
-char *MPlugin::resolve_suffix(const char *path) {
+char *MPlugin::resolve_suffix(const char *path)
+{
 	struct stat st;
 	static char buf[PATH_MAX];
 	static char tmpbuf[PATH_MAX];
 	char *found;
 
 	// Hmm, recursion.
-	if (!Q_strstr(path, "_mm")) {
+	if (!Q_strstr(path, "_mm"))
+	{
 		safevoid_snprintf(buf, sizeof(buf), "%s_mm", path);
 		Q_memcpy(tmpbuf,buf,sizeof(tmpbuf));
-		found=resolve_suffix(tmpbuf);
+		found = resolve_suffix(tmpbuf);
 		if (found)
 			return found;
 	}
 
-	if (!Q_strstr(path, "_MM")) {
+	if (!Q_strstr(path, "_MM"))
+	{
 		safevoid_snprintf(buf, sizeof(buf), "%s_MM", path);
 		Q_memcpy(tmpbuf,buf,sizeof(tmpbuf));
-		found=resolve_suffix(tmpbuf);
+		found = resolve_suffix(tmpbuf);
 		if (found)
 			return found;
 	}
 
 #ifdef _WIN32
 	safevoid_snprintf(buf, sizeof(buf), "%s.dll", path);
-#elif defined(linux)
-	safevoid_snprintf(buf, sizeof(buf), "%s.so", path);
 #else
-#error "OS unrecognized"
-#endif /* _WIN32 */
+	safevoid_snprintf(buf, sizeof(buf), "%s.so", path);
+#endif
+
 	if (stat(buf, &st) == 0 && S_ISREG(st.st_mode))
 		return buf;
 
@@ -431,16 +437,18 @@ char *MPlugin::resolve_suffix(const char *path) {
 		return buf;
 #endif
 
-	return NULL;
+	return nullptr;
 }
 
 
 // Check if a passed string starts with a known platform postfix.
 // It does not check beyond the period in order to work for both
 // Linux and Win32.
-mBOOL MPlugin::is_platform_postfix(const char *pf) {
-	typedef struct { const char * postfix; size_t len; } postfix_t;
-	static const postfix_t postfixes[] = {
+mBOOL MPlugin::is_platform_postfix(const char *pf)
+{
+	typedef struct { const char *postfix; size_t len; } postfix_t;
+	static const postfix_t postfixes[] =
+	{
 		{"_i386.", 6},
 		{"_i686.", 6},
 		{"_amd64.", 7},
@@ -454,7 +462,8 @@ mBOOL MPlugin::is_platform_postfix(const char *pf) {
 	if (!pf)
 		return mFALSE;
 
-	for (const postfix_t * plist = postfixes; plist->postfix; plist++) {
+	for (const postfix_t *plist = postfixes; plist->postfix; plist++)
+	{
 		if (!Q_strncmp(pf, plist->postfix, plist->len))
 			return mTRUE;
 	}
@@ -475,7 +484,8 @@ mBOOL MPlugin::is_platform_postfix(const char *pf) {
 //  the part up to the last dot, if one exists.
 // meta_errno values:
 //  - none
-mBOOL MPlugin::platform_match(MPlugin* other) {
+mBOOL MPlugin::platform_match(MPlugin *other)
+{
 	char *end, *other_end;
 	int prefixlen;
 
@@ -522,89 +532,102 @@ mBOOL MPlugin::platform_match(MPlugin* other) {
 //  - errno's from query()
 //  - errno's from attach()
 //  - errno's from check_input()
-mBOOL MPlugin::load(PLUG_LOADTIME now) {
-	if (!check_input()) {
+mBOOL MPlugin::load(PLUG_LOADTIME now)
+{
+	if (!check_input())
+	{
 		// details logged, meta_errno set in check_input()
 		RETURN_ERRNO(mFALSE, ME_ARGUMENT);
 	}
-	if (status >= PL_RUNNING) {
+	if (status >= PL_RUNNING)
+	{
 		META_WARNING("dll: Not loading plugin '%s'; already loaded (status=%s)",
 				desc, str_status());
 		RETURN_ERRNO(mFALSE, ME_ALREADY);
 	}
-	if (action != PA_LOAD && action != PA_ATTACH && action != PA_RELOAD) {
+	if (action != PA_LOAD && action != PA_ATTACH && action != PA_RELOAD)
+	{
 		META_WARNING("dll: Not loading plugin '%s'; not marked for load (action=%s)", desc, str_action());
 		RETURN_ERRNO(mFALSE, ME_BADREQ);
 	}
 
-	if (status <= PL_OPENED) {
+	if (status <= PL_OPENED)
+	{
 		// query plugin; open file and get info about it
-		if (!query()) {
+		if (!query())
+		{
 			META_WARNING("dll: Skipping plugin '%s'; couldn't query", desc);
-			if (meta_errno != ME_DLOPEN) {
-				if (DLCLOSE(handle) != 0) {
-					META_WARNING("dll: Couldn't close plugin file '%s': %s",
-							file, DLERROR());
+			if (meta_errno != ME_DLOPEN)
+			{
+				if (DLCLOSE(handle) != 0)
+				{
+					META_WARNING("dll: Couldn't close plugin file '%s': %s", file, DLERROR());
 				}
 				else
-					handle=NULL;
+					handle = nullptr;
 			}
-			status=PL_BADFILE;
-			info=NULL; // prevent crash
+
+			status = PL_BADFILE;
+			info = nullptr; // prevent crash
+
 			// meta_errno should be already set in query()
 			return mFALSE;
 		}
-		status=PL_OPENED;
+		status = PL_OPENED;
 	}
 
 	// are we allowed to attach this plugin at this time?
-	if (info->loadable < now) {
-		if (info->loadable > PT_STARTUP) {
+	if (info->loadable < now)
+	{
+		if (info->loadable > PT_STARTUP)
+		{
 			// will try to attach again at next opportunity
-			META_DEBUG(2, ("dll: Delaying load plugin '%s'; can't attach now: allowed=%s; now=%s",
-						desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
+			META_DEBUG(2, ("dll: Delaying load plugin '%s'; can't attach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
 			RETURN_ERRNO(mFALSE, ME_DELAYED);
 		}
-		else {
-			META_DEBUG(2, ("dll: Failed load plugin '%s'; can't attach now: allowed=%s; now=%s",
-						desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
+		else
+		{
+			META_DEBUG(2, ("dll: Failed load plugin '%s'; can't attach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
+
 			// don't try to attach again later
-			action=PA_NONE;
+			action = PA_NONE;
 			RETURN_ERRNO(mFALSE, ME_NOTALLOWED);
 		}
 	}
 
 	// attach plugin; get function tables
-	if (attach(now) != mTRUE) {
+	if (attach(now) != mTRUE)
+	{
 		META_WARNING("dll: Failed to attach plugin '%s'", desc);
 		// Note we don't dlclose() here, since we're returning PL_FAILED,
 		// which implies that it's been dlopened and queried successfully.
 		// Doing so causes crashes, because things like "meta list" try to
 		// look at *info, which is in the DLL memory space and unaccessible
 		// (segfault) after dlclosed.
-		status=PL_FAILED;
+
+		status = PL_FAILED;
 		// meta_errno should be already set in attach()
 		return mFALSE;
 	}
 
-	status=PL_RUNNING;
-	action=PA_NONE;
+	status = PL_RUNNING;
+	action = PA_NONE;
 
 	// If not loading at server startup, then need to call plugin's
 	// GameInit, since we've passed that.
-	if (now != PT_STARTUP) {
-		FN_GAMEINIT pfn_gameinit=NULL;
+	if (now != PT_STARTUP)
+	{
+		FN_GAMEINIT pfn_gameinit = nullptr;
 		if (tables.dllapi && (pfn_gameinit=tables.dllapi->pfnGameInit))
 			pfn_gameinit();
 	}
+
 	// If loading during map, then I'd like to call plugin's
 	// ServerActivate, since we've passed that.  However, I'm not sure what
 	// arguments to give it...  So, we'll just have to say for the
 	// moment that plugins that are loadable during a map can't need to
 	// hook ServerActivate.
-
-	META_LOG("dll: Loaded plugin '%s': %s v%s %s, %s", desc, info->name,
-			info->version, info->date, info->author);
+	META_LOG("dll: Loaded plugin '%s': %s v%s %s, %s", desc, info->name, info->version, info->date, info->author);
 	return mTRUE;
 }
 
@@ -628,9 +651,9 @@ mBOOL MPlugin::query()
 	META_QUERY_FN pfn_query;
 
 	// open the plugin DLL
-	if (!(handle=DLOPEN(pathname))) {
-		META_WARNING("dll: Failed query plugin '%s'; Couldn't open file '%s': %s",
-				desc, pathname, DLERROR());
+	if (!(handle = DLOPEN(pathname)))
+	{
+		META_WARNING("dll: Failed query plugin '%s'; Couldn't open file '%s': %s", desc, pathname, DLERROR());
 		RETURN_ERRNO(mFALSE, ME_DLOPEN);
 	}
 
@@ -645,7 +668,8 @@ mBOOL MPlugin::query()
 	// engine functions like AlertMessage, which have to be passed along via
 	// GiveFnptrsToDll.
 	pfn_query = (META_QUERY_FN) DLSYM(handle, "Meta_Query");
-	if (!pfn_query) {
+	if (!pfn_query)
+	{
 		META_WARNING("dll: Failed query plugin '%s'; Couldn't find Meta_Query(): %s", desc, DLERROR());
 		// caller will dlclose()
 		RETURN_ERRNO(mFALSE, ME_DLMISSING);
@@ -666,41 +690,47 @@ mBOOL MPlugin::query()
 	// plugin can NOT use any Engine functions, as they haven't been
 	// provided yet (done next, in GiveFnptrsToDll).
 	pfn_init = (META_INIT_FN) DLSYM(handle, "Meta_Init");
-	if (pfn_init) {
+	if (pfn_init)
+	{
 		pfn_init();
 		META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Init()", desc));
 	}
-	else {
+	else
+	{
 		META_DEBUG(5, ("dll: no Meta_Init present in plugin '%s'", desc));
 		// don't return; not an error
 	}
 
 	// pass on engine function table and globals to plugin
-	if (!(pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN) DLSYM(handle, "GiveFnptrsToDll"))) {
+	if (!(pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN) DLSYM(handle, "GiveFnptrsToDll")))
+	{
 		// META_WARNING("dll: Couldn't find GiveFnptrsToDll() in plugin '%s': %s", desc, DLERROR());
 		META_WARNING("dll: Failed query plugin '%s'; Couldn't find GiveFnptrsToDll(): %s", desc, DLERROR());
+
 		// caller will dlclose()
 		RETURN_ERRNO(mFALSE, ME_DLMISSING);
 	}
+
 	pfn_give_engfuncs(Engine.pl_funcs, Engine.globals);
 	META_DEBUG(6, ("dll: Plugin '%s': Called GiveFnptrsToDll()", desc));
 
 	// Call plugin's Meta_Query(), to pass our meta interface version, and get
 	// plugin's info structure.
-	meta_errno=ME_NOERROR;
-	info=NULL;
+	meta_errno = ME_NOERROR;
+	info = nullptr;
+
 	// Make a copy of the meta_util function table for each plugin, for the
 	// same reason.
 	Q_memcpy(&mutil_funcs, &MetaUtilFunctions, sizeof(mutil_funcs));
 
-	if (pfn_query(META_INTERFACE_VERSION, &info, &mutil_funcs) != TRUE) {
-		META_WARNING("dll: Failed query plugin '%s'; Meta_Query returned error",
-				desc);
-		meta_errno=ME_DLERROR;
+	if (pfn_query(META_INTERFACE_VERSION, &info, &mutil_funcs))
+	{
+		META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Query() successfully", desc));
 	}
-	else {
-		META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Query() successfully",
-					desc));
+	else
+	{
+		META_WARNING("dll: Failed query plugin '%s'; Meta_Query returned error", desc);
+		meta_errno = ME_DLERROR;
 	}
 
 	// Check for interface differences...  Generally, a difference in major
@@ -712,45 +742,53 @@ mBOOL MPlugin::query()
 	//
 	// Note, this check is done regardless of whether meta_query returns an
 	// error.
-	if (info && !FStrEq(info->ifvers, META_INTERFACE_VERSION)) {
-		int mmajor=0, mminor=0, pmajor=0, pminor=0;
+	if (info && !FStrEq(info->ifvers, META_INTERFACE_VERSION))
+	{
+		int mmajor = 0, mminor = 0, pmajor = 0, pminor = 0;
 		META_DEBUG(3, ("dll: Note: Plugin '%s' interface version didn't match; expected %s, found %s", desc, META_INTERFACE_VERSION, info->ifvers));
 		sscanf(META_INTERFACE_VERSION, "%d:%d", &mmajor, &mminor);
 		sscanf(info->ifvers, "%d:%d", &pmajor, &pminor);
+
 		// If plugin has later interface version, it's incompatible
 		// (update metamod).
-		if (pmajor > mmajor || (pmajor==mmajor && pminor > mminor)) {
+		if (pmajor > mmajor || (pmajor == mmajor && pminor > mminor))
+		{
 			META_WARNING("dll: Plugin '%s' requires a newer version of Metamod (Metamod needs at least interface %s not the current %s)", desc, info->ifvers, META_INTERFACE_VERSION);
-			meta_errno=ME_IFVERSION;
+			meta_errno = ME_IFVERSION;
 		}
 		// If plugin has older major interface version, it's incompatible
 		// (update plugin).
-		else if (pmajor < mmajor) {
+		else if (pmajor < mmajor)
+		{
 			META_WARNING("dll: Plugin '%s' is out of date and incompatible with this version of Metamod; please find a newer version of the plugin (plugin needs at least interface %s not the current %s)", desc, META_INTERFACE_VERSION, info->ifvers);
-			meta_errno=ME_IFVERSION;
+			meta_errno = ME_IFVERSION;
 		}
 		// Plugin has identical major, with older minor.  This is supposed to be
 		// backwards compatible, so we warn, but we still accept it.
-		else if (pmajor==mmajor && pminor < mminor)
+		else if (pmajor == mmajor && pminor < mminor)
 			META_LOG("dll: Note: plugin '%s' is using an older interface version (%s), not the latest interface version (%s); there might be an updated version of the plugin", desc, info->ifvers, META_INTERFACE_VERSION);
 		else
-			META_LOG("dll: Plugin '%s': unexpected version comparision; metavers=%s, mmajor=%d, mminor=%d; plugvers=%s, pmajor=%d, pminor=%d",
-					desc, META_INTERFACE_VERSION, mmajor, mminor, info->ifvers, pmajor, pminor);
+			META_LOG("dll: Plugin '%s': unexpected version comparision; metavers=%s, mmajor=%d, mminor=%d; plugvers=%s, pmajor=%d, pminor=%d", desc, META_INTERFACE_VERSION, mmajor, mminor, info->ifvers, pmajor, pminor);
 	}
 
-	if (meta_errno == ME_IFVERSION) {
+	if (meta_errno == ME_IFVERSION)
+	{
 		META_WARNING("dll: Rejected plugin '%s' due to interface version incompatibility (mm=%s, pl=%s)", desc, META_INTERFACE_VERSION, info->ifvers);
+
 		// meta_errno is set already above
 		// caller will dlclose()
 		return mFALSE;
 	}
-	else if (meta_errno != ME_NOERROR) {
+	else if (meta_errno != ME_NOERROR)
+	{
 		// some other error, already logged
 		return mFALSE;
 	}
 
-	if (!info) {
+	if (!info)
+	{
 		META_WARNING("dll: Failed query plugin '%s'; Empty info structure", desc);
+
 		// caller will dlclose()
 		RETURN_ERRNO(mFALSE, ME_NULLRESULT);
 	}
@@ -761,24 +799,20 @@ mBOOL MPlugin::query()
 		desc[sizeof(desc) - 1] = '\0';
 	}
 
-	//
 	// Give plugin the p-series extension function table.
 	// Check for version differences!
-	//
-	if (NULL!=(pfn_give_pext_funcs=(META_GIVE_PEXT_FUNCTIONS_FN) DLSYM(handle, "Meta_PExtGiveFnptrs"))) {
+	if ((pfn_give_pext_funcs = (META_GIVE_PEXT_FUNCTIONS_FN)DLSYM(handle, "Meta_PExtGiveFnptrs")))
+	{
 		plugin_pext_version = (*pfn_give_pext_funcs)(META_PEXT_VERSION, (pextension_funcs_t*)(&(mutil_funcs.pfnLoadPlugin)));
 
-		//if plugin is newer, we got incompatibility problem!
-		if (plugin_pext_version > META_PEXT_VERSION) {
-			META_WARNING("dll: Plugin '%s' requires a newer version of Metamod-P (extension interface needs to be at least %d not the current %d)",
-			desc,
-			plugin_pext_version,
-			META_PEXT_VERSION);
+		// if plugin is newer, we got incompatibility problem!
+		if (plugin_pext_version > META_PEXT_VERSION)
+		{
+			META_WARNING("dll: Plugin '%s' requires a newer version of Metamod-P (extension interface needs to be at least %d not the current %d)", desc, plugin_pext_version, META_PEXT_VERSION);
 		}
 	}
 
 	META_DEBUG(6, ("dll: Plugin '%s': Query successful", desc));
-
 	return mTRUE;
 }
 
@@ -801,7 +835,8 @@ mBOOL MPlugin::query()
 //  - ME_DLMISSING	couldn't find meta_attach() in plugin
 //  - ME_DLERROR	plugin attach() returned error
 //  - ME_NOMEM		failed malloc
-mBOOL MPlugin::attach(PLUG_LOADTIME now) {
+mBOOL MPlugin::attach(PLUG_LOADTIME now)
+{
 	int ret;
 	int iface_vers;
 
@@ -810,9 +845,11 @@ mBOOL MPlugin::attach(PLUG_LOADTIME now) {
 
 	// Make copy of gameDLL's function tables for each plugin, so we don't
 	// risk the plugins screwing with the tables everyone uses.
-	if (!gamedll_funcs.dllapi_table) {
+	if (!gamedll_funcs.dllapi_table)
+	{
 		gamedll_funcs.dllapi_table = (DLL_FUNCTIONS *) calloc(1, sizeof(DLL_FUNCTIONS));
-		if (!gamedll_funcs.dllapi_table) {
+		if (!gamedll_funcs.dllapi_table)
+		{
 			META_WARNING("dll: Failed attach plugin '%s': Failed malloc() for dllapi_table");
 			RETURN_ERRNO(mFALSE, ME_NOMEM);
 		}
@@ -821,9 +858,12 @@ mBOOL MPlugin::attach(PLUG_LOADTIME now) {
 		else
 			Q_memset(gamedll_funcs.dllapi_table, 0, sizeof(DLL_FUNCTIONS));
 	}
-	if (!gamedll_funcs.newapi_table) {
+
+	if (!gamedll_funcs.newapi_table)
+	{
 		gamedll_funcs.newapi_table = (NEW_DLL_FUNCTIONS *) calloc(1, sizeof(NEW_DLL_FUNCTIONS));
-		if (!gamedll_funcs.newapi_table) {
+		if (!gamedll_funcs.newapi_table)
+		{
 			META_WARNING("dll: Failed attach plugin '%s': Failed malloc() for newapi_table");
 			RETURN_ERRNO(mFALSE, ME_NOMEM);
 		}
@@ -832,7 +872,9 @@ mBOOL MPlugin::attach(PLUG_LOADTIME now) {
 		else
 			Q_memset(gamedll_funcs.newapi_table, 0, sizeof(NEW_DLL_FUNCTIONS));
 	}
-	if (!(pfn_attach = (META_ATTACH_FN) DLSYM(handle, "Meta_Attach"))) {
+
+	if (!(pfn_attach = (META_ATTACH_FN) DLSYM(handle, "Meta_Attach")))
+	{
 		META_WARNING("dll: Failed attach plugin '%s': Couldn't find Meta_Attach(): %s", desc, DLERROR());
 		// caller will dlclose()
 		RETURN_ERRNO(mFALSE, ME_DLMISSING);
@@ -841,8 +883,9 @@ mBOOL MPlugin::attach(PLUG_LOADTIME now) {
 	Q_memset(&meta_table, 0, sizeof(meta_table));
 	// get table of function tables,
 	// give public meta globals
-	ret=pfn_attach(now, &meta_table, &PublicMetaGlobals, &gamedll_funcs);
-	if (ret != TRUE) {
+	ret = pfn_attach(now, &meta_table, &PublicMetaGlobals, &gamedll_funcs);
+	if (ret != TRUE)
+	{
 		META_WARNING("dll: Failed attach plugin '%s': Error from Meta_Attach(): %d", desc, ret);
 		// caller will dlclose()
 		RETURN_ERRNO(mFALSE, ME_DLERROR);
@@ -851,77 +894,57 @@ mBOOL MPlugin::attach(PLUG_LOADTIME now) {
 
 	// Rather than duplicate code, we use another ugly macro.  Again,
 	// a function isn't an option since we have varying types.
-#define GET_FUNC_TABLE_FROM_PLUGIN(pfnGetFuncs, STR_GetFuncs, struct_field, API_TYPE, TABLE_TYPE, TABLE_SIZE, vers_pass, vers_int, vers_want) \
-	if (meta_table.pfnGetFuncs) { \
-		if (!struct_field) { \
-			struct_field = (TABLE_TYPE*)calloc(1, TABLE_SIZE); \
-		} else { \
-			Q_memset(struct_field, 0, TABLE_SIZE); \
-		} \
-		if (meta_table.pfnGetFuncs(struct_field, vers_pass)) { \
-			META_DEBUG(3, ("dll: Plugin '%s': Found %s", desc, STR_GetFuncs)); \
-		} \
-		else { \
-			META_WARNING("dll: Failure calling %s in plugin '%s'", STR_GetFuncs, desc); \
-			if (vers_int != vers_want) \
-				META_WARNING("dll: Interface version didn't match; expected %d, found %d", vers_want, vers_int); \
-		} \
-	} \
-	else { \
-		META_DEBUG(5, ("dll: Plugin '%s': No %s", desc, STR_GetFuncs)); \
-		if (struct_field) \
-			free(struct_field); \
-		struct_field=NULL; \
+#define GET_FUNC_TABLE_FROM_PLUGIN(pfnGetFuncs, STR_GetFuncs, struct_field, API_TYPE, TABLE_TYPE, TABLE_SIZE, vers_pass, vers_int, vers_want)\
+	if (meta_table.pfnGetFuncs) {\
+		if (!struct_field) {\
+			struct_field = (TABLE_TYPE*)calloc(1, TABLE_SIZE);\
+		} else {\
+			Q_memset(struct_field, 0, TABLE_SIZE);\
+		}\
+		if (meta_table.pfnGetFuncs(struct_field, vers_pass)) {\
+			META_DEBUG(3, ("dll: Plugin '%s': Found %s", desc, STR_GetFuncs));\
+		}\
+		else {\
+			META_WARNING("dll: Failure calling %s in plugin '%s'", STR_GetFuncs, desc);\
+			if (vers_int != vers_want)\
+				META_WARNING("dll: Interface version didn't match; expected %d, found %d", vers_want, vers_int);\
+		}\
+	}\
+	else {\
+		META_DEBUG(5, ("dll: Plugin '%s': No %s", desc, STR_GetFuncs));\
+		if (struct_field)\
+			free(struct_field);\
+		struct_field = nullptr;\
 	}
 
 	// Look for API-NEW interface in plugin.  We do this before API2/API, because
 	// that's what the engine appears to do..
-	iface_vers=NEW_DLL_FUNCTIONS_VERSION;
-	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetNewDLLFunctions,
-			"GetNewDLLFunctions", tables.newapi,
-			NEW_DLL_FUNCTIONS_FN, NEW_DLL_FUNCTIONS, sizeof(NEW_DLL_FUNCTIONS),
-			&iface_vers, iface_vers, NEW_DLL_FUNCTIONS_VERSION);
-	iface_vers=NEW_DLL_FUNCTIONS_VERSION;
-	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetNewDLLFunctions_Post,
-			"GetNewDLLFunctions_Post", post_tables.newapi,
-			NEW_DLL_FUNCTIONS_FN, NEW_DLL_FUNCTIONS, sizeof(NEW_DLL_FUNCTIONS),
-			&iface_vers, iface_vers, NEW_DLL_FUNCTIONS_VERSION);
+	iface_vers = NEW_DLL_FUNCTIONS_VERSION;
+	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetNewDLLFunctions, "GetNewDLLFunctions", tables.newapi, NEW_DLL_FUNCTIONS_FN, NEW_DLL_FUNCTIONS, sizeof(NEW_DLL_FUNCTIONS), &iface_vers, iface_vers, NEW_DLL_FUNCTIONS_VERSION);
+
+	iface_vers = NEW_DLL_FUNCTIONS_VERSION;
+	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetNewDLLFunctions_Post, "GetNewDLLFunctions_Post", post_tables.newapi, NEW_DLL_FUNCTIONS_FN, NEW_DLL_FUNCTIONS, sizeof(NEW_DLL_FUNCTIONS), &iface_vers, iface_vers, NEW_DLL_FUNCTIONS_VERSION);
 
 	// Look for API2 interface in plugin; preferred over API-1.
-	iface_vers=INTERFACE_VERSION;
-	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI2,
-			"GetEntityAPI2", tables.dllapi,
-			APIFUNCTION2, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS),
-			&iface_vers, iface_vers, INTERFACE_VERSION);
-	iface_vers=INTERFACE_VERSION;
-	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI2_Post,
-			"GetEntityAPI2_Post", post_tables.dllapi,
-			APIFUNCTION2, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS),
-			&iface_vers, iface_vers, INTERFACE_VERSION);
+	iface_vers = INTERFACE_VERSION;
+	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI2, "GetEntityAPI2", tables.dllapi, APIFUNCTION2, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS), &iface_vers, iface_vers, INTERFACE_VERSION);
+
+	iface_vers = INTERFACE_VERSION;
+	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI2_Post, "GetEntityAPI2_Post", post_tables.dllapi, APIFUNCTION2, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS), &iface_vers, iface_vers, INTERFACE_VERSION);
 
 	// Look for old-style API in plugin, if API2 interface wasn't found.
-	if (!tables.dllapi && !post_tables.dllapi) {
-		GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI,
-				"GetEntityAPI", tables.dllapi,
-				APIFUNCTION, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS),
-				INTERFACE_VERSION, INTERFACE_VERSION, INTERFACE_VERSION);
-		GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI_Post,
-				"GetEntityAPI_Post", post_tables.dllapi,
-				APIFUNCTION, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS),
-				INTERFACE_VERSION, INTERFACE_VERSION, INTERFACE_VERSION);
+	if (!tables.dllapi && !post_tables.dllapi)
+	{
+		GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI, "GetEntityAPI", tables.dllapi, APIFUNCTION, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS), INTERFACE_VERSION, INTERFACE_VERSION, INTERFACE_VERSION);
+		GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEntityAPI_Post, "GetEntityAPI_Post", post_tables.dllapi, APIFUNCTION, DLL_FUNCTIONS, sizeof(DLL_FUNCTIONS), INTERFACE_VERSION, INTERFACE_VERSION, INTERFACE_VERSION);
 	}
 
 	// Look for Engine interface.
-	iface_vers=ENGINE_INTERFACE_VERSION;
-	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEngineFunctions,
-			"GetEngineFunctions", tables.engine,
-			GET_ENGINE_FUNCTIONS_FN, enginefuncs_t, sizeof(enginefuncs_t),
-			&iface_vers, iface_vers, ENGINE_INTERFACE_VERSION);
-	iface_vers=ENGINE_INTERFACE_VERSION;
-	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEngineFunctions_Post,
-			"GetEngineFunctions_Post", post_tables.engine,
-			GET_ENGINE_FUNCTIONS_FN, enginefuncs_t, sizeof(enginefuncs_t),
-			&iface_vers, iface_vers, ENGINE_INTERFACE_VERSION);
+	iface_vers = ENGINE_INTERFACE_VERSION;
+	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEngineFunctions, "GetEngineFunctions", tables.engine, GET_ENGINE_FUNCTIONS_FN, enginefuncs_t, sizeof(enginefuncs_t), &iface_vers, iface_vers, ENGINE_INTERFACE_VERSION);
+
+	iface_vers = ENGINE_INTERFACE_VERSION;
+	GET_FUNC_TABLE_FROM_PLUGIN(pfnGetEngineFunctions_Post, "GetEngineFunctions_Post", post_tables.engine, GET_ENGINE_FUNCTIONS_FN, enginefuncs_t, sizeof(enginefuncs_t), &iface_vers, iface_vers, ENGINE_INTERFACE_VERSION);
 
 	if (!tables.dllapi && !post_tables.dllapi
 		&& !tables.newapi && !post_tables.newapi
@@ -930,43 +953,49 @@ mBOOL MPlugin::attach(PLUG_LOADTIME now) {
 		META_LOG("dll: Plugin '%s' isn't catching _any_ functions ??", desc);
 	}
 
-	time_loaded=time(NULL);
+	time_loaded = time(NULL);
 	return mTRUE;
 }
 
 // Unload a plugin from plugin request
 // meta_errno values:
 //  - errno's from unload()
-mBOOL MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON reason) {
+mBOOL MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+{
 	PLUG_ACTION old_action;
-	MPlugin * pl_unloader;
+	MPlugin *pl_unloader;
 
 	// try find unloader
-	if (!(pl_unloader=Plugins->find(plid))) {
+	if (!(pl_unloader = Plugins->find(plid)))
+	{
 		META_WARNING("dll: Not unloading plugin '%s'; plugin that requested unload is not found.", desc);
 		RETURN_ERRNO(mFALSE, ME_BADREQ);
 	}
 	// self check. Do not allow plugin to unload itself!
-	else if (pl_unloader->index == index) {
+	else if (pl_unloader->index == index)
+	{
 		META_WARNING("dll: Not unloading plugin '%s'; Plugin tried to unload itself.", desc);
 		RETURN_ERRNO(mFALSE, ME_UNLOAD_SELF);
 	}
 	// safe check. Do not allow active unloader to be unloaded!
-	else if (is_unloader) {
+	else if (is_unloader)
+	{
 		META_WARNING("dll: Not unloading plugin '%s'; Plugin is unloading plugin that tried to unload it.", desc);
 		RETURN_ERRNO(mFALSE, ME_UNLOAD_UNLOADER);
 	}
-	else {
-		unloader_index=pl_unloader->index;
+	else
+	{
+		unloader_index = pl_unloader->index;
 	}
 
 	// block unloader from being unloaded by other plugin
 	pl_unloader->is_unloader = mTRUE;
 
 	// try unload
-	old_action=action;
-	action=PA_UNLOAD;
-	if (unload(now, reason, (reason==PNL_CMD_FORCED) ? PNL_PLG_FORCED : PNL_PLUGIN)) {
+	old_action = action;
+	action = PA_UNLOAD;
+	if (unload(now, reason, (reason == PNL_CMD_FORCED) ? PNL_PLG_FORCED : PNL_PLUGIN))
+	{
 		META_DEBUG(1,("Unloaded plugin '%s'", desc));
 		pl_unloader->is_unloader = mFALSE;
 		return mTRUE;
@@ -975,8 +1004,9 @@ mBOOL MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON re
 	pl_unloader->is_unloader = mFALSE;
 
 	// Cannot unload plugin now. Don't set delayed mode.
-	if (meta_errno==ME_DELAYED) {
-		action=old_action;
+	if (meta_errno == ME_DELAYED)
+	{
+		action = old_action;
 		meta_errno = ME_NOTALLOWED;
 		META_DEBUG(2, ("dll: Failed unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(PT_ANYTIME, SL_SIMPLE)));
 	}
@@ -992,39 +1022,51 @@ mBOOL MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON re
 //  - ME_DELAYED	unload request is delayed (till changelevel?)
 //  - ME_NOTALLOWED	plugin not unloadable after startup
 //  - errno's from check_input()
-mBOOL MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASON real_reason) {
-	if (!check_input()) {
+mBOOL MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASON real_reason)
+{
+	if (!check_input())
+	{
 		// details logged, meta_errno set in check_input()
 		RETURN_ERRNO(mFALSE, ME_ARGUMENT);
 	}
-	if (status < PL_RUNNING) {
-		if (reason != PNL_CMD_FORCED && reason != PNL_RELOAD) {
+	if (status < PL_RUNNING)
+	{
+		if (reason != PNL_CMD_FORCED && reason != PNL_RELOAD)
+		{
 			META_WARNING("dll: Not unloading plugin '%s'; already unloaded (status=%s)", desc, str_status());
 			RETURN_ERRNO(mFALSE, ME_ALREADY);
 		}
 	}
-	if (action != PA_UNLOAD && action != PA_RELOAD) {
+
+	if (action != PA_UNLOAD && action != PA_RELOAD)
+	{
 		META_WARNING("dll: Not unloading plugin '%s'; not marked for unload (action=%s)", desc, str_action());
 		RETURN_ERRNO(mFALSE, ME_BADREQ);
 	}
 
 	// Are we allowed to detach this plugin at this time?
 	// If forcing unload, we disregard when plugin wants to be unloaded.
-	if (info && info->unloadable < now) {
-		if (reason == PNL_CMD_FORCED) {
+	if (info && info->unloadable < now)
+	{
+		if (reason == PNL_CMD_FORCED)
+		{
 			META_DEBUG(2, ("dll: Forced unload plugin '%s' overriding allowed times: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE)));
 		}
-		else {
-			if (info->unloadable > PT_STARTUP) {
+		else
+		{
+			if (info->unloadable > PT_STARTUP)
+			{
 				META_DEBUG(2, ("dll: Delaying unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE)));
+
 				// caller should give message to user
 				// try to unload again at next opportunity
 				RETURN_ERRNO(mFALSE, ME_DELAYED);
 			}
-			else {
+			else
+			{
 				META_DEBUG(2, ("dll: Failed unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE)));
 				// don't try to unload again later
-				action=PA_NONE;
+				action = PA_NONE;
 				RETURN_ERRNO(mFALSE, ME_NOTALLOWED);
 			}
 		}
@@ -1036,14 +1078,18 @@ mBOOL MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REAS
 	// indicates these two routines should match call for call.
 
 	// detach plugin
-	if (!detach(now, reason)) {
-		if (reason == PNL_RELOAD) {
+	if (!detach(now, reason))
+	{
+		if (reason == PNL_RELOAD)
+		{
 			META_DEBUG(2, ("dll: Reload plugin '%s' overriding failed detach", desc));
 		}
-		else if (reason == PNL_CMD_FORCED) {
+		else if (reason == PNL_CMD_FORCED)
+		{
 			META_DEBUG(2, ("dll: Forced unload plugin '%s' overriding failed detach", desc));
 		}
-		else {
+		else
+		{
 			META_WARNING("dll: Failed to detach plugin '%s'; ", desc);
 			// meta_errno should be already set in detach()
 			return mFALSE;
@@ -1057,27 +1103,33 @@ mBOOL MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REAS
 
 	// Unmark registered commands for this plugin (by index number).
 	RegCmds->disable(index);
+
 	// Unmark registered cvars for this plugin (by index number).
 	RegCvars->disable(index);
 
 	// Close the file.  Note: after this, attempts to reference any memory
 	// locations in the file will produce a segfault.
-	if (DLCLOSE(handle) != 0) {
+	if (DLCLOSE(handle) != 0)
+	{
 		// If DLL cannot be closed, OS is badly broken or we are giving invalid handle.
 		// So we don't return here but instead remove plugin from our listings.
 		META_WARNING("dll: Couldn't dlclose plugin file '%s': %s", file, DLERROR());
 	}
-	handle=NULL;
 
-	if (action==PA_UNLOAD) {
-		status=PL_EMPTY;
+	handle = nullptr;
+
+	if (action == PA_UNLOAD)
+	{
+		status = PL_EMPTY;
 		clear();
 	}
-	else if (action==PA_RELOAD) {
-		status=PL_VALID;
-		action=PA_LOAD;
+	else if (action == PA_RELOAD)
+	{
+		status = PL_VALID;
+		action = PA_LOAD;
 		clear();
 	}
+
 	META_LOG("dll: Unloaded plugin '%s' for reason '%s'", desc, str_reason(reason, real_reason));
 	return mTRUE;
 }
@@ -1087,7 +1139,8 @@ mBOOL MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REAS
 //  -
 //  - ME_DLMISSING	couldn't find meta_detach() in plugin
 //  - ME_DLERROR	plugin detach() returned error
-mBOOL MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason) {
+mBOOL MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+{
 	int ret;
 	META_DETACH_FN pfn_detach;
 
@@ -1097,17 +1150,20 @@ mBOOL MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason) {
 	if (!handle)
 		return mTRUE;
 
-	if (!(pfn_detach = (META_DETACH_FN) DLSYM(handle, "Meta_Detach"))) {
+	if (!(pfn_detach = (META_DETACH_FN) DLSYM(handle, "Meta_Detach")))
+	{
 		META_WARNING("dll: Error detach plugin '%s': Couldn't find Meta_Detach(): %s", desc, DLERROR());
 		// caller will dlclose()
 		RETURN_ERRNO(mFALSE, ME_DLMISSING);
 	}
 
-	ret=pfn_detach(now, reason);
-	if (ret != TRUE) {
+	ret = pfn_detach(now, reason);
+	if (ret != TRUE)
+	{
 		META_WARNING("dll: Failed detach plugin '%s': Error from Meta_Detach(): %d", desc, ret);
 		RETURN_ERRNO(mFALSE, ME_DLERROR);
 	}
+
 	META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Detach() successfully", desc));
 	return mTRUE;
 }
@@ -1118,44 +1174,55 @@ mBOOL MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason) {
 //  - errno's from check_input()
 //  - errno's from unload()
 //  - errno's from load()
-mBOOL MPlugin::reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason) {
-	if (!check_input()) {
+mBOOL MPlugin::reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+{
+	if (!check_input())
+	{
 		// details logged, meta_errno set in check_input()
 		RETURN_ERRNO(mFALSE, ME_ARGUMENT);
 	}
 
 	// Are we allowed to load this plugin at this time?
 	// If we cannot load the plugin after unloading it, we keep it.
-	if (info && info->loadable < now) {
-		if (info->loadable > PT_STARTUP) {
+	if (info && info->loadable < now)
+	{
+		if (info->loadable > PT_STARTUP)
+		{
 			META_DEBUG(2, ("dll: Delaying reload plugin '%s'; would not be able to reattach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
 			// caller should give message to user
 			// try to reload again at next opportunity
 			RETURN_ERRNO(mFALSE, ME_DELAYED);
 		}
-		else {
+		else
+		{
 			META_DEBUG(2, ("dll: Failed reload plugin '%s'; would not be able to reattach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
 			// don't try to reload again later
-			action=PA_NONE;
+			action = PA_NONE;
 			RETURN_ERRNO(mFALSE, ME_NOTALLOWED);
 		}
 	}
 
-	//this is to fix unloading
-	if (status < PL_RUNNING) {
+	// this is to fix unloading
+	if (status < PL_RUNNING)
+	{
 		META_WARNING("dll: Plugin '%s' isn't running; Forcing unload plugin for reloading", desc);
 		reason = PNL_RELOAD;
 	}
-	if (!unload(now, reason, reason)) {
+
+	if (!unload(now, reason, reason))
+	{
 		META_WARNING("dll: Failed to unload plugin '%s' for reloading", desc);
 		// meta_errno should be set already in unload()
 		return mFALSE;
 	}
-	if (!load(now)) {
+
+	if (!load(now))
+	{
 		META_WARNING("dll: Failed to reload plugin '%s' after unloading", desc);
 		// meta_errno should be set already in load()
 		return mFALSE;
 	}
+
 	return mTRUE;
 }
 
@@ -1166,23 +1233,27 @@ mBOOL MPlugin::reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason) {
 //  - ME_NOTALLOWED	plugin doesn't want to be paused
 mBOOL MPlugin::pause()
 {
-	if (status == PL_PAUSED) {
+	if (status == PL_PAUSED)
+	{
 		META_WARNING("Not pausing plugin '%s'; already paused", desc);
 		RETURN_ERRNO(mFALSE, ME_ALREADY);
 	}
-	if (status != PL_RUNNING) {
+
+	if (status != PL_RUNNING)
+	{
 		META_WARNING("Cannot pause plugin '%s'; not currently running (status=%s)", desc, str_status());
 		RETURN_ERRNO(mFALSE, ME_BADREQ);
 	}
 
 	// are we allowed to pause this plugin?
-	if (info->unloadable < PT_ANYPAUSE) {
+	if (info->unloadable < PT_ANYPAUSE)
+	{
 		META_WARNING("Cannot pause plugin '%s'; not allowed by plugin (allowed=%s)", desc, str_unloadable());
-		action=PA_NONE;
+		action = PA_NONE;
 		RETURN_ERRNO(mFALSE, ME_NOTALLOWED);
 	}
 
-	status=PL_PAUSED;
+	status = PL_PAUSED;
 	META_LOG("Paused plugin '%s'", desc);
 	return mTRUE;
 }
@@ -1192,11 +1263,13 @@ mBOOL MPlugin::pause()
 //  - ME_BADREQ		can't unpause; not paused
 mBOOL MPlugin::unpause()
 {
-	if (status != PL_PAUSED) {
+	if (status != PL_PAUSED)
+	{
 		META_WARNING("Cannot unpause plugin '%s'; not currently paused (status=%s)", desc, str_status());
 		RETURN_ERRNO(mFALSE, ME_BADREQ);
 	}
-	status=PL_RUNNING;
+
+	status = PL_RUNNING;
 	META_LOG("Unpaused plugin '%s'", desc);
 	return mTRUE;
 }
@@ -1223,7 +1296,6 @@ mBOOL MPlugin::retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 	}
 }
 
-//
 void MPlugin::free_api_pointers()
 {
 	if (gamedll_funcs.dllapi_table)
@@ -1252,29 +1324,31 @@ void MPlugin::free_api_pointers()
 //  - ME_DLERROR	failed to dlclose
 mBOOL MPlugin::clear()
 {
-	if (status != PL_FAILED && status != PL_BADFILE
-			&& status != PL_EMPTY && status != PL_OPENED) {
+	if (status != PL_FAILED && status != PL_BADFILE && status != PL_EMPTY && status != PL_OPENED)
+	{
 		META_WARNING("Cannot clear plugin '%s'; not marked as failed, empty, or open (status=%s)", desc, str_status());
 		RETURN_ERRNO(mFALSE, ME_BADREQ);
 	}
+
 	// If file is open, close the file.  Note: after this, attempts to
 	// reference any memory locations in the file will produce a segfault.
-	if (handle && DLCLOSE(handle) != 0) {
+	if (handle && DLCLOSE(handle) != 0)
+	{
 		META_WARNING("dll: Couldn't close plugin file '%s': %s", file, DLERROR());
-		status=PL_FAILED;
+		status = PL_FAILED;
 		RETURN_ERRNO(mFALSE, ME_DLERROR);
 	}
-	handle=NULL;
 
+	handle = nullptr;
 	free_api_pointers();
 
-	status=PL_EMPTY;
-	action=PA_NULL;
-	handle=NULL;
-	info=NULL;
-	time_loaded=0;
-	gamedll_funcs.dllapi_table=NULL;
-	gamedll_funcs.newapi_table=NULL;
+	status = PL_EMPTY;
+	action = PA_NULL;
+	handle = nullptr;
+	info = nullptr;
+	time_loaded = 0;
+	gamedll_funcs.dllapi_table = nullptr;
+	gamedll_funcs.newapi_table = nullptr;
 	Q_memset(&tables, 0, sizeof(tables));
 	Q_memset(&post_tables, 0, sizeof(post_tables));
 
@@ -1287,8 +1361,9 @@ mBOOL MPlugin::clear()
 void MPlugin::show()
 {
 	char *cp, *tstr;
-	int n, width;
-	width=13;
+	const int width = 13;
+	int n;
+
 	META_CONS("%*s: %s", width, "name", info ? info->name : "(nil)");
 	META_CONS("%*s: %s", width, "desc", desc);
 	META_CONS("%*s: %s", width, "status", str_status());
@@ -1306,21 +1381,26 @@ void MPlugin::show()
 	META_CONS("%*s: %s", width, "url", info ? info->url : "(nil)");
 	META_CONS("%*s: %s", width, "logtag", info ? info->logtag : "(nil)");
 	META_CONS("%*s: %s", width, "ifvers", info ? info->ifvers : "(nil)");
+
 	// ctime() includes newline at EOL
-	tstr=ctime(&time_loaded);
-	if ((cp=Q_strchr(tstr, '\n')))
-		*cp='\0';
+	tstr = ctime(&time_loaded);
+	if ((cp = Q_strchr(tstr, '\n')))
+		*cp = '\0';
+
 	META_CONS("%*s: %s", width, "last loaded", tstr);
 	// XXX show file time ?
 
-	if (tables.dllapi) {
+	if (tables.dllapi)
+	{
 		META_CONS("DLLAPI functions:");
 		SHOW_DEF_DLLAPI(tables.dllapi,"   ", "");
 		META_CONS("%d functions (dllapi)", n);
 	}
 	else
 		META_CONS("No DLLAPI functions.");
-	if (post_tables.dllapi) {
+
+	if (post_tables.dllapi)
+	{
 		META_CONS("DLLAPI-Post functions:");
 		SHOW_DEF_DLLAPI(post_tables.dllapi, "   ", "_Post");
 		META_CONS("%d functions (dllapi post)", n);
@@ -1328,14 +1408,17 @@ void MPlugin::show()
 	else
 		META_CONS("No DLLAPI-Post functions.");
 
-	if (tables.newapi) {
+	if (tables.newapi)
+	{
 		META_CONS("NEWAPI functions:");
 		SHOW_DEF_NEWAPI(tables.newapi, "   ", "");
 		META_CONS("%d functions (newapi)", n);
 	}
 	else
 		META_CONS("No NEWAPI functions.");
-	if (post_tables.newapi) {
+
+	if (post_tables.newapi)
+	{
 		META_CONS("NEWAPI-Post functions:");
 		SHOW_DEF_NEWAPI(post_tables.newapi, "   ", "_Post");
 		META_CONS("%d functions (newapi post)", n);
@@ -1343,20 +1426,24 @@ void MPlugin::show()
 	else
 		META_CONS("No NEWAPI-Post functions.");
 
-	if (tables.engine) {
+	if (tables.engine)
+	{
 		META_CONS("Engine functions:");
 		SHOW_DEF_ENGINE(tables.engine, "   ", "");
 		META_CONS("%d functions (engine)", n);
 	}
 	else
 		META_CONS("No Engine functions.");
-	if (post_tables.engine) {
+
+	if (post_tables.engine)
+	{
 		META_CONS("Engine-Post functions:");
 		SHOW_DEF_ENGINE(post_tables.engine, "   ", "_Post");
 		META_CONS("%d functions (engine post)", n);
 	}
 	else
 		META_CONS("No Engine-Post functions.");
+
 	RegCmds->show(index);
 	RegCvars->show(index);
 
@@ -1378,9 +1465,9 @@ mBOOL MPlugin::newer_file()
 
 	if (stat(pathname, &st) != 0)
 		RETURN_ERRNO(mFALSE, ME_NOFILE);
-	file_time=st.st_ctime > st.st_mtime ? st.st_ctime : st.st_mtime;
-	META_DEBUG(5, ("newer_file? file=%s; load=%d, file=%d; ctime=%d, mtime=%d",
-				file, time_loaded, file_time, st.st_ctime, st.st_mtime));
+
+	file_time = st.st_ctime > st.st_mtime ? st.st_ctime : st.st_mtime;
+	META_DEBUG(5, ("newer_file? file=%s; load=%d, file=%d; ctime=%d, mtime=%d", file, time_loaded, file_time, st.st_ctime, st.st_mtime));
 	if (file_time > time_loaded)
 		return mTRUE;
 	else
@@ -1468,7 +1555,7 @@ const char *MPlugin::str_action(STR_ACTION fmt)
 //  - none
 const char *MPlugin::str_loadtime(PLUG_LOADTIME ptime, STR_LOADTIME fmt)
 {
-	static const char *rPrintLoadTime[][5] = {
+	static const char *rPrintLoadTime[][26] = {
 		// SL_SIMPLE	// SL_SHOW	// SL_ALLOWED			// SL_NOW
 		{ "never",	"Never",	"never",			"never" },			// PT_NEVER
 		{ "startup",	"Start",	"at server startup",		"during server startup" },	// PT_STARTUP

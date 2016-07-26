@@ -1,11 +1,11 @@
 #pragma once
 
-#include "types_meta.h"			// mBOOL
-#include "comp_dep.h"
+#include "types_meta.h"
 
 // Flags to use for meta_cmd_doplug(), to operate on existing plugins; note
 // "load" operates on a non-existing plugin thus isn't included here.
-typedef enum {
+enum PLUG_CMD
+{
 	PC_NULL = 0,
 	PC_PAUSE,		// pause the plugin
 	PC_UNPAUSE,		// unpause the plugin
@@ -16,7 +16,7 @@ typedef enum {
 	PC_CLEAR,		// remove a failed plugin from the list
 	PC_FORCE_UNLOAD,	// forcibly unload the plugin
 	PC_REQUIRE,		// require that this plugin is loaded/running
-} PLUG_CMD;
+};
 
 void meta_register_cmdcvar();
 

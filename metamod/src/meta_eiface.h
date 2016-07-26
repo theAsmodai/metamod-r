@@ -1,10 +1,5 @@
 #pragma once
 
-#include <extdll.h>		// NEW_DLL_FUNCTIONS, enginefuncs_t
-#include <string.h>		// memset()
-
-#include "comp_dep.h"
-
 // We use our own versions of the engine/dll interface structs. We add a
 // few dummy entries to the end and set them to 0. That way we are
 // protected from updates to the HL SDK adding new functions which would
@@ -15,7 +10,6 @@
 // meta_new_dll_functions_t
 struct meta_new_dll_functions_t: public NEW_DLL_FUNCTIONS {
 public:
-// functions:
 	meta_new_dll_functions_t();
 	meta_new_dll_functions_t(
 		void (*pfnOnFreeEntPrivateData)	(edict_t *),
@@ -282,7 +276,6 @@ inline void meta_enginefuncs_t::copy_to(enginefuncs_t *_pFuncs)
 //
 struct HL_enginefuncs_t: public meta_enginefuncs_t {
 public:
-// functions:
 	HL_enginefuncs_t();
 
 	// Fill this object with pointers copied from an enginefuncs_t struct
@@ -292,8 +285,6 @@ public:
 	void initialise_interface(enginefuncs_t *pFuncs);
 
 private:
-// functions:
-public:
 	// Moving copy_to() and set_from() to the private space.
 	void set_from(enginefuncs_t *pFuncs) { meta_enginefuncs_t::set_from(pFuncs); };
 	void copy_to(enginefuncs_t *pFuncs) { meta_enginefuncs_t::copy_to(pFuncs); };

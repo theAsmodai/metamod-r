@@ -8,7 +8,6 @@
 #endif /* DEBUG */
 
 #include "enginecallbacks.h"
-#include "comp_dep.h"
 #include <util.h>
 
 // Also, create some additional macros for engine callback functions, which

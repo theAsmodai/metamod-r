@@ -1,7 +1,5 @@
 #pragma once
 
-#include "comp_dep.h"
-
 // Debug logging.
 //
 // This is done as a macro, rather than a function.  This way, you can add

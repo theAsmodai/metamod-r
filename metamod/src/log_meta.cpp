@@ -41,8 +41,8 @@ void META_DEV(const char *fmt, ...)
 	va_list ap;
 	static const char *const prefixDEV = "[META] dev:";
 
-	//if (!CVAR_GET_FLOAT("developer"))
-	//	return;
+	if (!CVAR_GET_FLOAT("developer"))
+		return;
 
 	va_start(ap, fmt);
 	buffered_ALERT(mlsDEV, at_logged, prefixDEV, fmt, ap);

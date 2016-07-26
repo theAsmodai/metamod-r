@@ -353,10 +353,10 @@ void cmd_doplug(PLUG_CMD pcmd)
 		int pindex = strtol(arg, &endptr, 10);
 
 		if (*arg && !*endptr)
-			findp=Plugins->find(pindex);
+			findp = Plugins->find(pindex);
 		// else try to match some string (prefix)
 		else
-			findp=Plugins->find_match(arg);
+			findp = Plugins->find_match(arg);
 
 		// Require that:
 		//  - specified plugin was found in the list of current plugins
@@ -366,8 +366,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 		{
 			if (findp && findp->status >= PL_RUNNING)
 			{
-				META_DEBUG(3, ("Required plugin '%s' found loaded and running.",
-						arg));
+				META_DEBUG(3, ("Required plugin '%s' found loaded and running.", arg));
 				return;
 			}
 			// Output to both places, because we don't want the admin
@@ -387,6 +386,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 				META_ERROR("Required plugin '%s' did not load successfully!  (status=%s)  Exiting.", arg, findp->str_status(ST_SIMPLE));
 				META_CONS("\nERROR: Required plugin '%s' did not load successfully!  (status=%s)  Exiting.\n", arg, findp->str_status(ST_SIMPLE));
 			}
+
 			// Allow chance to read the message, before any window closes.
 			do_exit(1);
 		}
@@ -400,21 +400,21 @@ void cmd_doplug(PLUG_CMD pcmd)
 			return;
 		}
 
-		if (pcmd == PC_PAUSE)
+		switch (pcmd)
 		{
+		case PC_PAUSE:
 			if (findp->pause())
 				META_CONS("Paused plugin '%s'", findp->desc);
 			else
 				META_CONS("Pause failed for plugin '%s'", findp->desc);
-		}
-		else if (pcmd == PC_UNPAUSE)
-		{
+			break;
+		case PC_UNPAUSE:
 			if (findp->unpause())
 				META_CONS("Unpaused plugin '%s'", findp->desc);
 			else
 				META_CONS("Unpause failed for plugin '%s'", findp->desc);
-		}
-		else if (pcmd == PC_UNLOAD)
+			break;
+		case PC_UNLOAD:
 		{
 			findp->action = PA_UNLOAD;
 			if (findp->unload(PT_ANYTIME, PNL_COMMAND, PNL_COMMAND))
@@ -426,8 +426,9 @@ void cmd_doplug(PLUG_CMD pcmd)
 				META_CONS("Unload delayed for plugin '%s'", findp->desc);
 			else
 				META_CONS("Unload failed for plugin '%s'", findp->desc);
+			break;
 		}
-		else if (pcmd == PC_FORCE_UNLOAD)
+		case PC_FORCE_UNLOAD:
 		{
 			findp->action = PA_UNLOAD;
 			if (findp->unload(PT_ANYTIME, PNL_CMD_FORCED, PNL_CMD_FORCED))
@@ -437,8 +438,9 @@ void cmd_doplug(PLUG_CMD pcmd)
 			}
 			else
 				META_CONS("Forced unload failed for plugin '%s'", findp->desc);
+			break;
 		}
-		else if (pcmd == PC_RELOAD)
+		case PC_RELOAD:
 		{
 			findp->action = PA_RELOAD;
 			if (findp->reload(PT_ANYTIME, PNL_COMMAND))
@@ -449,30 +451,31 @@ void cmd_doplug(PLUG_CMD pcmd)
 				META_CONS("Reload not allowed for plugin '%s' now, only allowed %s", findp->desc, findp->str_loadable(SL_ALLOWED));
 			else
 				META_CONS("Reload failed for plugin '%s'", findp->desc);
+			break;
 		}
-		else if (pcmd == PC_RETRY)
-		{
+		case PC_RETRY:
 			if (findp->retry(PT_ANYTIME, PNL_COMMAND))
 				META_CONS("Retry succeeded for plugin '%s'", findp->desc);
 			else
 				META_CONS("Retry failed for plugin '%s'", findp->desc);
-		}
-		else if (pcmd == PC_CLEAR)
-		{
-			if (findp->clear())
+			break;
+		case PC_CLEAR:
+			if (!findp->clear())
 			{
-				META_CONS("Cleared failed plugin '%s' from list", findp->desc);
-				Plugins->show();
-			}
-			else
 				META_CONS("Clear failed for plugin '%s'", findp->desc);
-		}
-		else if (pcmd == PC_INFO)
+				return;
+			}
+
+			META_CONS("Cleared failed plugin '%s' from list", findp->desc);
+			Plugins->show();
+			break;
+		case PC_INFO:
 			findp->show();
-		else
-		{
+			break;
+		default:
 			META_WARNING("Unexpected plug_cmd: %d", pcmd);
 			META_CONS("Command failed; see log");
+			break;
 		}
 	}
 }

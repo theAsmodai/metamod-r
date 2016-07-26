@@ -1,12 +1,7 @@
 #pragma once
 
-#include "comp_dep.h"
-
 // Our own boolean type, for stricter type matching.
-typedef enum mBOOL {
-	mFALSE = 0,
-	mTRUE,
-} mBOOL;
+enum mBOOL { mFALSE = 0, mTRUE, };
 
 // Like C's errno, for our various functions; describes causes of failure
 // or mFALSE returns.

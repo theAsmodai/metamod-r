@@ -1,6 +1,5 @@
 #pragma once 
 
-#include "comp_dep.h"
 #include "types_meta.h"			// mBOOL
 #include "ret_type.h"
 
@@ -16,7 +15,7 @@ enum enum_api_t
 };
 
 // API caller function prototype
-typedef void *(DLLINTERNAL_NOVIS *api_caller_func_t)(const void *func, const void *packed_args);
+typedef void *(*api_caller_func_t)(const void *func, const void *packed_args);
 
 struct api_info_t
 {

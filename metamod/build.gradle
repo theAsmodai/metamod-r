@@ -45,21 +45,22 @@ void setupToolchain(NativeBinarySpec b)
 		cfg.compilerOptions.pchConfig = new MsvcToolchainConfig.PrecompiledHeadersConfig(
 			enabled: true,
 			pchHeader: 'precompiled.h',
-			pchSourceSet: 'metamod_pch'
+			pchSourceSet: 'rmod_pch'
 		)
-		cfg.compilerOptions.args '/Ob2', '/Oi', '/GF', '/GR-', '/GS-'
 		cfg.singleDefines('_CRT_SECURE_NO_WARNINGS')
 	} else if (cfg instanceof GccToolchainConfig) {
 		cfg.compilerOptions.pchConfig = new GccToolchainConfig.PrecompilerHeaderOptions(
 			enabled: true,
-			pchSourceSet: 'metamod_pch'
+			pchSourceSet: 'rmod_pch'
 		)
 		cfg.compilerOptions.languageStandard = 'c++0x'
 		cfg.defines([
 			'_stricmp': 'strcasecmp',
 			'_strnicmp': 'strncasecmp',
+			'_strdup': 'strdup',
+			'_unlink': 'unlink',
 			'_vsnprintf': 'vsnprintf',
-			'_snprintf': 'snprintf'
+			'_vsnwprintf' : 'vswprintf',
 		])
 
 		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-msse2', '-fomit-frame-pointer', '-inline-forceinline', '-fvisibility=default', '-fvisibility-inlines-hidden', '-fno-rtti', '-g0', '-s'
@@ -97,7 +98,7 @@ model {
 			baseName GradleCppUtils.windows ? 'metamod_mm' : 'metamod_mm_i386'
 
 			sources {
-				metamod_pch(CppSourceSet) {
+				rmod_pch(CppSourceSet) {
 					source {
 						srcDirs "src"
 						include "precompiled.cpp"
@@ -107,11 +108,18 @@ model {
 						srcDirs "include"
 					}
 				}
-				metamod_src(CppSourceSet) {
+				rmod_src(CppSourceSet) {
 					source {
 						srcDir "src"
 						srcDir "version"
 						include "**/*.cpp"
+
+						if (GradleCppUtils.windows) {
+							exclude "osdep_linkent_linux.cpp"
+						} else {
+							exclude "osdep_linkent_win32.cpp"
+						}
+
 						exclude "precompiled.cpp"
 					}
 
@@ -121,7 +129,7 @@ model {
 				}
 				rc {
 					source {
-						srcDir "msvc"
+						srcDirs "msvc"
 						include "metamod.rc"
 					}
 					exportedHeaders {
@@ -170,11 +178,7 @@ task generateAppVersion {
 	inputs.property('lastCommitDate', verInfo.lastCommitDate.toString())
 
 	doLast {
-		def templateCtx = [
-			verInfo: verInfo
-		]
-
-		def content = VelocityUtils.renderTemplate(tplFile, templateCtx)
+		def content = VelocityUtils.renderTemplate(tplFile, verInfo)
 
 		renderedFile.delete()
 		renderedFile.write(content, 'utf-8')

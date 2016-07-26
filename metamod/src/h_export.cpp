@@ -1,11 +1,11 @@
 #include "precompiled.h"
 
 #ifdef _WIN32
-//! Required DLL entry point
+// Required DLL entry point
 // The above SDK comment indicates this routine is required, but the MSDN
 // documentation indicates it's actually optional.  We keep it, though, for
 // completeness. 
-// Note! 'extern "C"' needed for mingw compile.
+// Note: 'extern "C"' needed for mingw compile.
 extern "C" BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	if (fdwReason == DLL_PROCESS_ATTACH) {
@@ -31,7 +31,7 @@ void _fini() {
 }
 #endif
 
-//! Holds engine functionality callbacks
+// Holds engine functionality callbacks
 HL_enginefuncs_t g_engfuncs;
 globalvars_t  *gpGlobals;
 engine_t Engine;
@@ -43,7 +43,7 @@ engine_t Engine;
 // is actually all done in meta_startup().
 C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pengfuncsFromEngine, globalvars_t *pGlobals)
 {
-#ifdef linux
+#ifndef _WIN32
 	metamod_handle = get_module_handle_of_memptr((void*)&g_engfuncs);
 #endif
 
@@ -53,7 +53,7 @@ C_DLLEXPORT void WINAPI GiveFnptrsToDll(enginefuncs_t *pengfuncsFromEngine, glob
 
 	g_engfuncs.initialise_interface(pengfuncsFromEngine);
 
-	// NOTE!  Have to call logging function _after_ initialising g_engfuncs, so
+	// NOTE: Have to call logging function _after_ initialising g_engfuncs, so
 	// that g_engfuncs.pfnAlertMessage() can be resolved properly, heh. :)
 	META_DEV("called: GiveFnptrsToDll");
 	// Load plugins, load game dll.

@@ -1,69 +1,24 @@
 #pragma once
 
-#include <string.h>			// strerror()
-#include <ctype.h>			// isupper, tolower
-#include <errno.h>			// errno
-
 // Various differences between WIN32 and Linux.
-
-#include "comp_dep.h"
 #include "types_meta.h"		// mBOOL
 #include "mreg.h"			// REG_CMD_FN, etc
 #include "log_meta.h"		// LOG_ERROR, etc
 
 // String describing platform/DLL-type, for matching lines in plugins.ini.
 #ifdef _WIN32
+	#define UNUSED		/**/
+
 	#define PLATFORM	"mswin"
 	#define PLATFORM_SPC	"win32"
 	#define PLATFORM_DLEXT	".dll"
 #else
+	#define UNUSED		__attribute__((unused))
+
 	#define PLATFORM	"linux"
 	#define PLATFORM_SPC	"lin32"
 	#define PLATFORM_DLEXT	".so"
 #endif
-
-// Macro for function-exporting from DLL..
-// from SDK dlls/cbase.h:
-//! C functions for external declarations that call the appropriate C++ methods
-
-// Windows uses "__declspec(dllexport)" to mark functions in the DLL that
-// should be visible/callable externally.
-//
-// It also apparently requires WINAPI for GiveFnptrsToDll().
-//
-// See doc/notes_windows_coding for more information..
-
-// Attributes to specify an "exported" function, visible from outside the
-// DLL.
-#undef DLLEXPORT
-#ifdef _WIN32
-	#define DLLEXPORT	__declspec(dllexport)
-	// WINAPI should be provided in the windows compiler headers.
-	// It's usually defined to something like "__stdcall".
-#elif defined(linux)
-	#define DLLEXPORT	/* */
-	#define WINAPI		/* */
-#endif /* linux */
-
-// Simplified macro for declaring/defining exported DLL functions.  They
-// need to be 'extern "C"' so that the C++ compiler enforces parameter
-// type-matching, rather than considering routines with mis-matched
-// arguments/types to be overloaded functions...
-//
-// AFAIK, this is os-independent, but it's included here in osdep.h where
-// DLLEXPORT is defined, for convenience.
-
-#ifdef _WIN32
-
-#define C_DLLEXPORT		extern "C" DLLEXPORT
-
-#elif defined(linux)
-
-#define C_DLLEXPORT extern "C" __attribute__((visibility("default")))
-
-#endif /* linux */
-
-
 
 // Special version that fixes vsnprintf bugs.
 #ifndef DO_NOT_FIX_VARARG_ENGINE_API_WARPERS
@@ -151,13 +106,11 @@ mBOOL os_safe_call(REG_CMD_FN pfn);
 #ifdef _WIN32
 	#define strtok_r(s, delim, ptrptr)	my_strtok_r(s, delim, ptrptr)
 	char *my_strtok_r(char *s, const char *delim, char **ptrptr);
-#endif /* _WIN32 */
-
+#else
 // Linux doesn't have an strlwr() routine, so we write our own.
-#ifdef linux
 	#define strlwr(s) my_strlwr(s)
 	char *my_strlwr(char *s);
-#endif /* _WIN32 */
+#endif // _WIN32
 
 
 // Set filename and pathname maximum lengths.  Note some windows compilers
@@ -175,7 +128,7 @@ mBOOL os_safe_call(REG_CMD_FN pfn);
 	#ifndef PATH_MAX
 		#define PATH_MAX	_MAX_PATH
 	#endif
-#endif /* _WIN32 */
+#endif // _WIN32
 
 // Various other windows routine differences.
 #ifdef linux
@@ -204,7 +157,7 @@ mBOOL os_safe_call(REG_CMD_FN pfn);
 		#define write		_write
 		#define close		_close
 	#endif /* GCC or MSVC 8.0+ */
-#endif /* _WIN32 */
+#endif // _WIN32
 
 #if !defined WIN32 && !defined _MSC_VER
 #include <unistd.h>	// getcwd
@@ -232,7 +185,7 @@ mBOOL os_safe_call(REG_CMD_FN pfn);
     #ifndef S_IWGRP
         #define S_IWGRP S_IWUSR
     #endif
-#endif /* _WIN32 */
+#endif // _WIN32
 
 // Normalize/standardize a pathname.
 //  - For win32, this involves:
@@ -246,7 +199,7 @@ mBOOL os_safe_call(REG_CMD_FN pfn);
 #define normalize_pathname(a)
 #elif defined(_WIN32)
 void normalize_pathname(char *path);
-#endif /* _WIN32 */
+#endif // _WIN32
 
 // Indicate if pathname appears to be an absolute-path.  Under linux this
 // is a leading slash (/).  Under win32, this can be:
@@ -259,7 +212,7 @@ inline mBOOL is_absolute_path(const char *path) {
 #ifdef _WIN32
 	if (path[1]==':') return mTRUE;
 	if (path[0]=='\\') return mTRUE;
-#endif /* _WIN32 */
+#endif // _WIN32
 	return mFALSE;
 }
 
@@ -267,7 +220,7 @@ inline mBOOL is_absolute_path(const char *path) {
 // Buffer pointed to by resolved_name is assumed to be able to store a
 // string of PATH_MAX length.
 char *realpath(const char *file_name, char *resolved_name);
-#endif /* _WIN32 */
+#endif // _WIN32
 
 // Generic "error string" from a recent OS call.  For linux, this is based
 // on errno.  For win32, it's based on GetLastError.

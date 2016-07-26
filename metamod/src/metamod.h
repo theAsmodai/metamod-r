@@ -1,27 +1,25 @@
-#ifndef METAMOD_H
-#define METAMOD_H
+#pragma once
 
-#include "comp_dep.h"
 #include "meta_api.h"			// META_RES, etc
-#include "mlist.h"				// MPluginList, etc
-#include "mreg.h"				// MRegCmdList, etc
+#include "mlist.h"			// MPluginList, etc
+#include "mreg.h"			// MRegCmdList, etc
 #include "conf_meta.h"			// MConfig
-#include "osdep.h"				// NAME_MAX, etc
+#include "osdep.h"			// NAME_MAX, etc
 #include "types_meta.h"			// mBOOL
 #include "mplayer.h"                    // MPlayerList
-#include "meta_eiface.h"        // HL_enginefuncs_t, meta_enginefuncs_t
-#include "engine_t.h"           // engine_t, Engine
+#include "meta_eiface.h"		// HL_enginefuncs_t, meta_enginefuncs_t
+#include "engine_t.h"          		// engine_t, Engine
 
 // file that lists plugins to load at startup
 #define PLUGINS_INI			"addons/metamod/plugins.ini"
-#define OLD_PLUGINS_INI		"metamod.ini"
+#define OLD_PLUGINS_INI			"metamod.ini"
 
 // file that contains commands to metamod plugins at startup
 #define EXEC_CFG			"addons/metamod/exec.cfg"
-#define OLD_EXEC_CFG		"metaexec.cfg"
+#define OLD_EXEC_CFG			"metaexec.cfg"
 
 // previously, file that contained path for an override-gamedll
-#define OLD_GAMEDLL_TXT		"metagame.ini"
+#define OLD_GAMEDLL_TXT			"metagame.ini"
 
 // generic config file
 #define CONFIG_INI			"addons/metamod/config.ini"
@@ -33,16 +31,18 @@ extern DLHANDLE metamod_handle;
 extern cvar_t meta_version;
 
 // Info about the game dll/mod.
-typedef struct gamedll_s {
+struct gamedll_t
+{
 	char name[NAME_MAX];		// ie "cstrike" (from gamedir)
-	const char *desc;				// ie "Counter-Strike"
+	const char *desc;		// ie "Counter-Strike"
 	char gamedir[PATH_MAX];		// ie "/home/willday/half-life/cstrike"
 	char pathname[PATH_MAX];	// ie "/home/willday/half-life/cstrike/dlls/cs_i386.so"
-	char const *file;			// ie "cs_i386.so"
+	char const *file;		// ie "cs_i386.so"
 	char real_pathname[PATH_MAX];	// in case pathname overridden by bot, etc
 	DLHANDLE handle;
 	gamedll_funcs_t funcs;		// dllapi_table, newapi_table
-} gamedll_t;
+};
+
 extern gamedll_t GameDLL;
 
 // SDK variables for storing engine funcs and globals.
@@ -145,26 +145,21 @@ mBOOL meta_load_gamedll();
 // accept.  Thus there are "_void" versions of the 5 macros; these are
 // listed first.
 
-// ===== macros for void-returning functions ==================================
+// macros for void-returning functions
 
 // return ()
 #define RETURN_API_void() \
 	return;
 
-// ===== macros for type-returning functions ==================================
+// macros for type-returning functions
 
 // return a value
 #define RETURN_API(ret_t) \
 	{ return GET_RET_CLASS(ret_val, ret_t); }
 
-// ===== end macros ===========================================================
-
 #ifdef META_PERFMON
 
-// ============================================================================
 // Api-hook performance monitoring
-// ============================================================================
-
 extern long double total_tsc;
 extern unsigned long long count_tsc;
 extern unsigned long long active_tsc;
@@ -202,19 +197,11 @@ inline unsigned long long GET_TSC() {
 			min_tsc = run_tsc; \
 	}
 
-// ===== end ==================================================================
-
 #else
-
-// ===== performance monitor disabled =========================================
 
 #define API_START_TSC_TRACKING()
 #define API_PAUSE_TSC_TRACKING()
 #define API_UNPAUSE_TSC_TRACKING()
 #define API_END_TSC_TRACKING()
 
-// ===== end ==================================================================
-
-#endif /*META_PERFMON*/
-
-#endif /* METAMOD_H */
+#endif // META_PERFMON

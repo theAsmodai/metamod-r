@@ -6,7 +6,7 @@
 #include "new_baseclass.h"	// class_metamod_new
 
 // Info on an individual player
-class MPlayer : public class_metamod_new
+class MPlayer: public class_metamod_new
 {
 private:
 	mBOOL isQueried;			// is this player currently queried for a cvar value
