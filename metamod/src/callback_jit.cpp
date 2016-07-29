@@ -1,0 +1,369 @@
+#include "precompiled.h"
+
+CJit g_jit;
+
+class CUniqueLabel
+{
+public:
+	CUniqueLabel(const char* name) : m_name(name)
+	{
+		m_name += m_unique_index++;
+	}
+
+	operator std::string&()
+	{
+		return m_name;
+	}
+
+private:
+	std::string m_name;
+	static size_t m_unique_index;
+};
+size_t CUniqueLabel::m_unique_index;
+
+class CForwardCallbackJIT : public jitasm::function<int, CForwardCallbackJIT, int>
+{
+public:
+	CForwardCallbackJIT(jitdata_t *jitdata);
+	void naked_main();
+	void call_func(jitasm::Frontend::Reg32 addr);
+
+private:
+	jitdata_t* m_jitdata;
+
+	enum
+	{
+		mg_mres = 0,
+		mg_prev_mres = 4,
+		mg_status = 8,
+		mg_orig_ret = 12,
+		mg_over_ret = 16,
+	};
+};
+
+CForwardCallbackJIT::CForwardCallbackJIT(jitdata_t* jitdata) : m_jitdata(jitdata)
+{
+}
+
+void CForwardCallbackJIT::naked_main()
+{
+	// prologue
+	push(ebp);
+	mov(ebp, esp);
+	push(ebx);
+
+	enum // stack map
+	{
+		orig_ret = 0,
+		over_ret = 4
+	};
+
+	auto globals = ebx;
+	auto mg_backup = m_jitdata->has_ret ? 8 : 0;
+	auto framesize = mg_backup + sizeof(meta_globals_t);
+
+	if (m_jitdata->has_varargs) {
+		sub(esp, framesize += MAX_STRBUF_LEN);
+
+		// format varargs
+		lea(edx, dword_ptr[ebp + 8 + m_jitdata->args_count * 4]); // varargs ptr
+		lea(eax, dword_ptr[esp + mg_backup + sizeof(meta_globals_t)]); // buf ptr
+		mov(ecx, size_t(vsnprintf));
+
+		push(edx);
+		push(dword_ptr[ebp + 8 + (m_jitdata->args_count - 1) * 4]); // last arg of pfn (format)
+		push(MAX_STRBUF_LEN);
+		push(eax);
+		call(ecx);
+		add(esp, 4 * sizeof(int));
+	}
+	else
+		sub(esp, framesize);
+
+	// setup globals ptr
+	mov(globals, size_t(&g_metaGlobals));
+	movups(xmm0, xmmword_ptr[globals]);
+	mov(eax, dword_ptr[globals + 16]);
+	movups(xmmword_ptr[esp + mg_backup], xmm0);
+	mov(dword_ptr[esp + mg_backup + 16], eax);
+
+	// call metamod's pre hook if present
+	if (m_jitdata->mm_hook && m_jitdata->mm_hook_time == P_PRE) {
+		mov(ecx, m_jitdata->mm_hook);
+		call_func(ecx);
+	}
+
+	// setup meta globals
+	mov(dword_ptr[globals + mg_mres], MRES_UNSET);
+
+	// setup retval pointers
+	if (m_jitdata->has_ret) {
+		lea(eax, dword_ptr[esp + over_ret]);
+		mov(dword_ptr[globals + mg_orig_ret], esp);
+		mov(dword_ptr[globals + mg_over_ret], eax);
+	}
+
+	// call pre
+	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
+		auto plug = &m_jitdata->plugins[i];
+		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->table_offset);
+
+		// plugin don't want any hooks from that table
+		if (!fn_table)
+			continue;
+
+		CUniqueLabel go_next_plugin("go_next_plugin");
+
+		// check status and handler set
+		cmp(byte_ptr[size_t(&plug->status)], PL_RUNNING);
+		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
+		jnz(go_next_plugin);
+		jecxz(go_next_plugin);
+
+		if (hookid++) {
+			mov(eax, dword_ptr[globals + mg_mres]);
+			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			mov(dword_ptr[globals + mg_prev_mres], eax);
+		}
+		else { // init
+			xor_(eax, eax);
+			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
+			mov(dword_ptr[globals + mg_status], eax); // NULL
+		}
+
+		call_func(ecx);
+
+		mov(edx, dword_ptr[globals + mg_mres]);
+		mov(ecx, dword_ptr[globals + mg_status]);
+		cmp(edx, ecx);
+		cmovg(ecx, edx);
+		mov(dword_ptr[globals + mg_status], ecx);
+
+		if (m_jitdata->has_ret) {
+			mov(ecx, dword_ptr[esp + over_ret]);
+			cmp(edx, MRES_SUPERCEDE);
+			cmovz(ecx, eax);
+			mov(dword_ptr[esp + over_ret], ecx);
+		}
+
+		L(go_next_plugin);
+	}
+
+	// call original if need
+	cmp(dword_ptr[globals + mg_status], MRES_SUPERCEDE);
+	jz("skip_original");
+	{
+		if (m_jitdata->pfn_original) {
+			mov(ecx, m_jitdata->pfn_original);
+			call_func(ecx);
+		}
+
+		if (m_jitdata->has_ret) {
+			if (m_jitdata->pfn_original)
+				mov(dword_ptr[esp + orig_ret], eax);
+			else
+				mov(dword_ptr[esp + orig_ret], TRUE); // for should collide :/
+
+			jmp("skip_supercede");
+		}
+	}
+	L("skip_original");
+	{
+		if (m_jitdata->has_ret) {
+			// if supercede
+			mov(eax, dword_ptr[esp + over_ret]);
+			mov(dword_ptr[esp + orig_ret], eax);
+
+			L("skip_supercede");
+		}
+	}
+	L("skip_all");
+
+	// call post
+	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
+		auto plug = &m_jitdata->plugins[i];
+		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->post_table_offset);
+
+		// plugin don't want any hooks from that table
+		if (!fn_table)
+			continue;
+
+		CUniqueLabel go_next_plugin("go_next_plugin");
+
+		// check status and handler set
+		cmp(byte_ptr[size_t(&plug->status)], PL_RUNNING);
+		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
+		jnz(go_next_plugin);
+		jecxz(go_next_plugin);
+
+		if (hookid++) {
+			mov(eax, dword_ptr[globals + mg_mres]);
+			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			mov(dword_ptr[globals + mg_prev_mres], eax);
+		}
+		else { // init
+			xor_(eax, eax);
+			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
+			mov(dword_ptr[globals + mg_status], eax); // NULL
+		}
+
+		call_func(ecx);
+
+		mov(edx, dword_ptr[globals + mg_mres]);
+		mov(ecx, dword_ptr[globals + mg_status]);
+		cmp(ecx, edx);
+		cmovl(ecx, edx);
+		mov(dword_ptr[globals + mg_status], ecx);
+
+		if (m_jitdata->has_ret) {
+			cmp(edx, MRES_SUPERCEDE);
+			mov(ecx, dword_ptr[esp + over_ret]);
+			cmovz(ecx, eax);
+			mov(dword_ptr[esp + over_ret], ecx);
+		}
+
+		L(go_next_plugin);
+	}
+
+	// call metamod's post hook if present
+	if (m_jitdata->mm_hook && m_jitdata->mm_hook_time == P_POST) {
+		mov(ecx, m_jitdata->mm_hook);
+		call_func(ecx);
+	}
+
+	movups(xmm0, xmmword_ptr[esp + mg_backup]);
+	mov(eax, dword_ptr[esp + mg_backup + 16]);
+	movups(xmmword_ptr[globals], xmm0);
+	mov(dword_ptr[globals + 16], eax);
+
+	if (m_jitdata->has_ret) {
+		mov(eax, dword_ptr[esp + orig_ret]);
+		cmp(dword_ptr[globals + mg_status], MRES_OVERRIDE);
+		cmovz(eax, dword_ptr[esp + over_ret]);
+	}
+
+	if (framesize) {
+		add(esp, framesize);
+	}
+
+	// epilogue
+	pop(ebx);
+	pop(ebp);
+	ret();
+}
+
+void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
+{
+	const size_t normal_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u : 0u);
+	const size_t strbuf_stack_offset = (m_jitdata->has_ret ? 8u : 0u) + sizeof(meta_globals_t);
+
+	// push formatted buf
+	if (m_jitdata->has_varargs) {
+		lea(eax, dword_ptr[esp + strbuf_stack_offset]);
+		push(eax);
+	}
+
+	// push normal args
+	for (size_t j = normal_args_count; j > 0; j--)
+		push(dword_ptr[ebp + 8 + (j - 1) * 4]);
+
+	// call
+	call(addr);
+
+	// pop stack
+	if (m_jitdata->args_count)
+		add(esp, m_jitdata->args_count * 4);
+}
+
+class CSimpleJmp : public jitasm::function<void, CSimpleJmp>
+{
+public:
+	CSimpleJmp(size_t addr/*, size_t hook, size_t hook_time, size_t ret_backup*/);
+	void naked_main();
+
+private:
+	size_t m_addr;
+	/*size_t m_hook;
+	size_t m_hook_time;
+	size_t m_ret_backup;*/
+};
+
+CSimpleJmp::CSimpleJmp(size_t addr/*, size_t hook, size_t hook_time, size_t ret_backup*/) : m_addr(addr)/*, m_hook(hook), m_hook_time(hook_time), m_ret_backup(ret_backup)*/
+{
+}
+
+void CSimpleJmp::naked_main()
+{
+	/*if (m_hook && m_hook_time == P_PRE) {
+		mov(ecx, m_hook);
+		pop(dword_ptr[m_ret_backup]);
+		call(ecx);
+		push(dword_ptr[m_ret_backup]);
+	}*/
+
+	jmp(dword_ptr[m_addr]);
+
+	/*if (m_hook && m_hook_time == P_POST) {
+		mov(ecx, m_hook);
+		pop(dword_ptr[m_ret_backup]);
+		call(ecx);
+		push(dword_ptr[m_ret_backup]);
+	}*/
+}
+
+size_t CJit::compile_callback(jitdata_t* jitdata)
+{
+	if (!is_hook_needed(jitdata)) {
+		return jitdata->pfn_original;
+	}
+
+	CForwardCallbackJIT callback(jitdata);
+	callback.Assemble();
+
+	auto code = callback.GetCode();
+	auto codeSize = callback.GetCodeSize();
+	auto ptr = m_allocator.allocate(codeSize);
+
+	return (size_t)memcpy(ptr, code, codeSize);
+}
+
+size_t CJit::compile_tramp(size_t ptr_to_func/*, size_t hook, size_t hook_time*/)
+{
+	CSimpleJmp jmp(ptr_to_func/*, hook, hook_time, size_t(m_static_allocator.allocate(sizeof(int)))*/);
+	jmp.Assemble();
+
+	auto code = jmp.GetCode();
+	auto codeSize = jmp.GetCodeSize();
+	auto ptr = m_static_allocator.allocate(codeSize);
+
+	return (size_t)memcpy(ptr, code, codeSize);
+}
+
+void CJit::clear_callbacks()
+{
+	m_allocator.deallocate_all();
+}
+
+bool CJit::is_hook_needed(jitdata_t* jitdata)
+{
+	if (jitdata->mm_hook)
+		return true;
+
+	if (!jitdata->plugins)
+		return false;
+
+	for (int i = 0, hookid = 0; i < jitdata->plugins_count; i++) {
+		auto plug = &jitdata->plugins[i];
+
+		const size_t fn_table			= *(size_t *)(size_t(plug) + jitdata->table_offset);
+		const size_t fn_table_post		= *(size_t *)(size_t(plug) + jitdata->post_table_offset);
+
+		if (fn_table || fn_table_post) {
+			return true;
+		}
+	}
+
+	return false;
+}

@@ -1,18 +1,6 @@
 #include "precompiled.h"
 
-mBOOL dlclose_handle_invalid;
-
-// To keep the rest of the sources clean and keep not only OS but also
-// compiler dependant differences in this file, we define a local function
-// to set the new handler.
-void mm_set_new_handler()
-{
-#if defined(_MSC_VER) && (_MSC_VER < 1300)
-	_set_new_handler(meta_new_handler);
-#else
-	std::set_new_handler(meta_new_handler);
-#endif
-}
+bool dlclose_handle_invalid;
 
 #ifdef _WIN32
 // Since windows doesn't provide a verison of strtok_r(), we include one
@@ -112,8 +100,7 @@ const char *DLFNAME(void *memptr)
 
 	// MSDN indicates that GetModuleFileName will leave string
 	// null-terminated, even if it's truncated because buffer is too small.
-	if (!GetModuleFileName((HMODULE)MBI.AllocationBase, fname,
-				sizeof(fname)-1))
+	if (!GetModuleFileName((HMODULE)MBI.AllocationBase, fname, sizeof(fname) - 1))
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
 	if (!fname[0])
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
@@ -133,25 +120,25 @@ const char *DLFNAME(void *memptr)
 // we need it for in this particular situation.
 // meta_errno values:
 //  - ME_NOTFOUND	couldn't find a matching sharedlib for this ptr
-mBOOL IS_VALID_PTR(void *memptr)
+bool IS_VALID_PTR(void *memptr)
 {
 	Dl_info dli;
 	Q_memset(&dli, 0, sizeof(dli));
 	if (dladdr(memptr, &dli))
-		return mTRUE;
+		return true;
 	else
-		RETURN_ERRNO(mFALSE, ME_NOTFOUND);
+		RETURN_ERRNO(false, ME_NOTFOUND);
 }
 #elif defined(_WIN32)
 // Use the native windows routine IsBadCodePtr.
 // meta_errno values:
 //  - ME_BADMEMPTR	not a valid memory pointer
-mBOOL IS_VALID_PTR(void *memptr)
+bool IS_VALID_PTR(void *memptr)
 {
 	if (IsBadCodePtr((FARPROC) memptr))
-		RETURN_ERRNO(mFALSE, ME_BADMEMPTR);
+		RETURN_ERRNO(false, ME_BADMEMPTR);
 	else
-		return mTRUE;
+		return true;
 }
 #endif // _WIN32
 
@@ -160,33 +147,13 @@ mBOOL IS_VALID_PTR(void *memptr)
 // in plugin commands and produced confusing output ("plugin has been
 // unloaded", when really it segfaultd), and (b) wasn't necessary since
 // IS_VALID_PTR() should cover the situation.
-mBOOL os_safe_call(REG_CMD_FN pfn)
+bool os_safe_call(REG_CMD_FN pfn)
 {
 	// try and see if this is a valid memory location
 	if (!IS_VALID_PTR((void *)pfn))
 		// meta_errno should be already set in is_valid_ptr()
-		return mFALSE;
+		return false;
 
 	pfn();
-	return mTRUE;
+	return true;
 }
-
-// See comments in osdep.h.
-#if defined(_MSC_VER) && (_MSC_VER >= 1300)
-void __cdecl meta_new_handler()
-{
-	return;
-}
-#elif defined(_MSC_VER)
-int meta_new_handler(size_t size)
-{
-	// This merely because we don't want the program to exit if new()
-	// fails..
-	return 0;
-}
-#else
-void meta_new_handler()
-{
-	return;
-}
-#endif

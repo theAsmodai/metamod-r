@@ -83,6 +83,9 @@
     <ClCompile Include="..\src\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\callback_jit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\api_info.h">
@@ -109,9 +112,6 @@
     <ClInclude Include="..\src\game_support.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\games.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\h_export.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -130,9 +130,6 @@
     <ClInclude Include="..\src\metamod.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mhook.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\mlist.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -140,9 +137,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mplugin.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\mqueue.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\mreg.h">
@@ -176,6 +170,12 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\callback_jit.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\jitasm.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

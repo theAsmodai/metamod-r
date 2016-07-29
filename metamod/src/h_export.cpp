@@ -57,31 +57,3 @@ void WINAPI GiveFnptrsToDll(enginefuncs_t *pengfuncsFromEngine, globalvars_t *pG
 	// Load plugins, load game dll.
 	metamod_startup();
 }
-
-// Avoid linking to libstdc++
-#if defined(linux)
-extern "C" void __cxa_pure_virtual(void)
-{
-}
-
-void *operator new(size_t size)
-{
-	return Q_malloc(size);
-}
-
-void *operator new[](size_t size)
-{
-	return Q_malloc(size);
-}
-
-void operator delete(void *ptr)
-{
-	Q_free(ptr);
-}
-
-void operator delete[](void * ptr)
-{
-	Q_free(ptr);
-}
-#endif
-

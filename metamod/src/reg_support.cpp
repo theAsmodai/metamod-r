@@ -62,7 +62,7 @@ void meta_command_handler()
 		return;
 	}
 
-	if (icmd->call() != mTRUE)
+	if (icmd->call() != true)
 	{
 		META_CONS("[metamod: command '%s' unavailable; plugin unloaded]", cmd);
 	}
@@ -201,6 +201,6 @@ int meta_RegUserMsg(const char *pszName, int iSize)
 // Intercept and record queries
 void meta_QueryClientCvarValue(const edict_t *player, const char *cvarName)
 {
-	g_Players.set_player_cvar_query(player, cvarName);
+	g_players.set_player_cvar_query(player, cvarName);
 	(*g_engfuncs.pfnQueryClientCvarValue)(player, cvarName);
 }

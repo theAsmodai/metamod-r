@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-MPlayer::MPlayer() : isQueried(mFALSE)
+MPlayer::MPlayer() : isQueried(false)
 {
 }
 
@@ -18,7 +18,7 @@ void MPlayer::set_cvar_query(const char *cvar)
 		return;
 	}
 
-	isQueried = mTRUE;
+	isQueried = true;
 	Q_strncpy(cvarName, cvar, sizeof cvarName - 1);
 	cvarName[sizeof cvarName - 1] = '\0';
 }
@@ -26,7 +26,7 @@ void MPlayer::set_cvar_query(const char *cvar)
 // Unmark player as querying a client cvar
 void MPlayer::clear_cvar_query(const char *cvar)
 {
-	isQueried = mFALSE;
+	isQueried = false;
 	cvarName[0] = '\0';
 }
 

@@ -13,7 +13,7 @@ public:
 	const char *is_querying_cvar() const;			// check if a player is querying a cvar. returns
 
 private:
-	mBOOL isQueried;					// is this player currently queried for a cvar value
+	bool isQueried;					// is this player currently queried for a cvar value
 	char cvarName[64];					// name of the cvar if getting queried
 };
 

@@ -323,7 +323,7 @@ int mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PLUG_LOADTI
 
 const char* mutil_IsQueryingClientCvar(plid_t plid, const edict_t* pEdict)
 {
-	return g_Players.is_querying_cvar(pEdict);
+	return g_players.is_querying_cvar(pEdict);
 }
 
 int mutil_MakeRequestId(plid_t plid)

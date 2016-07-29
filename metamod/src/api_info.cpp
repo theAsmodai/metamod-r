@@ -1,234 +1,239 @@
 #include "precompiled.h"
 
+#define API_ENTRY(table, name, loglevel)	{ offsetof(table, pfn##name), #table "::" #name, loglevel }
+#define DLLAPI_ENTRY(name, loglevel)		API_ENTRY(DLL_FUNCTIONS, name, loglevel)
+#define NEWAPI_ENTRY(name, loglevel)		API_ENTRY(NEW_DLL_FUNCTIONS, name, loglevel)
+#define ENGAPI_ENTRY(name, loglevel)		API_ENTRY(enginefuncs_t, name, loglevel)
+
 // trace flag, loglevel, name
 dllapi_info_t dllapi_info = {
-	{ mFALSE, 3,	"GameDLLInit" },		// pfnGameInit
-	{ mFALSE, 10,	"DispatchSpawn" },		// pfnSpawn
-	{ mFALSE, 16,	"DispatchThink" },		// pfnThink
-	{ mFALSE, 9,	"DispatchUse" },		// pfnUse
-	{ mFALSE, 11,	"DispatchTouch" },		// pfnTouch
-	{ mFALSE, 9,	"DispatchBlocked" },		// pfnBlocked
-	{ mFALSE, 10,	"DispatchKeyValue" },		// pfnKeyValue
-	{ mFALSE, 9,	"DispatchSave" },		// pfnSave
-	{ mFALSE, 9,	"DispatchRestore" },		// pfnRestore
-	{ mFALSE, 20,	"DispatchObjectCollsionBox" },	// pfnSetAbsBox
-	{ mFALSE, 9,	"SaveWriteFields" },		// pfnSaveWriteFields
-	{ mFALSE, 9,	"SaveReadFields" },		// pfnSaveReadFields
-	{ mFALSE, 9,	"SaveGlobalState" },		// pfnSaveGlobalState
-	{ mFALSE, 9,	"RestoreGlobalState" },		// pfnRestoreGlobalState
-	{ mFALSE, 9,	"ResetGlobalState" },		// pfnResetGlobalState
-	{ mFALSE, 3,	"ClientConnect" },		// pfnClientConnect
-	{ mFALSE, 3,	"ClientDisconnect" },		// pfnClientDisconnect
-	{ mFALSE, 3,	"ClientKill" },			// pfnClientKill
-	{ mFALSE, 3,	"ClientPutInServer" },		// pfnClientPutInServer
-	{ mFALSE, 9,	"ClientCommand" },		// pfnClientCommand
-	{ mFALSE, 11,	"ClientUserInfoChanged" },	// pfnClientUserInfoChanged
-	{ mFALSE, 3,	"ServerActivate" },		// pfnServerActivate
-	{ mFALSE, 3,	"ServerDeactivate" },		// pfnServerDeactivate
-	{ mFALSE, 14,	"PlayerPreThink" },		// pfnPlayerPreThink
-	{ mFALSE, 14,	"PlayerPostThink" },		// pfnPlayerPostThink
-	{ mFALSE, 18,	"StartFrame" },			// pfnStartFrame
-	{ mFALSE, 9,	"ParmsNewLevel" },		// pfnParmsNewLevel
-	{ mFALSE, 9,	"ParmsChangeLevel" },		// pfnParmsChangeLevel
-	{ mFALSE, 9,	"GetGameDescription" },		// pfnGetGameDescription
-	{ mFALSE, 9,	"PlayerCustomization" },	// pfnPlayerCustomization
-	{ mFALSE, 9,	"SpectatorConnect" },		// pfnSpectatorConnect
-	{ mFALSE, 9,	"SpectatorDisconnect" },	// pfnSpectatorDisconnect
-	{ mFALSE, 9,	"SpectatorThink" },		// pfnSpectatorThink
-	{ mFALSE, 3,	"Sys_Error" },			// pfnSys_Error
-	{ mFALSE, 13,	"PM_Move" },			// pfnPM_Move
-	{ mFALSE, 9,	"PM_Init" },			// pfnPM_Init
-	{ mFALSE, 9,	"PM_FindTextureType" },		// pfnPM_FindTextureType
-	{ mFALSE, 12,	"SetupVisibility" },		// pfnSetupVisibility
-	{ mFALSE, 12,	"UpdateClientData" },		// pfnUpdateClientData
-	{ mFALSE, 16,	"AddToFullPack" },		// pfnAddToFullPack
-	{ mFALSE, 9,	"CreateBaseline" },		// pfnCreateBaseline
-	{ mFALSE, 9,	"RegisterEncoders" },		// pfnRegisterEncoders
-	{ mFALSE, 9,	"GetWeaponData" },		// pfnGetWeaponData
-	{ mFALSE, 15,	"CmdStart" },			// pfnCmdStart
-	{ mFALSE, 15,	"CmdEnd" },			// pfnCmdEnd
-	{ mFALSE, 9,	"ConnectionlessPacket" },	// pfnConnectionlessPacket
-	{ mFALSE, 9,	"GetHullBounds" },		// pfnGetHullBounds
-	{ mFALSE, 9,	"CreateInstancedBaselines" },	// pfnCreateInstancedBaselines
-	{ mFALSE, 3,	"InconsistentFile" },		// pfnInconsistentFile
-	{ mFALSE, 20,	"AllowLagCompensation" },	// pfnAllowLagCompensation
+	DLLAPI_ENTRY(GameInit, 1),		// pfnGameInit
+	DLLAPI_ENTRY(Spawn, 2),		// pfnSpawn
+	DLLAPI_ENTRY(Think, 2),		// pfnThink
+	DLLAPI_ENTRY(Use, 2),		// pfnUse
+	DLLAPI_ENTRY(Touch, 2),		// pfnTouch
+	DLLAPI_ENTRY(Blocked, 2),		// pfnBlocked
+	DLLAPI_ENTRY(KeyValue, 4),		// pfnKeyValue
+	DLLAPI_ENTRY(Save, 4),		// pfnSave
+	DLLAPI_ENTRY(Restore, 4),		// pfnRestore
+	DLLAPI_ENTRY(SetAbsBox, 2),	// pfnSetAbsBox
+	DLLAPI_ENTRY(SaveWriteFields, 4),		// pfnSaveWriteFields
+	DLLAPI_ENTRY(SaveReadFields, 4),		// pfnSaveReadFields
+	DLLAPI_ENTRY(SaveGlobalState, 4),		// pfnSaveGlobalState
+	DLLAPI_ENTRY(RestoreGlobalState, 4),		// pfnRestoreGlobalState
+	DLLAPI_ENTRY(ResetGlobalState, 4),		// pfnResetGlobalState
+	DLLAPI_ENTRY(ClientConnect, 1),		// pfnClientConnect
+	DLLAPI_ENTRY(ClientDisconnect, 1),		// pfnClientDisconnect
+	DLLAPI_ENTRY(ClientKill, 2),			// pfnClientKill
+	DLLAPI_ENTRY(ClientPutInServer, 1),		// pfnClientPutInServer
+	DLLAPI_ENTRY(ClientCommand, 2),		// pfnClientCommand
+	DLLAPI_ENTRY(ClientUserInfoChanged, 2),	// pfnClientUserInfoChanged
+	DLLAPI_ENTRY(ServerActivate, 1),		// pfnServerActivate
+	DLLAPI_ENTRY(ServerDeactivate, 1),		// pfnServerDeactivate
+	DLLAPI_ENTRY(PlayerPreThink, 3),		// pfnPlayerPreThink
+	DLLAPI_ENTRY(PlayerPostThink, 3),		// pfnPlayerPostThink
+	DLLAPI_ENTRY(StartFrame, 4),			// pfnStartFrame
+	DLLAPI_ENTRY(ParmsNewLevel, 4),		// pfnParmsNewLevel
+	DLLAPI_ENTRY(ParmsChangeLevel, 4),		// pfnParmsChangeLevel
+	DLLAPI_ENTRY(GetGameDescription, 3),		// pfnGetGameDescription
+	DLLAPI_ENTRY(PlayerCustomization, 4),	// pfnPlayerCustomization
+	DLLAPI_ENTRY(SpectatorConnect, 3),		// pfnSpectatorConnect
+	DLLAPI_ENTRY(SpectatorDisconnect, 3),	// pfnSpectatorDisconnect
+	DLLAPI_ENTRY(SpectatorThink, 3),		// pfnSpectatorThink
+	DLLAPI_ENTRY(Sys_Error, 4),			// pfnSys_Error
+	DLLAPI_ENTRY(PM_Move, 3),			// pfnPM_Move
+	DLLAPI_ENTRY(PM_Init, 1),			// pfnPM_Init
+	DLLAPI_ENTRY(PM_FindTextureType, 3),		// pfnPM_FindTextureType
+	DLLAPI_ENTRY(SetupVisibility, 3),		// pfnSetupVisibility
+	DLLAPI_ENTRY(UpdateClientData, 3),		// pfnUpdateClientData
+	DLLAPI_ENTRY(AddToFullPack, 3),		// pfnAddToFullPack
+	DLLAPI_ENTRY(CreateBaseline, 4),		// pfnCreateBaseline
+	DLLAPI_ENTRY(RegisterEncoders, 4),		// pfnRegisterEncoders
+	DLLAPI_ENTRY(GetWeaponData, 3),		// pfnGetWeaponData
+	DLLAPI_ENTRY(CmdStart, 3),			// pfnCmdStart
+	DLLAPI_ENTRY(CmdEnd, 3),			// pfnCmdEnd
+	DLLAPI_ENTRY(ConnectionlessPacket, 4),	// pfnConnectionlessPacket
+	DLLAPI_ENTRY(GetHullBounds, 3),		// pfnGetHullBounds
+	DLLAPI_ENTRY(CreateInstancedBaselines, 4),	// pfnCreateInstancedBaselines
+	DLLAPI_ENTRY(InconsistentFile, 3),		// pfnInconsistentFile
+	DLLAPI_ENTRY(AllowLagCompensation, 4),	// pfnAllowLagCompensation
 
-	{ mFALSE, 0, nullptr },
+	{ 0, "", 0 },
 };
 
 newapi_info_t newapi_info = {
-	{ mFALSE, 16,	"OnFreeEntPrivateData" },	// pfnOnFreeEntPrivateData
-	{ mFALSE, 3,	"GameShutdown" },		// pfnGameShutdown
-	{ mFALSE, 14,	"ShouldCollide" },		// pfnShouldCollide
-	{ mFALSE, 3,	"CvarValue" },			// pfnCvarValue
-	{ mFALSE, 3,	"CvarValue2" },			// pfnCvarValue2
+	NEWAPI_ENTRY(OnFreeEntPrivateData, 3),	// pfnOnFreeEntPrivateData
+	NEWAPI_ENTRY(GameShutdown, 3),		// pfnGameShutdown
+	NEWAPI_ENTRY(ShouldCollide, 3),		// pfnShouldCollide
+	NEWAPI_ENTRY(CvarValue, 2),			// pfnCvarValue
+	NEWAPI_ENTRY(CvarValue2, 2),			// pfnCvarValue2
 
-	{ mFALSE, 0, nullptr },
+	{ 0, "", 0 },
 };
 
 engine_info_t engine_info = {
-	{ mFALSE, 13,	"PrecacheModel" },		// pfnPrecacheModel
-	{ mFALSE, 13,	"PrecacheSound" },		// pfnPrecacheSound
-	{ mFALSE, 18,	"SetModel" },			// pfnSetModel
-	{ mFALSE, 34,	"ModelIndex" },			// pfnModelIndex
-	{ mFALSE, 10,	"ModelFrames" },		// pfnModelFrames
-	{ mFALSE, 14,	"SetSize" },			// pfnSetSize
-	{ mFALSE, 9,	"ChangeLevel" },		// pfnChangeLevel
-	{ mFALSE, 9,	"GetSpawnParms" },		// pfnGetSpawnParms
-	{ mFALSE, 9,	"SaveSpawnParms" },		// pfnSaveSpawnParms
-	{ mFALSE, 9,	"VecToYaw" },			// pfnVecToYaw
-	{ mFALSE, 14,	"VecToAngles" },		// pfnVecToAngles
-	{ mFALSE, 9,	"MoveToOrigin" },		// pfnMoveToOrigin
-	{ mFALSE, 9,	"ChangeYaw" },			// pfnChangeYaw
-	{ mFALSE, 9,	"ChangePitch" },		// pfnChangePitch
-	{ mFALSE, 32,	"FindEntityByString" },		// pfnFindEntityByString
-	{ mFALSE, 9,	"GetEntityIllum" },		// pfnGetEntityIllum
-	{ mFALSE, 9,	"FindEntityInSphere" },		// pfnFindEntityInSphere
-	{ mFALSE, 19,	"FindClientInPVS" },		// pfnFindClientInPVS
-	{ mFALSE, 9,	"EntitiesInPVS" },		// pfnEntitiesInPVS
-	{ mFALSE, 40,	"MakeVectors" },		// pfnMakeVectors
-	{ mFALSE, 9,	"AngleVectors" },		// pfnAngleVectors
-	{ mFALSE, 13,	"CreateEntity" },		// pfnCreateEntity
-	{ mFALSE, 13,	"RemoveEntity" },		// pfnRemoveEntity
-	{ mFALSE, 13,	"CreateNamedEntity" },		// pfnCreateNamedEntity
-	{ mFALSE, 9,	"MakeStatic" },			// pfnMakeStatic
-	{ mFALSE, 9,	"EntIsOnFloor" },		// pfnEntIsOnFloor
-	{ mFALSE, 9,	"DropToFloor" },		// pfnDropToFloor
-	{ mFALSE, 9,	"WalkMove" },			// pfnWalkMove
-	{ mFALSE, 14,	"SetOrigin" },			// pfnSetOrigin
-	{ mFALSE, 12,	"EmitSound" },			// pfnEmitSound
-	{ mFALSE, 12,	"EmitAmbientSound" },		// pfnEmitAmbientSound
-	{ mFALSE, 20,	"TraceLine" },			// pfnTraceLine
-	{ mFALSE, 9,	"TraceToss" },			// pfnTraceToss
-	{ mFALSE, 9,	"TraceMonsterHull" },		// pfnTraceMonsterHull
-	{ mFALSE, 9,	"TraceHull" },			// pfnTraceHull
-	{ mFALSE, 9,	"TraceModel" },			// pfnTraceModel
-	{ mFALSE, 15,	"TraceTexture" },		// pfnTraceTexture		// CS: when moving
-	{ mFALSE, 9,	"TraceSphere" },		// pfnTraceSphere
-	{ mFALSE, 9,	"GetAimVector" },		// pfnGetAimVector
-	{ mFALSE, 9,	"ServerCommand" },		// pfnServerCommand
-	{ mFALSE, 9,	"ServerExecute" },		// pfnServerExecute
-	{ mFALSE, 11,	"engClientCommand" },		// pfnClientCommand		// d'oh, ClientCommand in dllapi too
-	{ mFALSE, 9,	"ParticleEffect" },		// pfnParticleEffect
-	{ mFALSE, 9,	"LightStyle" },			// pfnLightStyle
-	{ mFALSE, 9,	"DecalIndex" },			// pfnDecalIndex
-	{ mFALSE, 15,	"PointContents" },		// pfnPointContents		// CS: when moving
-	{ mFALSE, 22,	"MessageBegin" },		// pfnMessageBegin
-	{ mFALSE, 22,	"MessageEnd" },			// pfnMessageEnd
-	{ mFALSE, 30,	"WriteByte" },			// pfnWriteByte
-	{ mFALSE, 23,	"WriteChar" },			// pfnWriteChar
-	{ mFALSE, 24,	"WriteShort" },			// pfnWriteShort
-	{ mFALSE, 23,	"WriteLong" },			// pfnWriteLong
-	{ mFALSE, 23,	"WriteAngle" },			// pfnWriteAngle
-	{ mFALSE, 23,	"WriteCoord" },			// pfnWriteCoord
-	{ mFALSE, 25,	"WriteString" },		// pfnWriteString
-	{ mFALSE, 23,	"WriteEntity" },		// pfnWriteEntity
-	{ mFALSE, 9,	"CVarRegister" },		// pfnCVarRegister
-	{ mFALSE, 21,	"CVarGetFloat" },		// pfnCVarGetFloat
-	{ mFALSE, 9,	"CVarGetString" },		// pfnCVarGetString
-	{ mFALSE, 10,	"CVarSetFloat" },		// pfnCVarSetFloat
-	{ mFALSE, 9,	"CVarSetString" },		// pfnCVarSetString
-	{ mFALSE, 15,	"AlertMessage" },		// pfnAlertMessage
-	{ mFALSE, 17,	"EngineFprintf" },		// pfnEngineFprintf
-	{ mFALSE, 14,	"PvAllocEntPrivateData" },	// pfnPvAllocEntPrivateData
-	{ mFALSE, 9,	"PvEntPrivateData" },		// pfnPvEntPrivateData
-	{ mFALSE, 9,	"FreeEntPrivateData" },		// pfnFreeEntPrivateData
-	{ mFALSE, 9,	"SzFromIndex" },		// pfnSzFromIndex
-	{ mFALSE, 10,	"AllocString" },		// pfnAllocString
-	{ mFALSE, 9,	"GetVarsOfEnt" },		// pfnGetVarsOfEnt
-	{ mFALSE, 14,	"PEntityOfEntOffset" },		// pfnPEntityOfEntOffset
-	{ mFALSE, 19,	"EntOffsetOfPEntity" },		// pfnEntOffsetOfPEntity
-	{ mFALSE, 14,	"IndexOfEdict" },		// pfnIndexOfEdict
-	{ mFALSE, 17,	"PEntityOfEntIndex" },		// pfnPEntityOfEntIndex
-	{ mFALSE, 9,	"FindEntityByVars" },		// pfnFindEntityByVars
-	{ mFALSE, 14,	"GetModelPtr" },		// pfnGetModelPtr
-	{ mFALSE, 9,	"RegUserMsg" },			// pfnRegUserMsg
-	{ mFALSE, 9,	"AnimationAutomove" },		// pfnAnimationAutomove
-	{ mFALSE, 9,	"GetBonePosition" },		// pfnGetBonePosition
-	{ mFALSE, 9,	"FunctionFromName" },		// pfnFunctionFromName
-	{ mFALSE, 9,	"NameForFunction" },		// pfnNameForFunction
-	{ mFALSE, 9,	"ClientPrintf" },		// pfnClientPrintf
-	{ mFALSE, 9,	"ServerPrint" },		// pfnServerPrint
-	{ mFALSE, 13,	"Cmd_Args" },			// pfnCmd_Args
-	{ mFALSE, 13,	"Cmd_Argv" },			// pfnCmd_Argv
-	{ mFALSE, 13,	"Cmd_Argc" },			// pfnCmd_Argc
-	{ mFALSE, 9,	"GetAttachment" },		// pfnGetAttachment
-	{ mFALSE, 9,	"CRC32_Init" },			// pfnCRC32_Init
-	{ mFALSE, 9,	"CRC32_ProcessBuffer" },	// pfnCRC32_ProcessBuffer
-	{ mFALSE, 9,	"CRC32_ProcessByte" },		// pfnCRC32_ProcessByte
-	{ mFALSE, 9,	"CRC32_Final" },		// pfnCRC32_Final
-	{ mFALSE, 16,	"RandomLong" },			// pfnRandomLong
-	{ mFALSE, 14,	"RandomFloat" },		// pfnRandomFloat		// CS: when firing
-	{ mFALSE, 14,	"SetView" },			// pfnSetView
-	{ mFALSE, 9,	"Time" },			// pfnTime
-	{ mFALSE, 9,	"CrosshairAngle" },		// pfnCrosshairAngle
-	{ mFALSE, 10,	"LoadFileForMe" },		// pfnLoadFileForMe
-	{ mFALSE, 10,	"FreeFile" },			// pfnFreeFile
-	{ mFALSE, 9,	"EndSection" },			// pfnEndSection
-	{ mFALSE, 9,	"CompareFileTime" },		// pfnCompareFileTime
-	{ mFALSE, 9,	"GetGameDir" },			// pfnGetGameDir
-	{ mFALSE, 9,	"Cvar_RegisterVariable" },	// pfnCvar_RegisterVariable
-	{ mFALSE, 9,	"FadeClientVolume" },		// pfnFadeClientVolume
-	{ mFALSE, 14,	"SetClientMaxspeed" },		// pfnSetClientMaxspeed
-	{ mFALSE, 9,	"CreateFakeClient" },		// pfnCreateFakeClient
-	{ mFALSE, 9,	"RunPlayerMove" },		// pfnRunPlayerMove
-	{ mFALSE, 9,	"NumberOfEntities" },		// pfnNumberOfEntities
-	{ mFALSE, 17,	"GetInfoKeyBuffer" },		// pfnGetInfoKeyBuffer
-	{ mFALSE, 13,	"InfoKeyValue" },		// pfnInfoKeyValue
-	{ mFALSE, 9,	"SetKeyValue" },		// pfnSetKeyValue
-	{ mFALSE, 12,	"SetClientKeyValue" },		// pfnSetClientKeyValue
-	{ mFALSE, 9,	"IsMapValid" },			// pfnIsMapValid
-	{ mFALSE, 9,	"StaticDecal" },		// pfnStaticDecal
-	{ mFALSE, 9,	"PrecacheGeneric" },		// pfnPrecacheGeneric
-	{ mFALSE, 10,	"GetPlayerUserId" },		// pfnGetPlayerUserId
-	{ mFALSE, 9,	"BuildSoundMsg" },		// pfnBuildSoundMsg
-	{ mFALSE, 9,	"IsDedicatedServer" },		// pfnIsDedicatedServer
-	{ mFALSE, 9,	"CVarGetPointer" },		// pfnCVarGetPointer
-	{ mFALSE, 9,	"GetPlayerWONId" },		// pfnGetPlayerWONId
-	{ mFALSE, 9,	"Info_RemoveKey" },		// pfnInfo_RemoveKey
-	{ mFALSE, 15,	"GetPhysicsKeyValue" },		// pfnGetPhysicsKeyValue
-	{ mFALSE, 14,	"SetPhysicsKeyValue" },		// pfnSetPhysicsKeyValue
-	{ mFALSE, 15,	"GetPhysicsInfoString" },	// pfnGetPhysicsInfoString
-	{ mFALSE, 13,	"PrecacheEvent" },		// pfnPrecacheEvent
-	{ mFALSE, 9,	"PlaybackEvent" },		// pfnPlaybackEvent
-	{ mFALSE, 31,	"SetFatPVS" },			// pfnSetFatPVS
-	{ mFALSE, 31,	"SetFatPAS" },			// pfnSetFatPAS
-	{ mFALSE, 50,	"CheckVisibility" },		// pfnCheckVisibility
-	{ mFALSE, 37,	"DeltaSetField" },		// pfnDeltaSetField
-	{ mFALSE, 38,	"DeltaUnsetField" },		// pfnDeltaUnsetField
-	{ mFALSE, 9,	"DeltaAddEncoder" },		// pfnDeltaAddEncoder
-	{ mFALSE, 45,	"GetCurrentPlayer" },		// pfnGetCurrentPlayer
-	{ mFALSE, 14,	"CanSkipPlayer" },		// pfnCanSkipPlayer
-	{ mFALSE, 9,	"DeltaFindField" },		// pfnDeltaFindField
-	{ mFALSE, 37,	"DeltaSetFieldByIndex" },	// pfnDeltaSetFieldByIndex
-	{ mFALSE, 38,	"DeltaUnsetFieldByIndex" },	// pfnDeltaUnsetFieldByIndex
-	{ mFALSE, 9,	"SetGroupMask" },		// pfnSetGroupMask
-	{ mFALSE, 9,	"engCreateInstancedBaseline" },	// pfnCreateInstancedBaseline		// d'oh, CreateInstancedBaseline in dllapi too
-	{ mFALSE, 9,	"Cvar_DirectSet" },		// pfnCvar_DirectSet
-	{ mFALSE, 9,	"ForceUnmodified" },		// pfnForceUnmodified
-	{ mFALSE, 9,	"GetPlayerStats" },		// pfnGetPlayerStats
-	{ mFALSE, 3,	"AddServerCommand" },		// pfnAddServerCommand
+	ENGAPI_ENTRY(PrecacheModel, 2),		// pfnPrecacheModel
+	ENGAPI_ENTRY(PrecacheSound, 2),		// pfnPrecacheSound
+	ENGAPI_ENTRY(SetModel, 2),			// pfnSetModel
+	ENGAPI_ENTRY(ModelIndex, 2),			// pfnModelIndex
+	ENGAPI_ENTRY(ModelFrames, 3),		// pfnModelFrames
+	ENGAPI_ENTRY(SetSize, 2),			// pfnSetSize
+	ENGAPI_ENTRY(ChangeLevel, 2),		// pfnChangeLevel
+	ENGAPI_ENTRY(GetSpawnParms, 4),		// pfnGetSpawnParms
+	ENGAPI_ENTRY(SaveSpawnParms, 4),		// pfnSaveSpawnParms
+	ENGAPI_ENTRY(VecToYaw, 3),			// pfnVecToYaw
+	ENGAPI_ENTRY(VecToAngles, 3),		// pfnVecToAngles
+	ENGAPI_ENTRY(MoveToOrigin, 3),		// pfnMoveToOrigin
+	ENGAPI_ENTRY(ChangeYaw, 3),			// pfnChangeYaw
+	ENGAPI_ENTRY(ChangePitch, 3),		// pfnChangePitch
+	ENGAPI_ENTRY(FindEntityByString, 2),		// pfnFindEntityByString
+	ENGAPI_ENTRY(GetEntityIllum, 4),		// pfnGetEntityIllum
+	ENGAPI_ENTRY(FindEntityInSphere, 2),		// pfnFindEntityInSphere
+	ENGAPI_ENTRY(FindClientInPVS, 2),		// pfnFindClientInPVS
+	ENGAPI_ENTRY(EntitiesInPVS, 2),		// pfnEntitiesInPVS
+	ENGAPI_ENTRY(MakeVectors, 3),		// pfnMakeVectors
+	ENGAPI_ENTRY(AngleVectors, 3),		// pfnAngleVectors
+	ENGAPI_ENTRY(CreateEntity, 2),		// pfnCreateEntity
+	ENGAPI_ENTRY(RemoveEntity, 2),		// pfnRemoveEntity
+	ENGAPI_ENTRY(CreateNamedEntity, 2),		// pfnCreateNamedEntity
+	ENGAPI_ENTRY(MakeStatic, 2),			// pfnMakeStatic
+	ENGAPI_ENTRY(EntIsOnFloor, 2),		// pfnEntIsOnFloor
+	ENGAPI_ENTRY(DropToFloor, 2),		// pfnDropToFloor
+	ENGAPI_ENTRY(WalkMove, 2),			// pfnWalkMove
+	ENGAPI_ENTRY(SetOrigin, 2),			// pfnSetOrigin
+	ENGAPI_ENTRY(EmitSound, 2),			// pfnEmitSound
+	ENGAPI_ENTRY(EmitAmbientSound, 2),		// pfnEmitAmbientSound
+	ENGAPI_ENTRY(TraceLine, 2),			// pfnTraceLine
+	ENGAPI_ENTRY(TraceToss, 2),			// pfnTraceToss
+	ENGAPI_ENTRY(TraceMonsterHull, 2),		// pfnTraceMonsterHull
+	ENGAPI_ENTRY(TraceHull, 2),			// pfnTraceHull
+	ENGAPI_ENTRY(TraceModel, 2),			// pfnTraceModel
+	ENGAPI_ENTRY(TraceTexture, 2),		// pfnTraceTexture		// CS: when moving
+	ENGAPI_ENTRY(TraceSphere, 2),		// pfnTraceSphere
+	ENGAPI_ENTRY(GetAimVector, 2),		// pfnGetAimVector
+	ENGAPI_ENTRY(ServerCommand, 3),		// pfnServerCommand
+	ENGAPI_ENTRY(ServerExecute, 3),		// pfnServerExecute
+	ENGAPI_ENTRY(ClientCommand, 3),		// pfnClientCommand		// d'oh, ClientCommand in dllapi too
+	ENGAPI_ENTRY(ParticleEffect, 4),		// pfnParticleEffect
+	ENGAPI_ENTRY(LightStyle, 2),			// pfnLightStyle
+	ENGAPI_ENTRY(DecalIndex, 2),			// pfnDecalIndex
+	ENGAPI_ENTRY(PointContents, 2),		// pfnPointContents		// CS: when moving
+	ENGAPI_ENTRY(MessageBegin, 3),		// pfnMessageBegin
+	ENGAPI_ENTRY(MessageEnd, 3),			// pfnMessageEnd
+	ENGAPI_ENTRY(WriteByte, 3),			// pfnWriteByte
+	ENGAPI_ENTRY(WriteChar, 3),			// pfnWriteChar
+	ENGAPI_ENTRY(WriteShort, 3),			// pfnWriteShort
+	ENGAPI_ENTRY(WriteLong, 3),			// pfnWriteLong
+	ENGAPI_ENTRY(WriteAngle, 3),			// pfnWriteAngle
+	ENGAPI_ENTRY(WriteCoord, 3),			// pfnWriteCoord
+	ENGAPI_ENTRY(WriteString, 3),		// pfnWriteString
+	ENGAPI_ENTRY(WriteEntity, 3),		// pfnWriteEntity
+	ENGAPI_ENTRY(CVarRegister, 2),		// pfnCVarRegister
+	ENGAPI_ENTRY(CVarGetFloat, 2),		// pfnCVarGetFloat
+	ENGAPI_ENTRY(CVarGetString, 2),		// pfnCVarGetString
+	ENGAPI_ENTRY(CVarSetFloat, 2),		// pfnCVarSetFloat
+	ENGAPI_ENTRY(CVarSetString, 2),		// pfnCVarSetString
+	ENGAPI_ENTRY(AlertMessage, 3),		// pfnAlertMessage
+	ENGAPI_ENTRY(EngineFprintf, 3),		// pfnEngineFprintf
+	ENGAPI_ENTRY(PvAllocEntPrivateData, 2),	// pfnPvAllocEntPrivateData
+	ENGAPI_ENTRY(PvEntPrivateData, 2),		// pfnPvEntPrivateData
+	ENGAPI_ENTRY(FreeEntPrivateData, 2),		// pfnFreeEntPrivateData
+	ENGAPI_ENTRY(SzFromIndex, 3),		// pfnSzFromIndex
+	ENGAPI_ENTRY(AllocString, 3),		// pfnAllocString
+	ENGAPI_ENTRY(GetVarsOfEnt, 2),		// pfnGetVarsOfEnt
+	ENGAPI_ENTRY(PEntityOfEntOffset, 3),		// pfnPEntityOfEntOffset
+	ENGAPI_ENTRY(EntOffsetOfPEntity, 3),		// pfnEntOffsetOfPEntity
+	ENGAPI_ENTRY(IndexOfEdict, 3),		// pfnIndexOfEdict
+	ENGAPI_ENTRY(PEntityOfEntIndex, 3),		// pfnPEntityOfEntIndex
+	ENGAPI_ENTRY(FindEntityByVars, 3),		// pfnFindEntityByVars
+	ENGAPI_ENTRY(GetModelPtr, 3),		// pfnGetModelPtr
+	ENGAPI_ENTRY(RegUserMsg, 3),			// pfnRegUserMsg
+	ENGAPI_ENTRY(AnimationAutomove, 2),		// pfnAnimationAutomove
+	ENGAPI_ENTRY(GetBonePosition, 2),		// pfnGetBonePosition
+	ENGAPI_ENTRY(FunctionFromName, 4),		// pfnFunctionFromName
+	ENGAPI_ENTRY(NameForFunction, 4),		// pfnNameForFunction
+	ENGAPI_ENTRY(ClientPrintf, 3),		// pfnClientPrintf
+	ENGAPI_ENTRY(ServerPrint, 3),		// pfnServerPrint
+	ENGAPI_ENTRY(Cmd_Args, 3),			// pfnCmd_Args
+	ENGAPI_ENTRY(Cmd_Argv, 3),			// pfnCmd_Argv
+	ENGAPI_ENTRY(Cmd_Argc, 3),			// pfnCmd_Argc
+	ENGAPI_ENTRY(GetAttachment, 2),		// pfnGetAttachment
+	ENGAPI_ENTRY(CRC32_Init, 4),			// pfnCRC32_Init
+	ENGAPI_ENTRY(CRC32_ProcessBuffer, 4),	// pfnCRC32_ProcessBuffer
+	ENGAPI_ENTRY(CRC32_ProcessByte, 4),		// pfnCRC32_ProcessByte
+	ENGAPI_ENTRY(CRC32_Final, 4),		// pfnCRC32_Final
+	ENGAPI_ENTRY(RandomLong, 3),			// pfnRandomLong
+	ENGAPI_ENTRY(RandomFloat, 3),		// pfnRandomFloat		// CS: when firing
+	ENGAPI_ENTRY(SetView, 2),			// pfnSetView
+	ENGAPI_ENTRY(Time, 2),			// pfnTime
+	ENGAPI_ENTRY(CrosshairAngle, 2),		// pfnCrosshairAngle
+	ENGAPI_ENTRY(LoadFileForMe, 4),		// pfnLoadFileForMe
+	ENGAPI_ENTRY(FreeFile, 4),			// pfnFreeFile
+	ENGAPI_ENTRY(EndSection, 4),			// pfnEndSection
+	ENGAPI_ENTRY(CompareFileTime, 4),		// pfnCompareFileTime
+	ENGAPI_ENTRY(GetGameDir, 3),			// pfnGetGameDir
+	ENGAPI_ENTRY(Cvar_RegisterVariable, 2),	// pfnCvar_RegisterVariable
+	ENGAPI_ENTRY(FadeClientVolume, 2),		// pfnFadeClientVolume
+	ENGAPI_ENTRY(SetClientMaxspeed, 3),		// pfnSetClientMaxspeed
+	ENGAPI_ENTRY(CreateFakeClient, 2),		// pfnCreateFakeClient
+	ENGAPI_ENTRY(RunPlayerMove, 3),		// pfnRunPlayerMove
+	ENGAPI_ENTRY(NumberOfEntities, 2),		// pfnNumberOfEntities
+	ENGAPI_ENTRY(GetInfoKeyBuffer, 2),		// pfnGetInfoKeyBuffer
+	ENGAPI_ENTRY(InfoKeyValue, 2),		// pfnInfoKeyValue
+	ENGAPI_ENTRY(SetKeyValue, 2),		// pfnSetKeyValue
+	ENGAPI_ENTRY(SetClientKeyValue, 2),		// pfnSetClientKeyValue
+	ENGAPI_ENTRY(IsMapValid, 2),			// pfnIsMapValid
+	ENGAPI_ENTRY(StaticDecal, 2),		// pfnStaticDecal
+	ENGAPI_ENTRY(PrecacheGeneric, 2),		// pfnPrecacheGeneric
+	ENGAPI_ENTRY(GetPlayerUserId, 2),		// pfnGetPlayerUserId
+	ENGAPI_ENTRY(BuildSoundMsg, 2),		// pfnBuildSoundMsg
+	ENGAPI_ENTRY(IsDedicatedServer, 2),		// pfnIsDedicatedServer
+	ENGAPI_ENTRY(CVarGetPointer, 3),		// pfnCVarGetPointer
+	ENGAPI_ENTRY(GetPlayerWONId, 4),		// pfnGetPlayerWONId
+	ENGAPI_ENTRY(Info_RemoveKey, 2),		// pfnInfo_RemoveKey
+	ENGAPI_ENTRY(GetPhysicsKeyValue, 2),		// pfnGetPhysicsKeyValue
+	ENGAPI_ENTRY(SetPhysicsKeyValue, 2),		// pfnSetPhysicsKeyValue
+	ENGAPI_ENTRY(GetPhysicsInfoString, 2),	// pfnGetPhysicsInfoString
+	ENGAPI_ENTRY(PrecacheEvent, 2),		// pfnPrecacheEvent
+	ENGAPI_ENTRY(PlaybackEvent, 2),		// pfnPlaybackEvent
+	ENGAPI_ENTRY(SetFatPVS, 2),			// pfnSetFatPVS
+	ENGAPI_ENTRY(SetFatPAS, 2),			// pfnSetFatPAS
+	ENGAPI_ENTRY(CheckVisibility, 2),		// pfnCheckVisibility
+	ENGAPI_ENTRY(DeltaSetField, 3),		// pfnDeltaSetField
+	ENGAPI_ENTRY(DeltaUnsetField, 3),		// pfnDeltaUnsetField
+	ENGAPI_ENTRY(DeltaAddEncoder, 3),		// pfnDeltaAddEncoder
+	ENGAPI_ENTRY(GetCurrentPlayer, 2),		// pfnGetCurrentPlayer
+	ENGAPI_ENTRY(CanSkipPlayer, 2),		// pfnCanSkipPlayer
+	ENGAPI_ENTRY(DeltaFindField, 3),		// pfnDeltaFindField
+	ENGAPI_ENTRY(DeltaSetFieldByIndex, 3),	// pfnDeltaSetFieldByIndex
+	ENGAPI_ENTRY(DeltaUnsetFieldByIndex, 3),	// pfnDeltaUnsetFieldByIndex
+	ENGAPI_ENTRY(SetGroupMask, 2),		// pfnSetGroupMask
+	ENGAPI_ENTRY(CreateInstancedBaseline, 3),	// pfnCreateInstancedBaseline		// d'oh, CreateInstancedBaseline in dllapi too
+	ENGAPI_ENTRY(Cvar_DirectSet, 2),		// pfnCvar_DirectSet
+	ENGAPI_ENTRY(ForceUnmodified, 2),		// pfnForceUnmodified
+	ENGAPI_ENTRY(GetPlayerStats, 2),		// pfnGetPlayerStats
+	ENGAPI_ENTRY(AddServerCommand, 2),		// pfnAddServerCommand
 
-	{ mFALSE, 9,	"Voice_GetClientListening" },	// Voice_GetClientListening
-	{ mFALSE, 9,	"Voice_SetClientListening" },	// Voice_SetClientListening
-	{ mFALSE, 9,	"GetPlayerAuthId" },		// pfnGetPlayerAuthId
-	{ mFALSE, 30,	"SequenceGet" },		// pfnSequenceGet
+	ENGAPI_ENTRY(Voice_GetClientListening, 2),	// Voice_GetClientListening
+	ENGAPI_ENTRY(Voice_SetClientListening, 2),	// Voice_SetClientListening
+	ENGAPI_ENTRY(GetPlayerAuthId, 2),		// pfnGetPlayerAuthId
+	ENGAPI_ENTRY(SequenceGet, 2),		// pfnSequenceGet
 
-	{ mFALSE, 30,	"SequencePickSentence" },		// pfnSequencePickSentence
-	{ mFALSE, 30,	"GetFileSize" },			// pfnGetFileSize
-	{ mFALSE, 30,	"GetApproxWavePlayLen" },		// pfnGetApproxWavePlayLen
-	{ mFALSE, 30,	"IsCareerMatch" },			// pfnIsCareerMatch
-	{ mFALSE, 30,	"GetLocalizedStringLength" },		// pfnGetLocalizedStringLength
-	{ mFALSE, 30,	"RegisterTutorMessageShown" },		// pfnRegisterTutorMessageShown
-	{ mFALSE, 30,	"GetTimesTutorMessageShown" },		// pfnGetTimesTutorMessageShown
-	{ mFALSE, 30,	"ProcessTutorMessageDecayBuffer" },	// pfnProcessTutorMessageDecayBuffer
-	{ mFALSE, 30,	"ConstructTutorMessageDecayBuffer" },	// pfnConstructTutorMessageDecayBuffer
-	{ mFALSE, 9,	"ResetTutorMessageDecayData" },		// pfnResetTutorMessageDecayData
+	ENGAPI_ENTRY(SequencePickSentence, 2),		// pfnSequencePickSentence
+	ENGAPI_ENTRY(GetFileSize, 4),			// pfnGetFileSize
+	ENGAPI_ENTRY(GetApproxWavePlayLen, 4),		// pfnGetApproxWavePlayLen
+	ENGAPI_ENTRY(IsCareerMatch, 4),			// pfnIsCareerMatch
+	ENGAPI_ENTRY(GetLocalizedStringLength, 4),		// pfnGetLocalizedStringLength
+	ENGAPI_ENTRY(RegisterTutorMessageShown, 4),		// pfnRegisterTutorMessageShown
+	ENGAPI_ENTRY(GetTimesTutorMessageShown, 4),		// pfnGetTimesTutorMessageShown
+	ENGAPI_ENTRY(ProcessTutorMessageDecayBuffer, 4),	// pfnProcessTutorMessageDecayBuffer
+	ENGAPI_ENTRY(ConstructTutorMessageDecayBuffer, 4),	// pfnConstructTutorMessageDecayBuffer
+	ENGAPI_ENTRY(ResetTutorMessageDecayData, 4),		// pfnResetTutorMessageDecayData
 
-	{ mFALSE, 3,	"QueryClientCvarValue" },	//pfnQueryClientCvarValue
-	{ mFALSE, 3,	"QueryClientCvarValue2" },	//pfnQueryClientCvarValue2
-	{ mFALSE, 8,	"CheckParm" },			//pfnCheckParm
+	ENGAPI_ENTRY(QueryClientCvarValue, 2),	//pfnQueryClientCvarValue
+	ENGAPI_ENTRY(QueryClientCvarValue2, 2),	//pfnQueryClientCvarValue2
+	ENGAPI_ENTRY(EngCheckParm, 2),			//pfnCheckParm
 
 	// end
-	{ mFALSE, 0,	NULL },
+	{ 0, "", 0 },
 };

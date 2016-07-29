@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types_meta.h"		// mBOOL
+#include "types_meta.h"		// bool
 #include "mplugin.h"		// class MPlugin
 #include "plinfo.h"		// plid_t, etc
 
@@ -26,15 +26,15 @@ public:
 	MPlugin *find(DLHANDLE handle);			// find by handle
 	MPlugin *add(MPlugin *padd);
 
-	mBOOL found_child_plugins(int source_index);
+	bool found_child_plugins(int source_index) const;
 
-	mBOOL ini_startup(void);								// read inifile at startup
-	mBOOL ini_refresh(void);								// re-read inifile
-	mBOOL cmd_addload(const char *args);							// load from console command
+	bool ini_startup(void);								// read inifile at startup
+	bool ini_refresh(void);								// re-read inifile
+	bool cmd_addload(const char *args);							// load from console command
 	MPlugin *plugin_addload(plid_t plid, const char *fname, PLUG_LOADTIME now);		//load from plugin
 
-	mBOOL load(void);				// load the list, at startup
-	mBOOL refresh(PLUG_LOADTIME now);		// update from re-read inifile
+	bool load(void);				// load the list, at startup
+	bool refresh(PLUG_LOADTIME now);		// update from re-read inifile
 	void unpause_all(void);				// unpause any paused plugins
 	void retry_all(PLUG_LOADTIME now);		// retry any pending plugin actions
 	void show(int source_index = 0);		// list plugins to console

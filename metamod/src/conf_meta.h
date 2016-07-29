@@ -32,8 +32,8 @@ public:
 	char *exec_cfg;		// ie metaexec.cfg, exec.cfg
 
 	void init(option_t *global_options);
-	mBOOL load(const char *filename);
-	mBOOL set(const char *key, const char *value);
+	bool load(const char *filename);
+	bool set(const char *key, const char *value) const;
 	void show() const;
 
 private:
@@ -41,7 +41,7 @@ private:
 	char *filename;
 
 	option_t *find(const char *lookup) const;
-	static mBOOL set(option_t *setp, const char *value);
+	static bool set(option_t *setp, const char *value);
 	// Private; to satisfy -Weffc++ "has pointer data members but does
 	// not override" copy/assignment constructor.
 	void operator=(const MConfig &src);

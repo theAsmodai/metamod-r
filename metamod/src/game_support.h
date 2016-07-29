@@ -13,4 +13,4 @@ struct game_modinfo_t
 	const char *desc;		// our long-name description
 };
 
-mBOOL setup_gamedll(gamedll_t *gamedll);
+bool setup_gamedll(gamedll_t *gamedll);

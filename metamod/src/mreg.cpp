@@ -17,16 +17,16 @@ void MRegCmd::init(int idx)
 // meta_errno values:
 //  - ME_BADREQ		function disabled/invalid
 //  - ME_ARGUMENT	function pointer is null
-mBOOL MRegCmd::call()
+bool MRegCmd::call()
 {
-	mBOOL ret;
+	bool ret;
 
 	// can we expect to call this function?
 	if (status != RG_VALID)
-		RETURN_ERRNO(mFALSE, ME_BADREQ);
+		RETURN_ERRNO(false, ME_BADREQ);
 
 	if (!pfnCmd)
-		RETURN_ERRNO(mFALSE, ME_ARGUMENT);
+		RETURN_ERRNO(false, ME_ARGUMENT);
 
 	// try to call this function
 	ret = os_safe_call(pfnCmd);
@@ -43,14 +43,12 @@ mBOOL MRegCmd::call()
 	return ret;
 }
 
-MRegCmdList::MRegCmdList()
-	: mlist(0), size(REG_CMD_GROWSIZE), endlist(0)
+MRegCmdList::MRegCmdList() : mlist(0), size(REG_CMD_GROWSIZE), endlist(0)
 {
-	int i;
 	mlist = (MRegCmd *)Q_malloc(size * sizeof(MRegCmd));
 
 	// initialize array
-	for (i = 0; i < size; i++)
+	for (int i = 0; i < size; i++)
 		mlist[i].init(i + 1); // 1-based index
 
 	endlist = 0;
@@ -59,7 +57,7 @@ MRegCmdList::MRegCmdList()
 // Try to find a registered function with the given name.
 // meta_errno values:
 //  - ME_NOTFOUND	couldn't find a matching function
-MRegCmd *MRegCmdList::find(const char *findname)
+MRegCmd *MRegCmdList::find(const char *findname) const
 {
 	for (int i = 0; i < endlist; i++)
 	{
@@ -116,7 +114,7 @@ MRegCmd *MRegCmdList::add(const char *addname)
 }
 
 // Disable any functions belonging to the given plugin (by index id).
-void MRegCmdList::disable(int plugin_id)
+void MRegCmdList::disable(int plugin_id) const
 {
 	for (int i = 0; i < size; i++)
 	{
@@ -126,7 +124,7 @@ void MRegCmdList::disable(int plugin_id)
 }
 
 // List all the registered commands.
-void MRegCmdList::show()
+void MRegCmdList::show() const
 {
 	int n = 0, a = 0;
 	MRegCmd *icmd;
@@ -169,7 +167,7 @@ void MRegCmdList::show()
 }
 
 // List all the registered commands for the given plugin id.
-void MRegCmdList::show(int plugin_id)
+void MRegCmdList::show(int plugin_id) const
 {
 	int n = 0;
 	MRegCmd *icmd;
@@ -210,12 +208,12 @@ void MRegCvar::init(int idx)
 // Set the cvar, copying values from given cvar.
 // meta_errno values:
 //  - ME_ARGUMENT	given cvar doesn't match this cvar
-mBOOL MRegCvar::set(cvar_t *src)
+bool MRegCvar::set(cvar_t *src) const
 {
 	if (Q_stricmp(src->name, data->name))
 	{
 		META_ERROR("Tried to set cvar with mismatched name; src=%s dst=%s", src->name, data->name);
-		RETURN_ERRNO(mFALSE, ME_ARGUMENT);
+		RETURN_ERRNO(false, ME_ARGUMENT);
 	}
 
 	// Would like to free() existing string, but can't tell where it was
@@ -224,7 +222,7 @@ mBOOL MRegCvar::set(cvar_t *src)
 	data->flags = src->flags;
 	data->value = src->value;
 	data->next = src->next;
-	return mTRUE;
+	return true;
 }
 
 // Constructor
@@ -306,7 +304,7 @@ MRegCvar *MRegCvarList::find(const char *findname)
 }
 
 // Disable any cvars belonging to the given plugin (by index id).
-void MRegCvarList::disable(int plugin_id)
+void MRegCvarList::disable(int plugin_id) const
 {
 	int i;
 	MRegCvar *icvar;
@@ -325,7 +323,7 @@ void MRegCvarList::disable(int plugin_id)
 }
 
 // List all the registered cvars.
-void MRegCvarList::show()
+void MRegCvarList::show() const
 {
 	int i, n = 0, a = 0;
 	MRegCvar *icvar;
@@ -371,7 +369,7 @@ void MRegCvarList::show()
 }
 
 // List the registered cvars for the given plugin id.
-void MRegCvarList::show(int plugin_id)
+void MRegCvarList::show(int plugin_id) const
 {
 	int n = 0;
 	MRegCvar *icvar;

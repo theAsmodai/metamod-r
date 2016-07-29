@@ -1,5 +1,5 @@
 #pragma once
-#include "types_meta.h"		// mBOOL
+#include "types_meta.h"		// bool
 
 // Number of entries to add to reglists when they need to grow. Typically
 // more cvars than commands, so we grow them at different increments.
@@ -35,7 +35,7 @@ public:
 	REG_STATUS status;		// whether corresponding plugin is loaded
 
 	void init(int idx);		// init values, as not using constructors
-	mBOOL call();			// try to call the function
+	bool call();			// try to call the function
 
 private:
 	int index;			// 1-based
@@ -46,11 +46,11 @@ class MRegCmdList {
 public:
 	MRegCmdList();
 
-	MRegCmd *find(const char *findname);	// find by MRegCmd->name
+	MRegCmd *find(const char *findname) const;	// find by MRegCmd->name
 	MRegCmd *add(const char *addname);
-	void disable(int plugin_id);		// change status to Invalid
-	void show();				// list all funcs to console
-	void show(int plugin_id);		// list given plugin's funcs to console
+	void disable(int plugin_id) const;		// change status to Invalid
+	void show() const;				// list all funcs to console
+	void show(int plugin_id) const;		// list given plugin's funcs to console
 
 private:
 	MRegCmd *mlist;				// malloc'd array of registered commands
@@ -73,7 +73,7 @@ public:
 	REG_STATUS status;			// whether corresponding plugin is loaded
 
 	void init(int idx);			// init values, as not using constructors
-	mBOOL set(cvar_t *src);
+	bool set(cvar_t *src) const;
 
 private:
 	int index;				// 1-based
@@ -87,9 +87,9 @@ public:
 
 	MRegCvar *add(const char *addname);
 	MRegCvar *find(const char *findname);		// find by MRegCvar->data.name
-	void disable(int plugin_id);			// change status to Invalid
-	void show();					// list all cvars to console
-	void show(int plugin_id);			// list given plugin's cvars to console
+	void disable(int plugin_id) const;			// change status to Invalid
+	void show() const;					// list all cvars to console
+	void show(int plugin_id) const;			// list given plugin's cvars to console
 
 private:
 	MRegCvar *vlist;				// malloc'd array of registered cvars

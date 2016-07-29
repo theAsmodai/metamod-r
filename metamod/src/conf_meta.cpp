@@ -1,8 +1,6 @@
 #include "precompiled.h"
 
-MConfig::MConfig()
-	: list(nullptr), filename(nullptr), debuglevel(0),
-	plugins_file(nullptr), exec_cfg(nullptr)
+MConfig::MConfig() : debuglevel(0), plugins_file(nullptr), exec_cfg(nullptr), list(nullptr), filename(nullptr)
 {
 }
 
@@ -19,7 +17,7 @@ option_t *MConfig::find(const char* lookup) const
 {
 	for (auto optp = list; optp->name; optp++)
 	{
-		if (!Q_strcmp(optp->name, lookup)) {
+		if (!strcmp(optp->name, lookup)) {
 			return optp;
 		}
 	}
@@ -27,16 +25,16 @@ option_t *MConfig::find(const char* lookup) const
 	RETURN_ERRNO(NULL, ME_NOTFOUND);
 }
 
-mBOOL MConfig::set(const char* key, const char* value)
+bool MConfig::set(const char* key, const char* value) const
 {
 	option_t* optp = find(key);
 	if (optp)
 		return set(optp, value);
 
-	RETURN_ERRNO(mFALSE, ME_NOTFOUND);
+	RETURN_ERRNO(false, ME_NOTFOUND);
 }
 
-mBOOL MConfig::set(option_t* setp, const char* setstr)
+bool MConfig::set(option_t* setp, const char* setstr)
 {
 	char pathbuf[PATH_MAX ];
 	int* optval = (int *) setp->dest;
@@ -45,7 +43,7 @@ mBOOL MConfig::set(option_t* setp, const char* setstr)
 	// SETOPT_FN optcmd = (SETOPT_FN) setp->dest;
 
 	if (!setstr)
-		return mTRUE;
+		return true;
 
 	switch (setp->type)
 	{
@@ -53,7 +51,7 @@ mBOOL MConfig::set(option_t* setp, const char* setstr)
 		if (!isdigit(setstr[0]))
 		{
 			META_ERROR("option '%s' invalid format '%s'", setp->name, setstr);
-			RETURN_ERRNO(mFALSE, ME_FORMAT);
+			RETURN_ERRNO(false, ME_FORMAT);
 		}
 		*optval = Q_atoi(setstr);
 		META_DEBUG(3, ("set config int: %s = %d", setp->name, *optval));
@@ -71,7 +69,7 @@ mBOOL MConfig::set(option_t* setp, const char* setstr)
 		{
 			META_ERROR("option '%s' invalid format '%s'", setp->name,
 			           setstr);
-			RETURN_ERRNO(mFALSE, ME_FORMAT);
+			RETURN_ERRNO(false, ME_FORMAT);
 		}
 		META_DEBUG(3, ("set config bool: %s = %s", setp->name, *optval ? "true" : "false"));
 		break;
@@ -90,13 +88,13 @@ mBOOL MConfig::set(option_t* setp, const char* setstr)
 		break;
 	default:
 		META_ERROR("unrecognized config type '%d'", setp->type);
-		RETURN_ERRNO(mFALSE, ME_ARGUMENT);
+		RETURN_ERRNO(false, ME_ARGUMENT);
 	}
 
-	return mTRUE;
+	return true;
 }
 
-mBOOL MConfig::load(const char* fn)
+bool MConfig::load(const char* fn)
 {
 	FILE* fp;
 	char loadfile[PATH_MAX ];
@@ -113,7 +111,7 @@ mBOOL MConfig::load(const char* fn)
 	if (!fp)
 	{
 		META_ERROR("unable to open config file '%s': %s", loadfile, strerror(errno));
-		RETURN_ERRNO(mFALSE, ME_NOFILE);
+		RETURN_ERRNO(false, ME_NOFILE);
 	}
 
 	META_DEBUG(2, ("Loading from config file: %s", loadfile));
@@ -149,7 +147,7 @@ mBOOL MConfig::load(const char* fn)
 
 	filename = Q_strdup(loadfile);
 	fclose(fp);
-	return mTRUE;
+	return true;
 }
 
 void MConfig::show() const

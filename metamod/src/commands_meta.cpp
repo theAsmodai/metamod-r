@@ -201,7 +201,7 @@ void cmd_meta_refresh()
 	}
 
 	META_LOG("Refreshing the plugins on demand...");
-	if (g_plugins->refresh(PT_ANYTIME) != mTRUE)
+	if (g_plugins->refresh(PT_ANYTIME) != true)
 	{
 		META_LOG("Refresh failed.");
 	}

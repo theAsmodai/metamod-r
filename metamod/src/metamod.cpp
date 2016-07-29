@@ -16,8 +16,7 @@ option_t global_options[] =
 
 gamedll_t GameDLL;
 
-meta_globals_t PublicMetaGlobals;
-meta_globals_t PrivateMetaGlobals;
+meta_globals_t g_metaGlobals;
 
 meta_enginefuncs_t g_plugin_engfuncs;
 
@@ -26,7 +25,7 @@ MRegCmdList *g_regCmds;
 MRegCvarList *g_regCvars;
 MRegMsgList *g_regMsgs;
 
-MPlayerList g_Players;
+MPlayerList g_players;
 
 unsigned int CALL_API_count = 0;
 
@@ -54,16 +53,6 @@ void metamod_startup()
 	META_CONS("Metamod v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
 	META_CONS("Metamod build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
 	META_CONS("Metamod from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
-
-	// If running with "+developer", allow an opportunity to break in with
-	// a debugger.
-	if ((int) CVAR_GET_FLOAT("developer") != 0)
-	{
-		//sleep(10); // TODO: WAT??????
-	}
-
-	// specify our new() handler
-	mm_set_new_handler();
 
 	// Get gamedir, very early on, because it seems we need it all over the
 	// place here at the start.
@@ -149,11 +138,6 @@ void metamod_startup()
 	if (g_engine.pl_funcs->pfnQueryClientCvarValue)
 		g_engine.pl_funcs->pfnQueryClientCvarValue = meta_QueryClientCvarValue;
 
-#ifdef UNFINISHED
-	// Init the list of event/logline hooks.
-	Hooks = new MHookList();
-#endif
-
 	// Before, we loaded plugins before loading the game DLL, so that if no
 	// plugins caught engine functions, we could pass engine funcs straight
 	// to game dll, rather than acting as intermediary.  (Should perform
@@ -236,7 +220,7 @@ void metamod_startup()
 // Set initial GameDLL fields (name, gamedir).
 // meta_errno values:
 //  - ME_NULLRESULT	_getcwd failed
-mBOOL meta_init_gamedll(void)
+bool meta_init_gamedll(void)
 {
 	char gamedir[PATH_MAX];
 	char *cp;
@@ -277,7 +261,7 @@ mBOOL meta_init_gamedll(void)
 		if (!_getcwd(buf, sizeof(buf)))
 		{
 			META_WARNING("dll: Couldn't get cwd; %s", strerror(errno));
-			RETURN_ERRNO(mFALSE, ME_NULLRESULT);
+			RETURN_ERRNO(false, ME_NULLRESULT);
 		}
 
 		Q_snprintf(GameDLL.gamedir, sizeof(GameDLL.gamedir), "%s/%s", buf, gamedir);
@@ -286,7 +270,7 @@ mBOOL meta_init_gamedll(void)
 	}
 
 	META_DEBUG(3, ("Game: %s", GameDLL.name));
-	return mTRUE;
+	return true;
 }
 
 // Load game DLL.
@@ -294,7 +278,7 @@ mBOOL meta_init_gamedll(void)
 //  - ME_DLOPEN		couldn't dlopen game dll file
 //  - ME_DLMISSING	couldn't find required routine in game dll
 //                	(GiveFnptrsToDll, GetEntityAPI, GetEntityAPI2)
-mBOOL meta_load_gamedll(void)
+bool meta_load_gamedll(void)
 {
 	int iface_vers;
 	int found = 0;
@@ -308,15 +292,18 @@ mBOOL meta_load_gamedll(void)
 	{
 		META_ERROR("dll: Unrecognized game: %s", GameDLL.name);
 		// meta_errno should be already set in lookup_game()
-		return mFALSE;
+		return false;
 	}
 
 	// open the game DLL
 	if (!(GameDLL.handle = DLOPEN(GameDLL.pathname)))
 	{
 		META_ERROR("dll: Couldn't load game DLL %s: %s", GameDLL.pathname, DLERROR());
-		RETURN_ERRNO(mFALSE, ME_DLOPEN);
+		RETURN_ERRNO(false, ME_DLOPEN);
 	}
+
+	// prepare meta_engfuncs
+	compile_engine_callbacks();
 
 	// Used to only pass our table of engine funcs if a loaded plugin
 	// wanted to catch one of the functions, but now that plugins are
@@ -330,7 +317,7 @@ mBOOL meta_load_gamedll(void)
 	else
 	{
 		META_ERROR("dll: Couldn't find GiveFnptrsToDll() in game DLL '%s': %s", GameDLL.name, DLERROR());
-		RETURN_ERRNO(mFALSE, ME_DLMISSING);
+		RETURN_ERRNO(false, ME_DLMISSING);
 	}
 
 	// Yes...another macro.
@@ -389,9 +376,20 @@ mBOOL meta_load_gamedll(void)
 	if (!found)
 	{
 		META_ERROR("dll: Couldn't find either GetEntityAPI nor GetEntityAPI2 in game DLL '%s'", GameDLL.name);
-		RETURN_ERRNO(mFALSE, ME_DLMISSING);
+		RETURN_ERRNO(false, ME_DLMISSING);
 	}
 
+	// prepare gamedll callbacks
+	compile_gamedll_callbacks();
+
 	META_LOG("Game DLL for '%s' loaded successfully", GameDLL.desc);
-	return mTRUE;
+	return true;
+}
+
+void meta_rebuild_callbacks()
+{
+	g_jit.clear_callbacks();
+
+	compile_engine_callbacks();
+	compile_gamedll_callbacks();
 }

@@ -69,9 +69,9 @@ enum STR_SOURCE
 // An individual plugin.
 class MPlugin {
 private:
-	mBOOL query();
-	mBOOL attach(PLUG_LOADTIME now);
-	mBOOL detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
+	bool query();
+	bool attach(PLUG_LOADTIME now);
+	bool detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
 	gamedll_funcs_t gamedll_funcs;
 	mutil_funcs_t mutil_funcs;
 
@@ -91,7 +91,7 @@ public:
 	time_t time_loaded;				// when plugin was loaded
 	int source_plugin_index;			// who loaded this plugin
 	int unloader_index;
-	mBOOL is_unloader;				// fix to prevent other plugins unload active unloader.
+	bool is_unloader;				// fix to prevent other plugins unload active unloader.
 
 	DLL_FUNCTIONS *dllapi_table;
 	DLL_FUNCTIONS *dllapi_post_table;
@@ -100,29 +100,29 @@ public:
 	enginefuncs_t *engine_table;
 	enginefuncs_t *engine_post_table;
 
-	mBOOL ini_parseline(char *line);				// parse line from inifile
-	mBOOL cmd_parseline(const char *line);				// parse from console command
-	mBOOL plugin_parseline(const char *fname, int loader_index); 	// parse from plugin
-	mBOOL check_input();
+	bool ini_parseline(char *line);				// parse line from inifile
+	bool cmd_parseline(const char *line);				// parse from console command
+	bool plugin_parseline(const char *fname, int loader_index); 	// parse from plugin
+	bool check_input();
 
-	mBOOL resolve();						// find a matching file on disk
+	bool resolve();						// find a matching file on disk
 	char *resolve_dirs(char *path);
 	char *resolve_prefix(char *path);
 	char *resolve_suffix(char *path);
 
-	mBOOL platform_match(MPlugin* plugin);
+	bool platform_match(MPlugin* plugin);
 
-	mBOOL load(PLUG_LOADTIME now);
-	mBOOL unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASON real_reason);
-	mBOOL reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
-	mBOOL pause();
-	mBOOL unpause();
-	mBOOL retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);			// if previously failed
-	mBOOL clear();
-	mBOOL plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON reason);	// other plugin unloading
+	bool load(PLUG_LOADTIME now);
+	bool unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASON real_reason);
+	bool reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
+	bool pause();
+	bool unpause();
+	bool retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);			// if previously failed
+	bool clear();
+	bool plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON reason);	// other plugin unloading
 	void show();									// print info about plugin to console
 
-	mBOOL newer_file();								// check for newer file on disk
+	bool newer_file();								// check for newer file on disk
 
 	const char *str_status(STR_STATUS fmt);
 	const char *str_action(STR_ACTION fmt);

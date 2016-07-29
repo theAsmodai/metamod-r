@@ -7,9 +7,9 @@
 
 struct api_info_t
 {
-	mBOOL trace;		// if true, log info about this function
-	int loglevel;		// level at which to log info about this function
-	const char *name;	// string representation of function name
+	size_t offset;
+	const char *name;
+	size_t loglevel;
 };
 
 // DLL api functions

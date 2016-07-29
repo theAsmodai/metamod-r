@@ -1,10 +1,7 @@
 #pragma once
 
-// Our own boolean type, for stricter type matching.
-enum mBOOL { mFALSE = 0, mTRUE, };
-
 // Like C's errno, for our various functions; describes causes of failure
-// or mFALSE returns.
+// or false returns.
 enum META_ERRNO
 {
 	ME_NOERROR = 0,

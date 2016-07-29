@@ -10,7 +10,7 @@ const game_modinfo_t known_games[] = {
 	// Previously enumerated in this sourcefile, the list is now kept in a
 	// separate file, generated based on game information stored in a
 	// convenient db.
-	{ "cstrike",		"cs.so",		"mp.dll",		"Counter-Strike" },
+	{ "cstrike",	"cs.so",		"mp.dll",		"Counter-Strike" },
 	{ "czero",		"cs.so",		"mp.dll",		"Counter-Strike:Condition Zero" },
 
 	// End of list terminator:
@@ -22,7 +22,7 @@ inline const game_modinfo_t *lookup_game(const char *name)
 {
 	for (auto& known : known_games)
 	{
-		if (known.name && Q_stricmp(known.name, name))
+		if (known.name && !Q_stricmp(known.name, name))
 			return &known;
 	}
 
@@ -31,13 +31,13 @@ inline const game_modinfo_t *lookup_game(const char *name)
 }
 
 // Installs gamedll from Steam cache
-mBOOL install_gamedll(char *from, const char *to)
+bool install_gamedll(char *from, const char *to)
 {
 	int length_in;
 	int length_out;
 
 	if (!from)
-		return mFALSE;
+		return false;
 
 	if (!to)
 		to = from;
@@ -52,7 +52,7 @@ mBOOL install_gamedll(char *from, const char *to)
 		{
 			META_DEBUG(3, ("Installing gamedll from cache: Failed to create file %s: %s", to, strerror(errno)) );
 			FREE_FILE(cachefile);
-			return mFALSE;
+			return false;
 		}
 
 		length_out = Q_write(fd, cachefile, length_in);
@@ -68,7 +68,7 @@ mBOOL install_gamedll(char *from, const char *to)
 			if (length_out >= 0)
 				_unlink(to);
 
-			return mFALSE;
+			return false;
 		}
 
 		META_LOG("Installed gamedll %s from cache.", to);
@@ -76,10 +76,10 @@ mBOOL install_gamedll(char *from, const char *to)
 	else
 	{
 		META_DEBUG(3, ("Failed to install gamedll from cache: file %s not found in cache.", from));
-		return mFALSE;
+		return false;
 	}
 
-	return mTRUE;
+	return true;
 }
 
 // Set all the fields in the gamedll struct, - based either on an entry in
@@ -88,7 +88,7 @@ mBOOL install_gamedll(char *from, const char *to)
 //
 // meta_errno values:
 //  - ME_NOTFOUND	couldn't recognize game
-mBOOL setup_gamedll(gamedll_t *gamedll)
+bool setup_gamedll(gamedll_t *gamedll)
 {
 	const game_modinfo_t *known;
 	const char *knownfn = nullptr;
@@ -121,7 +121,7 @@ mBOOL setup_gamedll(gamedll_t *gamedll)
 	else
 	{
 		// Neither known-list found a gamedll.
-		RETURN_ERRNO(mFALSE, ME_NOTFOUND);
+		RETURN_ERRNO(false, ME_NOTFOUND);
 	}
 
 	Q_snprintf(gamedll->pathname, sizeof(gamedll->pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);
@@ -141,5 +141,5 @@ mBOOL setup_gamedll(gamedll_t *gamedll)
 	gamedll->desc = known->desc;
 	META_LOG("Recognized game '%s'; using dllfile '%s'", gamedll->name, gamedll->file);
 
-	return mTRUE;
+	return true;
 }

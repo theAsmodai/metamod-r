@@ -10,15 +10,14 @@
 #include <signal.h>			// sigaction, etc
 #endif
 
-#if defined(_MSC_VER) && (_MSC_VER < 1300)
-#include <new.h>		// set_new_handler()
-#else
-#include <new>			// set_new_handler()
-#endif
+#include "jitasm.h"
 
 #include <extdll.h>
 #include <studio.h>
 #include <studioapi.h>
+
+#include <vector>
+#include <array>
 
 #include "osdep.h"
 #include "api_info.h"
@@ -45,3 +44,4 @@
 #include "sdk_util.h"
 #include "enginecallbacks.h"
 #include "utils.h"
+#include "callback_jit.h"
