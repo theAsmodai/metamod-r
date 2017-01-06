@@ -5,11 +5,11 @@
 struct jitdata_t
 {
 	size_t pfn_original;
+	size_t pfn_offset; // from fn table
 	uint8 args_count;
 	bool has_ret;
 	bool has_varargs;
 	uint8 mm_hook_time;
-	size_t pfn_offset; // from fn table
 	size_t mm_hook;
 
 	MPlugin* plugins;

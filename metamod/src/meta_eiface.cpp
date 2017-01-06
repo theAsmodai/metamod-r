@@ -8,7 +8,7 @@ void meta_new_dll_functions_t::set_from(NEW_DLL_FUNCTIONS* _pFuncs)
 void meta_new_dll_functions_t::copy_to(NEW_DLL_FUNCTIONS *_pFuncs) const
 {
 #if 0
-	// TODO: Implemented check regamedll
+	// TODO: Implement regamedll check
 	// exit
 
 #endif

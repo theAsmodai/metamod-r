@@ -1,9 +1,10 @@
 #pragma once
 
-#include "types_meta.h"
-
-#define P_PRE 0		// plugin function called before gamedll
-#define P_POST 1	// plugin function called after gamedll
+enum
+{
+	P_PRE,		// plugin function called before gamedll
+	P_POST,		// plugin function called after gamedll
+};
 
 struct api_info_t
 {

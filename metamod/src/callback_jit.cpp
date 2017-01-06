@@ -25,7 +25,7 @@ class CForwardCallbackJIT : public jitasm::function<int, CForwardCallbackJIT, in
 {
 public:
 	CForwardCallbackJIT(jitdata_t *jitdata);
-	void naked_main();
+	void naked_main() override;
 	void call_func(jitasm::Frontend::Reg32 addr);
 
 private:
@@ -59,19 +59,21 @@ void CForwardCallbackJIT::naked_main()
 	};
 
 	auto globals = ebx;
-	auto mg_backup = m_jitdata->has_ret ? 8 : 0;
+	auto mg_backup = m_jitdata->has_ret ? 8 /* orig + over */ : 0;
 	auto framesize = mg_backup + sizeof(meta_globals_t);
 
 	if (m_jitdata->has_varargs) {
+		size_t buf_offset = framesize;
+
 		sub(esp, framesize += MAX_STRBUF_LEN);
 
 		// format varargs
 		lea(edx, dword_ptr[ebp + 8 + m_jitdata->args_count * 4]); // varargs ptr
-		lea(eax, dword_ptr[esp + mg_backup + sizeof(meta_globals_t)]); // buf ptr
+		lea(eax, dword_ptr[esp + buf_offset]); // buf ptr
 		mov(ecx, size_t(vsnprintf));
 
 		push(edx);
-		push(dword_ptr[ebp + 8 + (m_jitdata->args_count - 1) * 4]); // last arg of pfn (format)
+		push(dword_ptr[ebp + 8 + (m_jitdata->args_count - 1) * 4]); // last arg of pfn (format string)
 		push(MAX_STRBUF_LEN);
 		push(eax);
 		call(ecx);
@@ -80,7 +82,7 @@ void CForwardCallbackJIT::naked_main()
 	else
 		sub(esp, framesize);
 
-	// setup globals ptr
+	// setup globals ptr and backup old data
 	mov(globals, size_t(&g_metaGlobals));
 	movups(xmm0, xmmword_ptr[globals]);
 	mov(eax, dword_ptr[globals + 16]);
@@ -256,25 +258,25 @@ void CForwardCallbackJIT::naked_main()
 
 void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
 {
-	const size_t normal_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u : 0u);
-	const size_t strbuf_stack_offset = (m_jitdata->has_ret ? 8u : 0u) + sizeof(meta_globals_t);
+	const size_t fixed_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u /* excluding format string */ : 0u);
+	const size_t strbuf_offset = (m_jitdata->has_ret ? 8u : 0u) + sizeof(meta_globals_t);
 
-	// push formatted buf
+	// push formatted buf instead of format string
 	if (m_jitdata->has_varargs) {
-		lea(eax, dword_ptr[esp + strbuf_stack_offset]);
+		lea(eax, dword_ptr[esp + strbuf_offset]);
 		push(eax);
 	}
 
 	// push normal args
-	for (size_t j = normal_args_count; j > 0; j--)
-		push(dword_ptr[ebp + 8 + (j - 1) * 4]);
+	for (size_t j = fixed_args_count; j > 0; j--)
+		push(dword_ptr[ebp + 8 + (j - 1) * sizeof(int)]);
 
 	// call
 	call(addr);
 
 	// pop stack
 	if (m_jitdata->args_count)
-		add(esp, m_jitdata->args_count * 4);
+		add(esp, m_jitdata->args_count * sizeof(int));
 }
 
 class CSimpleJmp : public jitasm::function<void, CSimpleJmp>

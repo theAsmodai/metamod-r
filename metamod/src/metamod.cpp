@@ -44,7 +44,7 @@ void metamod_startup()
 	const char *cp;
 
 	META_CONS("   ");
-	META_CONS("   Metamod version %s Copyright (c) 2001-2016 Will Day (modification ReHLDS Team)", APP_VERSION_STRD);
+	META_CONS("   Metamod version %s Copyright (c) 2001-2016 Will Day (modification by ReHLDS Team)", APP_VERSION_STRD);
 	META_CONS("   Metamod comes with ABSOLUTELY NO WARRANTY; for details type `meta gpl'.");
 	META_CONS("   This is free software, and you are welcome to redistribute it");
 	META_CONS("   under certain conditions; type `meta gpl' for details.");
