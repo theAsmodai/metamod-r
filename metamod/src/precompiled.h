@@ -2,6 +2,8 @@
 
 #include "version/appversion.h"
 
+#define PSAPI_VERSION 1
+
 #if defined(linux) || defined(__APPLE__)
 // enable extra routines in system header files, like dladdr
 #ifndef _GNU_SOURCE

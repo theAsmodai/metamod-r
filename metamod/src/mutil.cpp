@@ -119,7 +119,7 @@ qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_
 {
 	plugin_info_t *plinfo = (plugin_info_t *)plid;
 	META_DEBUG(8, ("Looking up game entity '%s' for plugin '%s'", entStr, plinfo->name));
-	ENTITY_FN pfnEntity = (ENTITY_FN) DLSYM(GameDLL.handle, entStr);
+	ENTITY_FN pfnEntity = (ENTITY_FN)GameDLL.sys_module.getsym(entStr);
 	if (!pfnEntity)
 	{
 		META_ERROR("Couldn't find game entity '%s' in game DLL '%s' for plugin '%s'", entStr, GameDLL.name, plinfo->name);
@@ -268,7 +268,7 @@ int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME 
 	else
 	{
 		if (plugin_handle)
-			*plugin_handle = (void *)pl_loaded->handle;
+			*plugin_handle = (void *)pl_loaded->sys_module.gethandle();
 		return 0;
 	}
 }
@@ -310,7 +310,7 @@ int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PL
 		return ME_ARGUMENT;
 	}
 
-	if (!(findp = g_plugins->find((DLHANDLE)plugin_handle)))
+	if (!(findp = g_plugins->find((module_handle_t)plugin_handle)))
 		return ME_NOTFOUND;
 
 	meta_errno = ME_NOERROR;

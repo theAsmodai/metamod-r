@@ -1,36 +1,128 @@
 #include "precompiled.h"
 
-bool dlclose_handle_invalid;
+CSysModule::CSysModule() : m_handle(0), m_base(0), m_size(0)
+{
+}
 
 #ifdef _WIN32
-// Since windows doesn't provide a verison of strtok_r(), we include one
-// here.  This may or may not operate exactly like strtok_r(), but does
-// what we need it it do.
-char *my_strtok_r(char *s, const char *delim, char **ptrptr)
+module_handle_t CSysModule::load(const char* filepath)
 {
-	char *begin = nullptr;
-	char *end = nullptr;
-	char *rest = nullptr;
-	if (s)
-		begin = s;
-	else
-		begin = *ptrptr;
-	if (!begin)
-		return nullptr;
+	m_handle = LoadLibrary(filepath);
 
-	end = strpbrk(begin, delim);
-	if (end)
-	{
-		*end = '\0';
-		rest = end + 1;
-		*ptrptr = rest + strspn(rest, delim);
+	MODULEINFO module_info;
+	if (GetModuleInformation(GetCurrentProcess(), m_handle, &module_info, sizeof(module_info))) {
+		m_base = (uintptr_t)module_info.lpBaseOfDll;
+		m_size = module_info.SizeOfImage;
 	}
-	else
-		*ptrptr = nullptr;
 
-	return begin;
+	return m_handle;
 }
-#endif // _WIN32
+
+bool CSysModule::unload()
+{
+	bool ret = false;
+
+	if (m_handle) {
+		ret = FreeLibrary(m_handle) != ERROR;
+		m_handle = 0;
+		m_base = 0;
+		m_size = 0;
+	}
+
+	return ret;
+}
+
+void* CSysModule::getsym(const char* name) const
+{
+	return GetProcAddress(m_handle, name);
+}
+#else
+static ElfW(Addr) dlsize(void* base)
+{
+	ElfW(Ehdr) *ehdr;
+	ElfW(Phdr) *phdr;
+	ElfW(Addr) end;
+
+	ehdr = (ElfW(Ehdr) *)base;
+
+	/* Find the first program header */
+	phdr = (ElfW(Phdr)*)((ElfW(Addr))ehdr + ehdr->e_phoff);
+
+	/* Find the final PT_LOAD segment's extent */
+	for (int i = 0; i < ehdr->e_phnum; ++i)
+		if (phdr[i].p_type == PT_LOAD)
+			end = phdr[i].p_vaddr + phdr[i].p_memsz;
+
+	/* The start (virtual) address is always zero, so just return end.*/
+	return end;
+}
+
+module_handle_t CSysModule::load(const char* filepath)
+{
+	m_handle = dlopen(filepath, RTLD_NOW);
+
+	char buf[1024], dummy[1024], path[260];
+	sprintf(buf, "/proc/%i/maps", getpid());
+
+	FILE* fp = fopen(buf, "r");
+
+	while (fgets(buf, sizeof(buf), fp)) {
+		uintptr_t start, end;
+
+		int args = sscanf(buf, "%x-%x %128s %128s %128s %128s %255s", &start, &end, dummy, dummy, dummy, dummy, path);
+		if (args != 7) {
+			continue;
+		}
+
+		if (!Q_stricmp(path, filepath)) {
+			m_base = start;
+			m_size = end - start;
+			break;
+		}
+	}
+
+	fclose(fp);
+	return m_handle;
+}
+
+bool CSysModule::unload()
+{
+	bool ret = false;
+
+	if (m_handle) {
+		ret = dlclose(m_handle) != 0;
+		m_handle = 0;
+		m_base = 0;
+		m_size = 0;
+	}
+
+	return ret;
+}
+
+void* CSysModule::getsym(const char* name) const
+{
+	return dlsym(m_handle, name);
+}
+#endif
+
+module_handle_t CSysModule::gethandle() const
+{
+	return m_handle;
+}
+
+bool CSysModule::contain(void* addr) const
+{
+	return addr && uintptr_t(addr) > m_base && uintptr_t(addr) < m_base + m_size;
+}
+
+const char* CSysModule::getloaderror()
+{
+#ifdef _WIN32
+	return str_GetLastError();
+#else
+	return dlerror;
+#endif
+}
 
 #ifdef _WIN32
 // Windows doesn't provide a functon analagous to dlerr() that returns a
@@ -44,70 +136,16 @@ const char *str_GetLastError()
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&buf, MAX_STRBUF_LEN - 1, NULL);
 	return buf;
 }
+
+const char* str_os_error()
+{
+#ifdef _WIN32
+	return str_GetLastError();
+#else
+	return strerror(errno);
 #endif
-
-// Find the filename of the DLL/shared-lib where the given memory location
-// exists.
-#if defined(linux) || defined(__APPLE__)
-// Errno values:
-//  - ME_NOTFOUND	couldn't find a sharedlib that contains memory location
-const char *DLFNAME(void *memptr)
-{
-	Dl_info dli;
-	Q_memset(&dli, 0, sizeof(dli));
-	if (dladdr(memptr, &dli))
-		return dli.dli_fname;
-	else
-		RETURN_ERRNO(NULL, ME_NOTFOUND);
 }
-#elif defined(_WIN32)
-// Implementation for win32 provided by Jussi Kivilinna <kijuhe00@rhea.otol.fi>:
-//
-//    1. Get memory location info on memptr with VirtualQuery.
-//    2. Check if memory location info is valid and use MBI.AllocationBase
-//       as module start point.
-//    3. Get module file name with GetModuleFileName.
-//
-//    Simple and should work pretty much same way as 'dladdr' in linux.
-//    VirtualQuery and GetModuleFileName work even with win32s.
-//
-// Note that GetModuleFileName returns longfilenames rather than 8.3.
-//
-// Note also, the returned filename is local static storage, and should be
-// copied by caller if it needs to keep it around.
-//
-// Also note, normalize_pathname() should really be done by the caller, but
-// is done here to preserve "const char *" return consistent with linux
-// version.
-//
-// Errno values:
-//  - ME_NOTFOUND	couldn't find a DLL that contains memory location
-const char *DLFNAME(void *memptr)
-{
-	MEMORY_BASIC_INFORMATION MBI;
-	static char fname[PATH_MAX];
-
-	if (!VirtualQuery(memptr, &MBI, sizeof(MBI)))
-		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
-	if (MBI.State != MEM_COMMIT)
-		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
-	if (!MBI.AllocationBase)
-		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
-	// MSDN indicates that GetModuleFileName will leave string
-	// null-terminated, even if it's truncated because buffer is too small.
-	if (!GetModuleFileName((HMODULE)MBI.AllocationBase, fname, sizeof(fname) - 1))
-		RETURN_ERRNO(NULL, ME_NOTFOUND);
-	if (!fname[0])
-		RETURN_ERRNO(NULL, ME_NOTFOUND);
-
-	normalize_pathname(fname);
-	return fname;
-}
-#endif // _WIN32
-
+#endif
 
 // Determine whether the given memory location is valid (ie whether we
 // should expect to be able to reference strings or functions at this

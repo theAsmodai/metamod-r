@@ -80,13 +80,12 @@ void EXT_FUNC meta_command_handler()
 // to a generic command-handler function (see above).
 void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 {
-	MPlugin *iplug = NULL;
-	MRegCmd *icmd = NULL;
+	MPlugin *iplug = g_plugins->find_memloc(function);
 
 	META_DEBUG(4, ("called: meta_AddServerCommand; cmd_name=%s, function=%d", cmd_name, function));
 
 	// try to find which plugin is registering this command
-	if (!(iplug = g_plugins->find_memloc((void *)function)))
+	if (!iplug)
 	{
 		// if this isn't supported on this OS, don't log an error
 		if (meta_errno != ME_OSNOTSUP)
@@ -94,7 +93,7 @@ void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 	}
 
 	// See if this command was previously registered, ie a "reloaded" plugin.
-	icmd = g_regCmds->find(cmd_name);
+	auto icmd = g_regCmds->find(cmd_name);
 	if (!icmd)
 	{
 		// If not found, add.
@@ -134,27 +133,18 @@ void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 // it will fail to work properly.
 void EXT_FUNC meta_CVarRegister(cvar_t *pCvar)
 {
-	MPlugin *iplug = nullptr;
-	MRegCvar *icvar = nullptr;
+	MPlugin *iplug = g_plugins->find_memloc(pCvar);
 
 	META_DEBUG(4, ("called: meta_CVarRegister; name=%s", pCvar->name));
 
-	if (!strncmp(pCvar->name, "iz_", 3))
-		__asm int 3;
-
 	// try to find which plugin is registering this cvar
-	if (!(iplug = g_plugins->find_memloc((void *)pCvar)))
+	if (!iplug)
 	{
-		// if this isn't supported on this OS, don't log an error
-		if (meta_errno != ME_OSNOTSUP)
-		// Note: if cvar_t was malloc'd by the plugin, we can't
-		// determine the calling plugin.  Thus, this becomes a Debug
-		// rather than Error message.
 		META_DEBUG(1, ("Failed to find memloc for regcvar '%s'", pCvar->name));
 	}
 
 	// See if this cvar was previously registered, ie a "reloaded" plugin.
-	icvar = g_regCvars->find(pCvar->name);
+	auto icvar = g_regCvars->find(pCvar->name);
 	if (!icvar)
 	{
 		// If not found, add.

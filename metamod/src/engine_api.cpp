@@ -240,7 +240,7 @@ void compile_engfuncs_callbacks()
 {
 	jitdata_t jitdata;
 	jitdata.plugins = g_plugins ? g_plugins->plist : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->endlist : 0;
+	jitdata.plugins_count = g_plugins ? g_plugins->max_loaded_count : 0;
 	jitdata.table_offset = offsetof(MPlugin, engine_table);
 	jitdata.post_table_offset = offsetof(MPlugin, engine_post_table);
 

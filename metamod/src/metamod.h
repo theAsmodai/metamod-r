@@ -36,7 +36,7 @@ struct gamedll_t
 	char pathname[PATH_MAX];	// ie "/home/willday/half-life/cstrike/dlls/cs_i386.so"
 	char const *file;		// ie "cs_i386.so"
 	char real_pathname[PATH_MAX];	// in case pathname overridden by bot, etc
-	DLHANDLE handle;
+	CSysModule sys_module;
 	gamedll_funcs_t funcs;		// dllapi_table, newapi_table
 };
 

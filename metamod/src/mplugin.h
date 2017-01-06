@@ -5,9 +5,9 @@
 
 // Flags to indicate current "load" state of plugin.
 // NOTE: order is important, as greater/less comparisons are made.
-enum PLUG_STATUS
+enum PLUG_STATUS : uint8
 {
-	PL_EMPTY = 0,			// empty slot
+	PL_EMPTY = 0,		// empty slot
 	PL_VALID,			// has valid info in it
 	PL_BADFILE,			// nonexistent file (open failed), or not a valid plugin file (query failed)
 	PL_OPENED,			// dlopened and queried
@@ -17,7 +17,7 @@ enum PLUG_STATUS
 };
 
 // Action to take for plugin at next opportunity.
-enum PLUG_ACTION
+enum PLUG_ACTION : uint8
 {
 	PA_NULL = 0,
 	PA_NONE,			// no action needed right now
@@ -29,7 +29,7 @@ enum PLUG_ACTION
 };
 
 // Flags to indicate from where the plugin was loaded.
-enum PLOAD_SOURCE
+enum PLOAD_SOURCE : uint8
 {
 	PS_INI = 0,			// was loaded from the plugins.ini
 	PS_CMD,				// was loaded via a server command
@@ -37,7 +37,7 @@ enum PLOAD_SOURCE
 };
 
 // Flags for how to word description of plugin loadtime.
-enum STR_LOADTIME
+enum STR_LOADTIME : uint8
 {
 	SL_SIMPLE = 0,			// single word
 	SL_SHOW,			// for "show" output, 5 chars
@@ -46,21 +46,21 @@ enum STR_LOADTIME
 };
 
 // Flags for how to format description of status.
-enum STR_STATUS
+enum STR_STATUS : uint8
 {
 	ST_SIMPLE = 0,			// single word
 	ST_SHOW,			// for "show" output, 4 chars
 };
 
 // Flags for how to format description of action.
-enum STR_ACTION
+enum STR_ACTION : uint8
 {
 	SA_SIMPLE = 0,			// single word
 	SA_SHOW,			// for "show" output, 4 chars
 };
 
 // Flags for how to format description of source.
-enum STR_SOURCE
+enum STR_SOURCE : uint8
 {
 	SO_SIMPLE = 0,			// two words
 	SO_SHOW,			// for "list" output, 3 chars
@@ -68,26 +68,13 @@ enum STR_SOURCE
 
 // An individual plugin.
 class MPlugin {
-private:
-	bool query();
-	bool attach(PLUG_LOADTIME now);
-	bool detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
-	gamedll_funcs_t gamedll_funcs;
-	mutil_funcs_t mutil_funcs;
-
 public:
-	int index;					// 1-based
-	char filename[PATH_MAX];			// ie "dlls/mm_test_i386.so", from inifile
-	char *file;					// ie "mm_test_i386.so", ptr from filename
-	char desc[MAX_DESC_LEN];			// ie "Test metamod plugin", from inifile
-	char pathname[PATH_MAX];			// UNIQUE, ie "/home/willday/half-life/cstrike/dlls/mm_test_i386.so", built with GameDLL.gamedir
-	int pfspecific;					// level of specific platform affinity, used during load time
 	PLUG_STATUS status;				// current status of plugin (loaded, etc)
 	PLUG_ACTION action;				// what to do with plugin (load, unload, etc)
 	PLOAD_SOURCE source;				// source of the request to load the plugin
-
-	DLHANDLE handle;				// handle for dlopen, dlsym, etc
+	int index;					// 1-based
 	plugin_info_t *info;				// information plugin provides about itself
+	CSysModule sys_module;
 	time_t time_loaded;				// when plugin was loaded
 	int source_plugin_index;			// who loaded this plugin
 	int unloader_index;
@@ -100,6 +87,15 @@ public:
 	enginefuncs_t *engine_table;
 	enginefuncs_t *engine_post_table;
 
+	gamedll_funcs_t gamedll_funcs;
+	mutil_funcs_t mutil_funcs;
+
+	char filename[PATH_MAX];			// ie "dlls/mm_test_i386.so", from inifile
+	char *file;					// ie "mm_test_i386.so", ptr from filename
+	char desc[MAX_DESC_LEN];			// ie "Test metamod plugin", from inifile
+	char pathname[PATH_MAX];			// UNIQUE, ie "/home/willday/half-life/cstrike/dlls/mm_test_i386.so", built with GameDLL.gamedir
+	int pfspecific;					// level of specific platform affinity, used during load time
+
 	bool ini_parseline(char *line);				// parse line from inifile
 	bool cmd_parseline(const char *line);				// parse from console command
 	bool plugin_parseline(const char *fname, int loader_index); 	// parse from plugin
@@ -107,8 +103,8 @@ public:
 
 	bool resolve();						// find a matching file on disk
 	char *resolve_dirs(char *path);
-	char *resolve_prefix(char *path);
-	char *resolve_suffix(char *path);
+	char *resolve_prefix(char *path) const;
+	char *resolve_suffix(char *path) const;
 
 	bool platform_match(MPlugin* plugin);
 
@@ -151,6 +147,11 @@ public:
 		if (info) return str_loadtime(info->unloadable, fmt);
 		else return " -";
 	};
+
+private:
+	bool query();
+	bool attach(PLUG_LOADTIME now);
+	bool detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
 };
 
 // Macros used by MPlugin::show(), to list the functions that the plugin

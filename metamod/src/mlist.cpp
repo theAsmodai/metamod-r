@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 // Constructor
-MPluginList::MPluginList(const char* ifile) : size(MAX_PLUGINS), endlist(0)
+MPluginList::MPluginList(const char* ifile) : max_loaded_count(0)
 {
 	// store filename of ini file
 	Q_strncpy(inifile, ifile, sizeof inifile - 1);
@@ -9,28 +9,28 @@ MPluginList::MPluginList(const char* ifile) : size(MAX_PLUGINS), endlist(0)
 
 	// initialize array
 	Q_memset(plist, 0, sizeof(plist));
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < MAX_PLUGINS; i++)
 	{
 		plist[i].index = i + 1; // 1-based
 	}
 
-	endlist = 0;
+	max_loaded_count = 0;
 }
 
 // Find a plugin based on the plugin handle.
 // meta_errno values:
 //  - ME_ARGUMENT	invalid pindex
 //  - ME_NOTFOUND	couldn't find a matching plugin
-MPlugin *MPluginList::find(DLHANDLE handle)
+MPlugin *MPluginList::find(module_handle_t handle)
 {
 	if (!handle)
 		RETURN_ERRNO(NULL, ME_ARGUMENT);
 
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		if (plist[i].status < PL_VALID)
 			continue;
-		if (plist[i].handle == handle)
+		if (handle == plist[i].sys_module.gethandle())
 			return &plist[i];
 	}
 
@@ -62,7 +62,7 @@ MPlugin *MPluginList::find(plid_t id)
 	if (!id)
 		RETURN_ERRNO(NULL, ME_ARGUMENT);
 
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		if (plist[i].status < PL_VALID)
 			continue;
@@ -85,7 +85,7 @@ MPlugin *MPluginList::find(const char* findpath)
 
 	META_DEBUG(8, ("Looking for loaded plugin with dlfnamepath: %s", findpath));
 
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		META_DEBUG(9, ("Looking at: plugin %s loadedpath: %s", plist[i].file, plist[i].pathname));
 
@@ -104,25 +104,16 @@ MPlugin *MPluginList::find(const char* findpath)
 }
 
 // Find a plugin that uses the given memory location.
-// meta_errno values:
-//  - ME_ARGUMENT	null memptr
-//  - ME_NOTFOUND	couldn't find a matching plugin
-//  - errno's from DLFNAME()
 MPlugin *MPluginList::find_memloc(void *memptr)
 {
-	const char* dlfile;
+	for (int i = 0; i < max_loaded_count; i++) {
+		auto iplug = &plist[i];
 
-	if (!memptr)
-		RETURN_ERRNO(NULL, ME_ARGUMENT);
-
-	if (!(dlfile = DLFNAME(memptr)))
-	{
-		META_DEBUG(8, ("DLFNAME failed to find memloc %d", memptr));
-		// meta_errno should be already set in DLFNAME
-		return NULL;
+		if (iplug->sys_module.contain(memptr))
+			return iplug;
 	}
 
-	return find(dlfile);
+	return nullptr;
 }
 
 // Find a plugin with non-ambiguous prefix string matching desc, file,
@@ -145,7 +136,7 @@ MPlugin *MPluginList::find_match(const char *prefix)
 	pfound = NULL;
 	len = Q_strlen(prefix);
 	Q_snprintf(buf, sizeof(buf), "mm_%s", prefix);
-	for (i = 0; i < endlist; i++)
+	for (i = 0; i < max_loaded_count; i++)
 	{
 		iplug = &plist[i];
 		if (iplug->status < PL_VALID)
@@ -214,7 +205,7 @@ MPlugin *MPluginList::find_match(MPlugin* pmatch)
 	}
 
 	pfound = NULL;
-	for (i = 0; i < endlist; i++)
+	for (i = 0; i < max_loaded_count; i++)
 	{
 		iplug = &plist[i];
 		if (pmatch->platform_match(iplug))
@@ -292,32 +283,33 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 	return pl_added;
 }
 
+MPlugin* MPluginList::find_empty_slot()
+{
+	for (int i = 0; i < MAX_PLUGINS; i++) {
+		if (plist[i].status == PL_EMPTY) {
+			if (i > max_loaded_count)
+				max_loaded_count = i + 1;
+
+			return &plist[i];
+		}
+	}
+
+	return nullptr;
+}
+
 // Add a plugin to the list.
 // meta_errno values:
 //  - ME_MAXREACHED		reached max plugins
 MPlugin* MPluginList::add(MPlugin* padd)
 {
-	int i;
-	MPlugin* iplug;
-
-	// Find either:
-	//  - a slot in the list that's not being used
-	//  - the end of the list
-	for (i = 0; i < endlist && plist[i].status != PL_EMPTY; i++)
-		;
+	auto iplug = find_empty_slot();
 
 	// couldn't find a slot to use
-	if (i == size)
+	if (!iplug)
 	{
-		META_ERROR("Couldn't add plugin '%s' to list; reached max plugins (%d)", padd->file, i);
+		META_ERROR("Couldn't add plugin '%s' to list; reached max plugins (%d)", padd->file, MAX_PLUGINS);
 		RETURN_ERRNO(NULL, ME_MAXREACHED);
 	}
-
-	// if we found the end of the list, advance end marker
-	if (i == endlist)
-		endlist++;
-
-	iplug = &plist[i];
 
 	// copy filename into this free slot
 	Q_strncpy(iplug->filename, padd->filename, sizeof iplug->filename - 1);
@@ -337,13 +329,8 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	iplug->pathname[sizeof iplug->pathname - 1] = '\0';
 	normalize_pathname(iplug->pathname);
 
-	// copy source
 	iplug->source = padd->source;
-
-	// copy status
 	iplug->status = padd->status;
-
-	//copy other things
 	iplug->source_plugin_index = padd->source_plugin_index;
 
 	return iplug;
@@ -375,7 +362,7 @@ bool MPluginList::ini_startup()
 	}
 
 	META_LOG("ini: Begin reading plugins list: %s", inifile);
-	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof(line), fp) && n < size; ln++)
+	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof(line), fp) && n < MAX_PLUGINS; ln++)
 	{
 		// Remove line terminations.
 		char* cp;
@@ -420,7 +407,7 @@ bool MPluginList::ini_startup()
 		plist[n].action = PA_LOAD;
 		META_LOG("ini: Read plugin config for: %s", plist[n].desc);
 		n++;
-		endlist = n; // mark end of list
+		max_loaded_count = n; // mark end of list
 	}
 	META_LOG("ini: Finished reading plugins list: %s; Found %d plugins to load", inifile, n);
 
@@ -452,7 +439,7 @@ bool MPluginList::ini_refresh()
 	}
 
 	META_LOG("ini: Begin re-reading plugins list: %s", inifile);
-	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof(line), fp) && n < size; ln++)
+	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof(line), fp) && n < MAX_PLUGINS; ln++)
 	{
 		// Remove line terminations.
 		char *cp;
@@ -655,7 +642,7 @@ bool MPluginList::load()
 	}
 
 	META_LOG("dll: Loading plugins...");
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		if (plist[i].status < PL_VALID)
 			continue;
@@ -690,7 +677,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 	}
 
 	META_LOG("dll: Updating plugins...");
-	for (i = 0; i < endlist; i++)
+	for (i = 0; i < max_loaded_count; i++)
 	{
 		iplug = &plist[i];
 		if (iplug->status < PL_VALID)
@@ -767,7 +754,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 //  - none
 void MPluginList::unpause_all(void)
 {
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		auto iplug = &plist[i];
 		if (iplug->status == PL_PAUSED)
@@ -781,7 +768,7 @@ void MPluginList::unpause_all(void)
 //  - none
 void MPluginList::retry_all(PLUG_LOADTIME now)
 {
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		auto iplug = &plist[i];
 		if (iplug->action != PA_NONE)
@@ -806,7 +793,7 @@ void MPluginList::show(int source_index)
 	META_CONS("  %*s  %-*s  %-4s %-4s  %-*s  v%-*s  %-*s  %-5s %-5s", WIDTH_MAX_PLUGINS, "", sizeof(desc) - 1, "description", "stat", "pend",
 			sizeof(file) - 1, "file", sizeof(vers) - 1, "ers", 2 + WIDTH_MAX_PLUGINS, "src", "load ", "unlod");
 
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		pl = &plist[i];
 		if (pl->status < PL_VALID)
@@ -857,7 +844,7 @@ void MPluginList::show_client(edict_t *pEntity)
 	MPlugin *pl;
 	META_CLIENT(pEntity, "Currently running plugins:");
 
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		pl = &plist[i];
 		if (pl->status != PL_RUNNING || !pl->info)
@@ -880,7 +867,7 @@ bool MPluginList::found_child_plugins(int source_index) const
 	if (source_index <= 0)
 		return false;
 
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		if (plist[i].status < PL_VALID)
 			continue;
@@ -897,7 +884,7 @@ void MPluginList::clear_source_plugin_index(int source_index)
 	if (source_index <= 0)
 		return;
 
-	for (int i = 0; i < endlist; i++)
+	for (int i = 0; i < max_loaded_count; i++)
 	{
 		if (plist[i].status < PL_VALID)
 			continue;

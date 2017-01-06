@@ -292,9 +292,9 @@ bool meta_load_gamedll(void)
 	}
 
 	// open the game DLL
-	if (!(GameDLL.handle = DLOPEN(GameDLL.pathname)))
+	if (!GameDLL.sys_module.load(GameDLL.pathname))
 	{
-		META_ERROR("dll: Couldn't load game DLL %s: %s", GameDLL.pathname, DLERROR());
+		META_ERROR("dll: Couldn't load game DLL %s: %s", GameDLL.pathname, CSysModule::getloaderror());
 		RETURN_ERRNO(false, ME_DLOPEN);
 	}
 
@@ -305,20 +305,21 @@ bool meta_load_gamedll(void)
 	// wanted to catch one of the functions, but now that plugins are
 	// dynamically loadable at any time, we have to always pass our table,
 	// so that any plugin loaded later can catch what they need to.
-	if ((pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN) DLSYM(GameDLL.handle, "GiveFnptrsToDll")))
+	if ((pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN)GameDLL.sys_module.getsym("GiveFnptrsToDll")))
 	{
 		pfn_give_engfuncs(&meta_engfuncs, gpGlobals);
 		META_DEBUG(3, ("dll: Game '%s': Called GiveFnptrsToDll", GameDLL.name));
 	}
 	else
 	{
-		META_ERROR("dll: Couldn't find GiveFnptrsToDll() in game DLL '%s': %s", GameDLL.name, DLERROR());
+		META_ERROR("dll: Couldn't find GiveFnptrsToDll() in game DLL '%s'", GameDLL.name);
 		RETURN_ERRNO(false, ME_DLMISSING);
 	}
 
+	// TODO
 	// Yes...another macro.
 #define GET_FUNC_TABLE_FROM_GAME(gamedll, pfnGetFuncs, STR_GetFuncs, struct_field, API_TYPE, TABLE_TYPE, vers_pass, vers_int, vers_want, gotit) \
-		if ((pfnGetFuncs = (API_TYPE) DLSYM(gamedll.handle, STR_GetFuncs))) { \
+		if ((pfnGetFuncs = (API_TYPE)gamedll.sys_module.getsym(STR_GetFuncs))) { \
 			gamedll.funcs.struct_field = (TABLE_TYPE *)Q_calloc(1, sizeof(TABLE_TYPE)); \
 			if (!gamedll.funcs.struct_field) {\
 				META_ERROR("malloc failed for gamedll struct_field: %s", STR_GetFuncs); \

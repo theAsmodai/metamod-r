@@ -1,10 +1,5 @@
 #pragma once
 
-// Various differences between WIN32 and Linux.
-#include "types_meta.h"		// bool
-#include "mreg.h"		// REG_CMD_FN, etc
-#include "log_meta.h"		// LOG_ERROR, etc
-
 // String describing platform/DLL-type, for matching lines in plugins.ini.
 #ifdef _WIN32
 	#define UNUSED		/**/
@@ -20,75 +15,31 @@
 	#define PLATFORM_DLEXT	".so"
 #endif
 
-extern bool dlclose_handle_invalid;
+#include "mreg.h"
 
-// Functions & types for DLL open/close/etc operations.
 #ifdef _WIN32
-	typedef HINSTANCE DLHANDLE;
-	typedef FARPROC DLFUNC;
-	inline DLHANDLE DLOPEN(const char *filename)
-	{
-		return LoadLibraryA(filename);
-	}
-	inline DLFUNC DLSYM(DLHANDLE handle, const char *string)
-	{
-		return GetProcAddress(handle, string);
-	}
-	inline int DLCLOSE(DLHANDLE handle)
-	{
-		if (!handle)
-		{
-			dlclose_handle_invalid = true;
-			return 1;
-		}
-
-		dlclose_handle_invalid = false;
-		// NOTE: Windows FreeLibrary returns success=nonzero, fail=zero,
-		// which is the opposite of the unix convention, thus the '!'.
-		return !FreeLibrary(handle);
-	}
-	// Windows doesn't provide a function corresponding to dlerror(), so
-	// we make our own.
-	const char *str_GetLastError();
-	inline const char *DLERROR()
-	{
-		if (dlclose_handle_invalid)
-			return "Invalid handle.";
-
-		return str_GetLastError();
-	}
+typedef HINSTANCE module_handle_t;
 #else
-	typedef void *DLHANDLE;
-	typedef void *DLFUNC;
-	inline DLHANDLE DLOPEN(const char *filename)
-	{
-		return dlopen(filename, RTLD_NOW);
-	}
-	inline DLFUNC DLSYM(DLHANDLE handle, const char *string)
-	{
-		return dlsym(handle, string);
-	}
-	// dlclose crashes if handle is null.
-	inline int DLCLOSE(DLHANDLE handle)
-	{
-		if (!handle)
-		{
-			dlclose_handle_invalid = true;
-			return 1;
-		}
-		dlclose_handle_invalid = false;
-		return dlclose(handle);
-	}
-	inline const char *DLERROR()
-	{
-		if (dlclose_handle_invalid)
-			return "Invalid handle.";
-
-		return dlerror();
-	}
+typedef void* module_handle_t;
 #endif
 
-const char *DLFNAME(void *memptr);
+class CSysModule
+{
+public:
+	CSysModule();
+	module_handle_t load(const char* filename);
+	bool unload();
+	void* getsym(const char* name) const;
+	module_handle_t gethandle() const;
+	bool contain(void* addr) const;
+	static const char* getloaderror();
+
+private:
+	module_handle_t m_handle;
+	uintptr_t m_base;
+	uintptr_t m_size;
+};
+
 bool IS_VALID_PTR(void *memptr);
 
 // Attempt to call the given function pointer, without segfaulting.
@@ -96,14 +47,8 @@ bool os_safe_call(REG_CMD_FN pfn);
 
 // Windows doesn't have an strtok_r() routine, so we write our own.
 #ifdef _WIN32
-	#define strtok_r(s, delim, ptrptr)	my_strtok_r(s, delim, ptrptr)
-	char *my_strtok_r(char *s, const char *delim, char **ptrptr);
-#else
-// Linux doesn't have an strlwr() routine, so we write our own.
-	#define strlwr(s) my_strlwr(s)
-	char *my_strlwr(char *s);
+	#define strtok_r(s, delim, ptrptr)	mm_strtok_r(s, delim, ptrptr)
 #endif // _WIN32
-
 
 // Set filename and pathname maximum lengths.  Note some windows compilers
 // provide a <limits.h> which is incomplete and/or causes problems; see
@@ -165,89 +110,8 @@ bool os_safe_call(REG_CMD_FN pfn);
     #ifndef S_IWGRP
         #define S_IWGRP S_IWUSR
     #endif
+
+	const char *str_GetLastError();
 #endif // _WIN32
 
-// Normalize/standardize a pathname.
-//  - For win32, this involves:
-//    - Turning backslashes (\) into slashes (/), so that config files and
-//      Metamod internal code can be simpler and just use slashes (/).
-//    - Turning upper/mixed case into lowercase, since windows is
-//      non-case-sensitive.
-//  - For linux, this requires no work, as paths uses slashes (/) natively,
-//    and pathnames are case-sensitive.
-#if defined(__linux) || defined(__APPLE__)
-#define normalize_pathname(a)
-#elif defined(_WIN32)
-inline void normalize_pathname(char *path)
-{
-	char *cp;
-
-	META_DEBUG(8, ("normalize: %s", path));
-	for (cp = path; *cp; cp++)
-	{
-		if (isupper(*cp)) *cp = tolower(*cp);
-		if (*cp == '\\') *cp = '/';
-	}
-
-	META_DEBUG(8, ("normalized: %s", path));
-}
-#endif // _WIN32
-
-// Indicate if pathname appears to be an absolute-path.  Under linux this
-// is a leading slash (/).  Under win32, this can be:
-//  - a drive-letter path (ie "D:blah" or "C:\blah")
-//  - a toplevel path (ie "\blah")
-//  - a UNC network address (ie "\\srv1\blah").
-// Also, handle both native and normalized pathnames.
-inline int is_absolute_path(const char *path)
-{
-	if (path[0] == '/') return TRUE;
-#ifdef _WIN32
-	if (path[1] == ':') return TRUE;
-	if (path[0] == '\\') return TRUE;
-#endif // _WIN32
-	return FALSE;
-}
-
-#ifdef _WIN32
-// Buffer pointed to by resolved_name is assumed to be able to store a
-// string of PATH_MAX length.
-inline char *realpath(const char *file_name, char *resolved_name)
-{
-	int ret;
-	ret = GetFullPathName(file_name, PATH_MAX, resolved_name, NULL);
-	if (ret > PATH_MAX)
-	{
-		errno = ENAMETOOLONG;
-		return NULL;
-	}
-	else if (ret > 0)
-	{
-		HANDLE handle;
-		WIN32_FIND_DATA find_data;
-		handle = FindFirstFile(resolved_name, &find_data);
-		if (INVALID_HANDLE_VALUE == handle)
-		{
-			errno = ENOENT;
-			return NULL;
-		}
-
-		FindClose(handle);
-		normalize_pathname(resolved_name);
-		return resolved_name;
-	}
-
-	return NULL;
-}
-#endif // _WIN32
-
-// Generic "error string" from a recent OS call.  For linux, this is based
-// on errno.  For win32, it's based on GetLastError.
-inline const char *str_os_error()
-{
-#ifdef _WIN32
-	return str_GetLastError();
-#else
-	return strerror(errno);
-#endif
-}
+const char* str_os_error();

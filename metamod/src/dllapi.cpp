@@ -216,7 +216,7 @@ void compile_dllfunc_callbacks()
 {
 	jitdata_t jitdata;
 	jitdata.plugins = g_plugins ? g_plugins->plist : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->endlist : 0;
+	jitdata.plugins_count = g_plugins ? g_plugins->max_loaded_count : 0;
 	jitdata.table_offset = offsetof(MPlugin, dllapi_table);
 	jitdata.post_table_offset = offsetof(MPlugin, dllapi_post_table);
 
@@ -237,7 +237,7 @@ void compile_newdllfunc_callbacks()
 {
 	jitdata_t jitdata;
 	jitdata.plugins = g_plugins ? g_plugins->plist : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->endlist : 0;
+	jitdata.plugins_count = g_plugins ? g_plugins->max_loaded_count : 0;
 	jitdata.table_offset = offsetof(MPlugin, newapi_table);
 	jitdata.post_table_offset = offsetof(MPlugin, newapi_post_table);
 

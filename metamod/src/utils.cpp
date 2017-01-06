@@ -58,3 +58,83 @@ void execmem_allocator::allocate_page()
 	m_used = 0;
 	m_pages.push_back(page);
 }
+
+#ifdef _WIN32
+// Since windows doesn't provide a verison of strtok_r(), we include one
+// here.  This may or may not operate exactly like strtok_r(), but does
+// what we need it it do.
+char *mm_strtok_r(char *s, const char *delim, char **ptrptr)
+{
+	char *begin = nullptr;
+	char *end = nullptr;
+	char *rest = nullptr;
+	if (s)
+		begin = s;
+	else
+		begin = *ptrptr;
+	if (!begin)
+		return nullptr;
+
+	end = strpbrk(begin, delim);
+	if (end) {
+		*end = '\0';
+		rest = end + 1;
+		*ptrptr = rest + strspn(rest, delim);
+	}
+	else
+		*ptrptr = nullptr;
+
+	return begin;
+}
+#endif // _WIN32
+
+void normalize_pathname(char *path)
+{
+#ifdef _WIN32
+	char *cp;
+
+	META_DEBUG(8, ("normalize: %s", path));
+	for (cp = path; *cp; cp++) {
+		if (isupper(*cp)) *cp = tolower(*cp);
+		if (*cp == '\\') *cp = '/';
+	}
+
+	META_DEBUG(8, ("normalized: %s", path));
+#endif
+}
+
+bool is_absolute_path(const char *path)
+{
+	if (path[0] == '/') return true;
+#ifdef _WIN32
+	if (path[1] == ':') return true;
+	if (path[0] == '\\') return true;
+#endif // _WIN32
+	return false;
+}
+
+char *realpath(const char *file_name, char *resolved_name)
+{
+	int ret = GetFullPathName(file_name, PATH_MAX, resolved_name, NULL);
+	
+	if (ret > PATH_MAX) {
+		errno = ENAMETOOLONG;
+		return NULL;
+	}
+	
+	if (ret > 0) {
+		HANDLE handle;
+		WIN32_FIND_DATA find_data;
+		handle = FindFirstFile(resolved_name, &find_data);
+		if (INVALID_HANDLE_VALUE == handle) {
+			errno = ENOENT;
+			return NULL;
+		}
+
+		FindClose(handle);
+		normalize_pathname(resolved_name);
+		return resolved_name;
+	}
+
+	return NULL;
+}

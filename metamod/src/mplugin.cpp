@@ -382,7 +382,7 @@ char *MPlugin::resolve_dirs(char *path)
 //     dir/file
 // meta_errno values:
 //  - none
-char *MPlugin::resolve_prefix(char *path)
+char *MPlugin::resolve_prefix(char *path) const
 {
 	struct stat st;
 	char *cp, *fname;
@@ -432,7 +432,7 @@ char *MPlugin::resolve_prefix(char *path)
 //     path_i386.so, path_i486.so, etc (if linux)
 // meta_errno values:
 //  - none
-char *MPlugin::resolve_suffix(char *path)
+char *MPlugin::resolve_suffix(char *path) const
 {
 	struct stat st;
 	static char buf[PATH_MAX ];
@@ -595,12 +595,10 @@ bool MPlugin::load(PLUG_LOADTIME now)
 			META_ERROR("dll: Skipping plugin '%s'; couldn't query", desc);
 			if (meta_errno != ME_DLOPEN)
 			{
-				if (DLCLOSE(handle) != 0)
+				if (!sys_module.unload())
 				{
-					META_ERROR("dll: Couldn't close plugin file '%s': %s", file, DLERROR());
+					META_ERROR("dll: Couldn't close plugin file '%s': %s", file, "invalid handle");
 				}
-				else
-					handle = NULL;
 			}
 			status = PL_BADFILE;
 			info = NULL; //prevent crash
@@ -682,10 +680,9 @@ bool MPlugin::query(void)
 	META_QUERY_FN pfn_query;
 
 	// open the plugin DLL
-	if (!(handle = DLOPEN(pathname)))
+	if (!sys_module.load(pathname))
 	{
-		META_ERROR("dll: Failed query plugin '%s'; Couldn't open file '%s': %s",
-		           desc, pathname, DLERROR());
+		META_ERROR("dll: Failed query plugin '%s'; Couldn't open file '%s': %s", desc, pathname, sys_module.getloaderror());
 		RETURN_ERRNO(false, ME_DLOPEN);
 	}
 
@@ -699,10 +696,10 @@ bool MPlugin::query(void)
 	// GiveFnptrsToDll before Meta_Query, because the latter typically uses
 	// engine functions like AlertMessage, which have to be passed along via
 	// GiveFnptrsToDll.
-	pfn_query = (META_QUERY_FN) DLSYM(handle, "Meta_Query");
+	pfn_query = (META_QUERY_FN)sys_module.getsym("Meta_Query");
 	if (!pfn_query)
 	{
-		META_ERROR("dll: Failed query plugin '%s'; Couldn't find Meta_Query(): %s", desc, DLERROR());
+		META_ERROR("dll: Failed query plugin '%s'; Couldn't find Meta_Query(): %s", desc, "function not found");
 		// caller will dlclose()
 		RETURN_ERRNO(false, ME_DLMISSING);
 	}
@@ -721,7 +718,7 @@ bool MPlugin::query(void)
 	// This passes nothing and returns nothing, and the routine in the
 	// plugin can NOT use any g_engine functions, as they haven't been
 	// provided yet (done next, in GiveFnptrsToDll).
-	pfn_init = (META_INIT_FN) DLSYM(handle, "Meta_Init");
+	pfn_init = (META_INIT_FN)sys_module.getsym("Meta_Init");
 	if (pfn_init)
 	{
 		pfn_init();
@@ -734,10 +731,10 @@ bool MPlugin::query(void)
 	}
 
 	// pass on engine function table and globals to plugin
-	if (!(pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN) DLSYM(handle, "GiveFnptrsToDll")))
+	if (!(pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN)sys_module.getsym("GiveFnptrsToDll")))
 	{
 		// META_ERROR("dll: Couldn't find GiveFnptrsToDll() in plugin '%s': %s", desc, DLERROR());
-		META_ERROR("dll: Failed query plugin '%s'; Couldn't find GiveFnptrsToDll(): %s", desc, DLERROR());
+		META_ERROR("dll: Failed query plugin '%s'; Couldn't find GiveFnptrsToDll(): %s", desc, "function not found");
 		// caller will dlclose()
 		RETURN_ERRNO(false, ME_DLMISSING);
 	}
@@ -880,9 +877,9 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 		}
 		static_cast<meta_new_dll_functions_t *>(gamedll_funcs.newapi_table)->set_from(GameDLL.funcs.newapi_table);
 	}
-	if (!(pfn_attach = (META_ATTACH_FN) DLSYM(handle, "Meta_Attach")))
+	if (!(pfn_attach = (META_ATTACH_FN)sys_module.getsym("Meta_Attach")))
 	{
-		META_ERROR("dll: Failed attach plugin '%s': Couldn't find Meta_Attach(): %s", desc, DLERROR());
+		META_ERROR("dll: Failed attach plugin '%s': Couldn't find Meta_Attach(): %s", desc, "function not found");
 		// caller will dlclose()
 		RETURN_ERRNO(false, ME_DLMISSING);
 	}
@@ -1082,13 +1079,12 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASO
 
 	// Close the file.  Note: after this, attempts to reference any memory
 	// locations in the file will produce a segfault.
-	if (DLCLOSE(handle) != 0)
+	if (!sys_module.unload())
 	{
 		// If DLL cannot be closed, OS is badly broken or we are giving invalid handle.
 		// So we don't return here but instead remove plugin from our listings.
-		META_WARNING("dll: Couldn't close plugin file '%s': %s", file, DLERROR());
+		META_WARNING("dll: Couldn't close plugin file '%s': %s", file, "invalid handle");
 	}
-	handle = NULL;
 
 	if (action == PA_UNLOAD)
 	{
@@ -1118,12 +1114,12 @@ bool MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 	// If we have no handle, i.e. no dll loaded, we return true because the
 	// dll is obviously detached. We shouldn't call DLSYM() with a NULL
 	// handle since this will DLSYM() ourself.
-	if (!handle)
+	if (!sys_module.gethandle())
 		return true;
 
-	if (!(pfn_detach = (META_DETACH_FN) DLSYM(handle, "Meta_Detach")))
+	if (!(pfn_detach = (META_DETACH_FN)sys_module.getsym("Meta_Detach")))
 	{
-		META_ERROR("dll: Error detach plugin '%s': Couldn't find Meta_Detach(): %s", desc, DLERROR());
+		META_ERROR("dll: Error detach plugin '%s': Couldn't find Meta_Detach(): %s", desc, "function not found");
 		// caller will dlclose()
 		RETURN_ERRNO(false, ME_DLMISSING);
 	}
@@ -1279,13 +1275,12 @@ bool MPlugin::clear(void)
 	}
 	// If file is open, close the file.  Note: after this, attempts to
 	// reference any memory locations in the file will produce a segfault.
-	if (handle && DLCLOSE(handle) != 0)
+	if (!sys_module.unload())
 	{
-		META_ERROR("dll: Couldn't close plugin file '%s': %s", file, DLERROR());
+		META_ERROR("dll: Couldn't close plugin file '%s': %s", file, "invalid handle");
 		status = PL_FAILED;
 		RETURN_ERRNO(false, ME_DLERROR);
 	}
-	handle = NULL;
 
 	if (gamedll_funcs.dllapi_table) Q_free(gamedll_funcs.dllapi_table);
 	if (gamedll_funcs.newapi_table) Q_free(gamedll_funcs.newapi_table);
@@ -1298,7 +1293,6 @@ bool MPlugin::clear(void)
 
 	status = PL_EMPTY;
 	action = PA_NULL;
-	handle = NULL;
 	info = NULL;
 	time_loaded = 0;
 	dllapi_table = NULL;

@@ -172,14 +172,6 @@ void MRegCmdList::show(int plugin_id) const
 	int n = 0;
 	MRegCmd *icmd;
 
-	// If OS doesn't support DLFNAME, then we can't know what the plugin's
-	// registered cvars are.
-	DLFNAME(NULL);
-	if (meta_errno == ME_OSNOTSUP)
-	{
-		META_CONS("Registered commands: unknown (can't get info under this OS)");
-		return;
-	}
 	META_CONS("Registered commands:");
 	for (int i = 0; i < endlist; i++)
 	{
@@ -374,15 +366,6 @@ void MRegCvarList::show(int plugin_id) const
 	int n = 0;
 	MRegCvar *icvar;
 	char bname[30 + 1], bval[15 + 1]; // +1 for term null
-
-	// If OS doesn't support DLFNAME, then we can't know what the plugin's
-	// registered cvars are.
-	DLFNAME(NULL);
-	if (meta_errno == ME_OSNOTSUP)
-	{
-		META_CONS("Registered cvars: unknown (can't get info under this OS)");
-		return;
-	}
 
 	META_CONS("%-*s     %*s  %s", sizeof(bname) - 1, "Registered cvars:", sizeof(bval) - 1, "float value", "string value");
 	for (int i = 0; i < endlist; i++)

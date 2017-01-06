@@ -23,7 +23,8 @@ public:
 	MPlugin *find_memloc(void *memptr);		// find by memory location
 	MPlugin *find_match(const char *prefix);	// find by partial prefix match
 	MPlugin *find_match(MPlugin *pmatch);		// find by platform_match()
-	MPlugin *find(DLHANDLE handle);			// find by handle
+	MPlugin *find(module_handle_t handle);			// find by handle
+	MPlugin *find_empty_slot();
 	MPlugin *add(MPlugin *padd);
 
 	bool found_child_plugins(int source_index) const;
@@ -42,8 +43,7 @@ public:
 	void clear_source_plugin_index(int source_index);
 
 public:
-	int loaded_count;					// index of last used entry
-	int size;							// size of list, ie MAX_PLUGINS
+	int max_loaded_count;					// index of last used entry
 	char inifile[PATH_MAX];				// full pathname
 	MPlugin plist[MAX_PLUGINS];			// array of plugins
 };
