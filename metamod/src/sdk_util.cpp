@@ -17,7 +17,7 @@ char *UTIL_VarArgs(char *format, ...)
 void UTIL_LogPrintf(char *fmt, ...)
 {
 	va_list argptr;
-	static char string[1024];
+	char string[1024];
 
 	va_start(argptr, fmt);
 	Q_vsnprintf(string, sizeof(string), fmt, argptr);

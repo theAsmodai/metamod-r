@@ -31,10 +31,6 @@ unsigned int CALL_API_count = 0;
 
 int requestid_counter = 0;
 
-#ifdef UNFINISHED
-MHookList *Hooks;
-#endif // UNFINISHED
-
 // Very first metamod function that's run.
 // Do startup operations...
 void metamod_startup()

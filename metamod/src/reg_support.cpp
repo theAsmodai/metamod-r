@@ -45,7 +45,7 @@
 // Generic command handler, passed to the engine for any AddServerCommand
 // calls made by the plugin.  It finds the appropriate plugin function
 // pointer to call based on CMD_ARGV(0).
-void meta_command_handler()
+void EXT_FUNC meta_command_handler()
 {
 	META_DEBUG(5, ("called: meta_command_handler; arg0=%s args='%s'", CMD_ARGV(0), CMD_ARGS()));
 	const char *cmd = CMD_ARGV(0);
@@ -78,7 +78,7 @@ void meta_command_handler()
 // The string handed to the engine is just a Q_strdup() of the plugin's
 // string.  The function pointer handed to the engine is actually a pointer
 // to a generic command-handler function (see above).
-void meta_AddServerCommand(char *cmd_name, void (*function)())
+void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 {
 	MPlugin *iplug = NULL;
 	MRegCmd *icmd = NULL;
@@ -132,7 +132,7 @@ void meta_AddServerCommand(char *cmd_name, void (*function)())
 // values via the engine functions, this will work fine.  If the plugin
 // code tries to _directly_ read/set the fields of its own cvar structures,
 // it will fail to work properly.
-void meta_CVarRegister(cvar_t *pCvar)
+void EXT_FUNC meta_CVarRegister(cvar_t *pCvar)
 {
 	MPlugin *iplug = nullptr;
 	MRegCvar *icvar = nullptr;
@@ -192,15 +192,15 @@ void meta_CVarRegister(cvar_t *pCvar)
 // commands and cvars).  This merely provides differently located storage
 // for the string.
 
-int meta_RegUserMsg(const char *pszName, int iSize)
+int EXT_FUNC meta_RegUserMsg(const char *pszName, int iSize)
 {
 	char *cp = Q_strdup(pszName);
 	return REG_USER_MSG(cp, iSize);
 }
 
 // Intercept and record queries
-void meta_QueryClientCvarValue(const edict_t *player, const char *cvarName)
+void EXT_FUNC meta_QueryClientCvarValue(const edict_t *player, const char *cvarName)
 {
 	g_players.set_player_cvar_query(player, cvarName);
-	(*g_engfuncs.pfnQueryClientCvarValue)(player, cvarName);
+	g_engfuncs.pfnQueryClientCvarValue(player, cvarName);
 }

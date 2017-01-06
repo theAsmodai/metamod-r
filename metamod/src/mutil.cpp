@@ -10,7 +10,7 @@ hudtextparms_t default_csay_tparms = {
 };
 
 // Log to console; newline added.
-void mutil_LogConsole(plid_t plid, const char *fmt, ...)
+void EXT_FUNC mutil_LogConsole(plid_t plid, const char *fmt, ...)
 {
 	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
@@ -31,7 +31,7 @@ void mutil_LogConsole(plid_t plid, const char *fmt, ...)
 }
 
 // Log regular message to logs; newline added.
-void mutil_LogMessage(plid_t plid, const char *fmt, ...)
+void EXT_FUNC mutil_LogMessage(plid_t plid, const char *fmt, ...)
 {
 	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
@@ -44,7 +44,7 @@ void mutil_LogMessage(plid_t plid, const char *fmt, ...)
 }
 
 // Log an error message to logs; newline added.
-void mutil_LogError(plid_t plid, const char *fmt, ...)
+void EXT_FUNC mutil_LogError(plid_t plid, const char *fmt, ...)
 {
 	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
@@ -57,7 +57,7 @@ void mutil_LogError(plid_t plid, const char *fmt, ...)
 }
 
 // Log a message only if cvar "developer" set; newline added.
-void mutil_LogDeveloper(plid_t plid, const char* fmt, ...)
+void EXT_FUNC mutil_LogDeveloper(plid_t plid, const char* fmt, ...)
 {
 	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
@@ -75,7 +75,7 @@ void mutil_LogDeveloper(plid_t plid, const char* fmt, ...)
 
 // Print message on center of all player's screens.  Uses default text
 // parameters (color green, 10 second fade-in).
-void mutil_CenterSay(plid_t plid, const char* fmt, ...)
+void EXT_FUNC mutil_CenterSay(plid_t plid, const char* fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -84,7 +84,7 @@ void mutil_CenterSay(plid_t plid, const char* fmt, ...)
 }
 
 // Print a center-message, with given text parameters.
-void mutil_CenterSayParms(plid_t plid, hudtextparms_t tparms, const char* fmt, ...)
+void EXT_FUNC mutil_CenterSayParms(plid_t plid, hudtextparms_t tparms, const char* fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
@@ -94,7 +94,7 @@ void mutil_CenterSayParms(plid_t plid, hudtextparms_t tparms, const char* fmt, .
 
 // Print a center-message, with text parameters and varargs.  Provides
 // functionality to the above center_say interfaces.
-void mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const char* fmt, va_list ap)
+void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const char* fmt, va_list ap)
 {
 	char buf[MAX_LOGMSG_LEN];
 	int n;
@@ -115,7 +115,7 @@ void mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const char* fmt,
 // Allow plugins to call the entity functions in the GameDLL.  In
 // particular, calling "player()" as needed by most Bots.  Suggested by
 // Jussi Kivilinna.
-qboolean mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_t *pev)
+qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_t *pev)
 {
 	plugin_info_t *plinfo = (plugin_info_t *)plid;
 	META_DEBUG(8, ("Looking up game entity '%s' for plugin '%s'", entStr, plinfo->name));
@@ -133,7 +133,7 @@ qboolean mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_t *pev)
 
 // Find a usermsg, registered by the gamedll, with the corresponding
 // msgname, and return remaining info about it (msgid, size).
-int mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
+int EXT_FUNC mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 {
 	plugin_info_t *plinfo = (plugin_info_t *)plid;
 	META_DEBUG(8, ("Looking up usermsg name '%s' for plugin '%s'", msgname, plinfo->name));
@@ -151,7 +151,7 @@ int mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 
 // Find a usermsg, registered by the gamedll, with the corresponding
 // msgid, and return remaining info about it (msgname, size).
-const char* mutil_GetUserMsgName(plid_t plid, int msgid, int *size)
+const char* EXT_FUNC mutil_GetUserMsgName(plid_t plid, int msgid, int *size)
 {
 	plugin_info_t *plinfo = (plugin_info_t *)plid;
 	META_DEBUG(8, ("Looking up usermsg id '%d' for plugin '%s'", msgid, plinfo->name));
@@ -197,7 +197,7 @@ const char* mutil_GetUserMsgName(plid_t plid, int msgid, int *size)
 }
 
 // Return the full path of the plugin's loaded dll/so file.
-const char* mutil_GetPluginPath(plid_t plid)
+const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 {
 	static char buf[PATH_MAX ];
 	MPlugin *plug;
@@ -215,7 +215,7 @@ const char* mutil_GetPluginPath(plid_t plid)
 }
 
 // Return various string-based info about the game/MOD/gamedll.
-const char* mutil_GetGameInfo(plid_t plid, ginfo_t type)
+const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 {
 	static char buf[MAX_STRBUF_LEN];
 	const char *cp;
@@ -249,7 +249,7 @@ const char* mutil_GetGameInfo(plid_t plid, ginfo_t type)
 	return buf;
 }
 
-int mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME now, void **plugin_handle)
+int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME now, void **plugin_handle)
 {
 	MPlugin *pl_loaded;
 	if (!fname)
@@ -273,7 +273,7 @@ int mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME now, void
 	}
 }
 
-int mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
 	MPlugin *findp = nullptr;
 	int pindex;
@@ -301,7 +301,7 @@ int mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIME now, PL
 	return meta_errno;
 }
 
-int mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
 	MPlugin *findp;
 
@@ -321,18 +321,18 @@ int mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PLUG_LOADTI
 	return meta_errno;
 }
 
-const char* mutil_IsQueryingClientCvar(plid_t plid, const edict_t* pEdict)
+const char* EXT_FUNC mutil_IsQueryingClientCvar(plid_t plid, const edict_t* pEdict)
 {
 	return g_players.is_querying_cvar(pEdict);
 }
 
-int mutil_MakeRequestId(plid_t plid)
+int EXT_FUNC mutil_MakeRequestId(plid_t plid)
 {
 	//the offset is to distinguish from gamedll requests, if any
 	return abs(0xbeef << 16) + (++requestid_counter);
 }
 
-void mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIONS** pdll, NEW_DLL_FUNCTIONS** pnewdll)
+void EXT_FUNC mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIONS** pdll, NEW_DLL_FUNCTIONS** pnewdll)
 {
 	if (peng)
 		*peng = &meta_engfuncs;
@@ -343,43 +343,6 @@ void mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIONS** pdll
 	if (pnewdll)
 		*pnewdll = pHookedNewDllFunctions;
 }
-
-#ifdef UNFINISHED
-
-int mutil_HookGameEvent(plid_t plid, game_event_t event, event_func_t pfnHandle)
-{
-	return Hooks->add(plid, event, pfnHandle);
-}
-
-int mutil_HookLogTrigger(plid_t plid, const char *trigger, logmatch_func_t pfnHandle)
-{
-	return Hooks->add(plid, H_TRIGGER, trigger, pfnHandle);
-}
-
-int mutil_HookLogString(plid_t plid, const char *string, logmatch_func_t pfnHandle)
-{
-	return Hooks->add(plid, H_STRING, string, pfnHandle);
-}
-
-int mutil_HookLogRegex(plid_t plid, const char *pattern, logmatch_func_t pfnHandle)
-{
-	return Hooks->add(plid, H_STRING, pattern, pfnHandle);
-}
-
-qboolean mutil_RemoveHookID(plid_t plid, int hookid)
-{
-	if (Hooks->remove(plid, hookid))
-		return true;
-
-	return false;
-}
-
-int mutil_RemoveHookAll(plid_t plid)
-{
-	return Hooks->remove_all(plid);
-}
-
-#endif // UNFINISHED
 
 // Meta Utility Function table.
 mutil_funcs_t MetaUtilFunctions = {
@@ -401,12 +364,4 @@ mutil_funcs_t MetaUtilFunctions = {
 	mutil_IsQueryingClientCvar,	// pfnIsQueryingClientCvar
 	mutil_MakeRequestId,		// pfnMakeRequestId
 	mutil_GetHookTables,		// pfnGetHookTables
-#ifdef UNFINISHED
-	mutil_HookGameEvent,		// pfnGameEvent
-	mutil_HookLogTrigger,		// pfnLogTrigger
-	mutil_HookLogString,		// pfnLogString
-	mutil_HookLogRegex,		// pfnLogRegex
-	mutil_RemoveHookID,		// pfnRemoveHookID
-	mutil_RemoveHookAll,		// pfnRemoveHookAll
-#endif // UNFINISHED
 };

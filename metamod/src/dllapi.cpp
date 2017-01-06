@@ -29,7 +29,7 @@ void mm_ClientCommand(edict_t *pEntity)
 	}
 }
 
-void mm_ServerDeactivate(void)
+void EXT_FUNC mm_ServerDeactivate(void)
 {
 	sFunctionTable_jit.pfnServerDeactivate();
 
@@ -46,11 +46,13 @@ void mm_ServerDeactivate(void)
 	// from the previous map.  It's also called right before shutdown,
 	// which means whenever hlds quits, it'll reload the plugins just
 	// before it exits, which is rather silly, but oh well.
-	g_plugins->refresh(PT_CHANGELEVEL);
+	g_plugins->refresh(PT_CHANGELEVEL); // <- callbacks rebuilded (!)
 	g_plugins->unpause_all();
 	// g_plugins->retry_all(PT_CHANGELEVEL);
 	g_players.clear_all_cvar_queries();
 	requestid_counter = 0;
+
+	/* RETURN TO ENGINE */
 }
 
 compile_data_t g_dllfunc_cdata[] =
@@ -259,7 +261,7 @@ void compile_gamedll_tramps()
 		*(size_t *)(size_t(&sFunctionTable) + cd.offset) = g_jit.compile_tramp(size_t(&sFunctionTable_jit) + cd.offset);
 	}
 
-	// use direct hook
+	// use direct hook to prevent crash after callbacks rebuilding
 	sFunctionTable.pfnServerDeactivate = mm_ServerDeactivate;
 
 	for (auto& cd : g_newdllfunc_cdata) {

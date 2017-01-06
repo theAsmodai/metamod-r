@@ -41,7 +41,7 @@ void meta_register_cmdcvar()
 }
 
 // Parse "meta" console command.
-void server_meta()
+void EXT_FUNC server_meta()
 {
 	const char *cmd = CMD_ARGV(1);
 
@@ -59,7 +59,7 @@ void server_meta()
 }
 
 // Parse "meta" client command.
-void client_meta(edict_t* pEntity)
+void EXT_FUNC client_meta(edict_t* pEntity)
 {
 	const char *cmd = CMD_ARGV(1);
 	META_LOG("ClientCommand 'meta %s' from player '%s'", CMD_ARGS(), STRING(pEntity->v.netname));
