@@ -303,7 +303,8 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	// Find either:
 	//  - a slot in the list that's not being used
 	//  - the end of the list
-	for (i = 0; i < endlist && plist[i].status != PL_EMPTY; i++);
+	for (i = 0; i < endlist && plist[i].status != PL_EMPTY; i++)
+		;
 
 	// couldn't find a slot to use
 	if (i == size)
@@ -334,6 +335,7 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	// copy pathname
 	Q_strncpy(iplug->pathname, padd->pathname, sizeof iplug->pathname - 1);
 	iplug->pathname[sizeof iplug->pathname - 1] = '\0';
+	normalize_pathname(iplug->pathname);
 
 	// copy source
 	iplug->source = padd->source;

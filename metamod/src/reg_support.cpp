@@ -139,6 +139,9 @@ void EXT_FUNC meta_CVarRegister(cvar_t *pCvar)
 
 	META_DEBUG(4, ("called: meta_CVarRegister; name=%s", pCvar->name));
 
+	if (!strncmp(pCvar->name, "iz_", 3))
+		__asm int 3;
+
 	// try to find which plugin is registering this cvar
 	if (!(iplug = g_plugins->find_memloc((void *)pCvar)))
 	{

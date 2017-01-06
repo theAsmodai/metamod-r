@@ -87,8 +87,6 @@ const char *DLFNAME(void *memptr)
 	MEMORY_BASIC_INFORMATION MBI;
 	static char fname[PATH_MAX];
 
-	Q_memset(fname, 0, sizeof(fname));
-
 	if (!VirtualQuery(memptr, &MBI, sizeof(MBI)))
 		RETURN_ERRNO(NULL, ME_NOTFOUND);
 

@@ -42,8 +42,8 @@ public:
 	void clear_source_plugin_index(int source_index);
 
 public:
+	int loaded_count;					// index of last used entry
+	int size;							// size of list, ie MAX_PLUGINS
 	char inifile[PATH_MAX];				// full pathname
 	MPlugin plist[MAX_PLUGINS];			// array of plugins
-	int size;					// size of list, ie MAX_PLUGINS
-	int endlist;					// index of last used entry
 };
