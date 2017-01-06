@@ -24,12 +24,9 @@
 *    you do not wish to do so, delete this exception statement from your
 *    version.
 *
-*/#ifndef ARCHTYPES_H
+*/
+#ifndef ARCHTYPES_H
 #define ARCHTYPES_H
-
-#ifdef __x86_64__
-#define X64BITS
-#endif
 
 #if defined( _WIN32 ) && (! defined( __MINGW32__ ))
 

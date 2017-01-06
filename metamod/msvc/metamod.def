@@ -1,4 +1,4 @@
-LIBRARY metamod_mm
+LIBRARY metamod
 EXPORTS
 	GiveFnptrsToDll			@1
 SECTIONS

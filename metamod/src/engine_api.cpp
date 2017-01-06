@@ -11,11 +11,10 @@ void mm_QueryClientCvarValue(const edict_t* pEdict, const char* cvarName)
 	g_players.set_player_cvar_query(pEdict, cvarName);
 }
 
+// int -> void
 void mm_RegUserMsg(const char* pszName, int iSize)
 {
-	/*__asm int 3;
-	// Add the msgid, name, and size to our saved list, if we haven't
-	// already.
+	// Add the msgid, name, and size to our saved list, if we haven't already.
 	auto imsgid = *(int *)(g_metaGlobals.status == MRES_OVERRIDE ? g_metaGlobals.override_ret : g_metaGlobals.orig_ret);
 	auto nmsg = g_regMsgs->find(imsgid);
 	
@@ -28,7 +27,7 @@ void mm_RegUserMsg(const char* pszName, int iSize)
 			META_ERROR("user message id reused: msgid=%d, oldname=%s, newname=%s", imsgid, nmsg->name, pszName);
 	}
 	else
-		g_regMsgs->add(pszName, imsgid, iSize);*/
+		g_regMsgs->add(pszName, imsgid, iSize);
 }
 
 compile_data_t g_engfuncs_cdata[] =

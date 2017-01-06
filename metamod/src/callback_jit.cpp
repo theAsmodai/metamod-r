@@ -25,7 +25,7 @@ class CForwardCallbackJIT : public jitasm::function<int, CForwardCallbackJIT, in
 {
 public:
 	CForwardCallbackJIT(jitdata_t *jitdata);
-	void naked_main() override;
+	void naked_main();
 	void call_func(jitasm::Frontend::Reg32 addr);
 
 private:

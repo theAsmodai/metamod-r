@@ -8887,8 +8887,7 @@ struct function_cdecl<R, Derived, A1, detail::ArgNone, detail::ArgNone, detail::
 	typename detail::ResultTraits<R>::ResultPtr result_ptr;
 	operator FuncPtr() { return (FuncPtr)GetCode(); }
 	void InternalMain() {static_cast<Derived *>(this)->naked_main();}
-
-	virtual void naked_main() {
+	void naked_main() {
 		using namespace detail::calling_convention_cdecl;
 		Prolog();
 		detail::ResultDest result_dst(*this, ResultInfo<R>());
