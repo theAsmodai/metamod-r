@@ -254,16 +254,15 @@ int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME 
 	MPlugin *pl_loaded;
 	if (!fname)
 	{
-		return ME_ARGUMENT;
+		return 1;
 	}
 
-	meta_errno = ME_NOERROR;
 	if (!(pl_loaded = g_plugins->plugin_addload(plid, fname, now)))
 	{
 		if (plugin_handle)
 			*plugin_handle = nullptr;
 
-		return meta_errno;
+		return 1;
 	}
 	else
 	{
@@ -281,7 +280,7 @@ int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIM
 
 	if (!fname)
 	{
-		return ME_ARGUMENT;
+		return 1;
 	}
 
 	pindex = strtol(fname, &endptr, 10);
@@ -291,14 +290,12 @@ int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIM
 		findp = g_plugins->find_match(fname);
 
 	if (!findp)
-		return meta_errno;
-
-	meta_errno = ME_NOERROR;
+		return 1;
 
 	if (findp->plugin_unload(plid, now, reason))
 		return 0;
 
-	return meta_errno;
+	return 1;
 }
 
 int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
@@ -307,18 +304,16 @@ int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PL
 
 	if (!plugin_handle)
 	{
-		return ME_ARGUMENT;
+		return 1;
 	}
 
 	if (!(findp = g_plugins->find((module_handle_t)plugin_handle)))
-		return ME_NOTFOUND;
-
-	meta_errno = ME_NOERROR;
+		return 1;
 
 	if (findp->plugin_unload(plid, now, reason))
 		return 0;
 
-	return meta_errno;
+	return 1;
 }
 
 const char* EXT_FUNC mutil_IsQueryingClientCvar(plid_t plid, const edict_t* pEdict)

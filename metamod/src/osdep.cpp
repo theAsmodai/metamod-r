@@ -172,7 +172,7 @@ bool IS_VALID_PTR(void *memptr)
 bool IS_VALID_PTR(void *memptr)
 {
 	if (IsBadCodePtr((FARPROC) memptr))
-		RETURN_ERRNO(false, ME_BADMEMPTR);
+		return false;
 	else
 		return true;
 }

@@ -257,7 +257,7 @@ bool meta_init_gamedll(void)
 		if (!_getcwd(buf, sizeof(buf)))
 		{
 			META_WARNING("dll: Couldn't get cwd; %s", strerror(errno));
-			RETURN_ERRNO(false, ME_NULLRESULT);
+			return false;
 		}
 
 		Q_snprintf(GameDLL.gamedir, sizeof(GameDLL.gamedir), "%s/%s", buf, gamedir);
@@ -295,7 +295,7 @@ bool meta_load_gamedll(void)
 	if (!GameDLL.sys_module.load(GameDLL.pathname))
 	{
 		META_ERROR("dll: Couldn't load game DLL %s: %s", GameDLL.pathname, CSysModule::getloaderror());
-		RETURN_ERRNO(false, ME_DLOPEN);
+		return false;
 	}
 
 	// prepare meta_engfuncs
@@ -313,7 +313,7 @@ bool meta_load_gamedll(void)
 	else
 	{
 		META_ERROR("dll: Couldn't find GiveFnptrsToDll() in game DLL '%s'", GameDLL.name);
-		RETURN_ERRNO(false, ME_DLMISSING);
+		return false;
 	}
 
 	// TODO
@@ -373,7 +373,7 @@ bool meta_load_gamedll(void)
 	if (!found)
 	{
 		META_ERROR("dll: Couldn't find either GetEntityAPI nor GetEntityAPI2 in game DLL '%s'", GameDLL.name);
-		RETURN_ERRNO(false, ME_DLMISSING);
+		return false;
 	}
 
 	// prepare gamedll callbacks

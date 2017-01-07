@@ -14,7 +14,6 @@ void MPlayer::set_cvar_query(const char *cvar)
 	// client cvar is queried.
 	if (!cvar)
 	{
-		meta_errno = ME_ARGUMENT;
 		return;
 	}
 
@@ -80,5 +79,5 @@ const char *MPlayerList::is_querying_cvar(const edict_t *pEntity) const
 	if (indx >= 1 && indx <= gpGlobals->maxClients)
 		return players[indx].is_querying_cvar();
 
-	RETURN_ERRNO(NULL, ME_NOTFOUND);
+	return NULL;
 }

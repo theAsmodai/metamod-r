@@ -28,12 +28,12 @@ void EXT_FUNC meta_command_handler()
 // to a generic command-handler function (see above).
 void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 {
-	MPlugin *iplug = g_plugins->find_memloc(function);
+	MPlugin *plug = g_plugins->find_memloc(function);
 
-	META_DEBUG(4, ("called: meta_AddServerCommand; cmd_name=%s, function=%d", cmd_name, function));
+	META_DEBUG(4, ("called: meta_AddServerCommand; cmd_name=%s, function=%d, plugin=%s", cmd_name, function, plug ? plug->file : "unknown"));
 
 	// try to find which plugin is registering this command
-	if (!iplug) {
+	if (!plug) {
 		META_ERROR("Failed to find memloc for regcmd '%s'", cmd_name);
 	}
 
@@ -42,7 +42,7 @@ void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 	if (!icmd)
 	{
 		// If not found, add.
-		icmd = g_regCmds->add(cmd_name, function, iplug);
+		icmd = g_regCmds->add(cmd_name, function, plug);
 		if (!icmd)
 		{
 			return;

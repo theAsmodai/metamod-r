@@ -149,7 +149,7 @@ bool MRegCvar::set(cvar_t *src) const
 	if (Q_stricmp(src->name, data->name))
 	{
 		META_ERROR("Tried to set cvar with mismatched name; src=%s dst=%s", src->name, data->name);
-		RETURN_ERRNO(false, ME_ARGUMENT);
+		return false;
 	}
 
 	// Would like to free() existing string, but can't tell where it was
@@ -192,7 +192,7 @@ MRegCvar *MRegCvarList::add(const char *addname)
 		if (!temp)
 		{
 			META_ERROR("Couldn't grow registered cvar list to %d for '%s'; %s", newsize, addname, strerror(errno));
-			RETURN_ERRNO(NULL, ME_NOMEM);
+			return NULL;
 		}
 		vlist = temp;
 		size = newsize;
@@ -212,14 +212,14 @@ MRegCvar *MRegCvarList::add(const char *addname)
 	if (!icvar->data)
 	{
 		META_ERROR("Couldn't malloc cvar for adding reg cvar name '%s': %s", addname, strerror(errno));
-		RETURN_ERRNO(NULL, ME_NOMEM);
+		return NULL;
 	}
 
 	icvar->data->name = Q_strdup(addname);
 	if (!icvar->data->name)
 	{
 		META_ERROR("Couldn't Q_strdup for adding reg cvar name '%s': %s", addname, strerror(errno));
-		RETURN_ERRNO(NULL, ME_NOMEM);
+		return NULL;
 	}
 	endlist++;
 	return icvar;
@@ -236,7 +236,7 @@ MRegCvar *MRegCvarList::find(const char *findname)
 			return &vlist[i];
 	}
 
-	RETURN_ERRNO(NULL, ME_NOTFOUND);
+	return NULL;
 }
 
 // Disable any cvars belonging to the given plugin (by index id).
@@ -351,7 +351,7 @@ MRegMsg *MRegMsgList::add(const char *addname, int addmsgid, int addsize)
 	{
 		// all slots used
 		META_ERROR("Couldn't add registered msg '%s' to list; reached max msgs (%d)", addname, size);
-		RETURN_ERRNO(NULL, ME_MAXREACHED);
+		return NULL;
 	}
 
 	MRegMsg *imsg = &mlist[endlist];
@@ -378,7 +378,7 @@ MRegMsg *MRegMsgList::find(const char *findname)
 			return &mlist[i];
 	}
 
-	RETURN_ERRNO(NULL, ME_NOTFOUND);
+	return NULL;
 }
 
 // Try to find a registered msg with the given msgid.
@@ -392,7 +392,7 @@ MRegMsg *MRegMsgList::find(int findmsgid)
 			return &mlist[i];
 	}
 
-	RETURN_ERRNO(NULL, ME_NOTFOUND);
+	return NULL;
 }
 
 // List the registered usermsgs for the gamedll.

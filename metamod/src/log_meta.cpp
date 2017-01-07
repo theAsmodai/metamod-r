@@ -15,12 +15,11 @@ static void buffered_ALERT(MLOG_SERVICE service, ALERT_TYPE atype, const char *p
 // Print to console.
 void META_CONS(const char *fmt, ...)
 {
-	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
-	unsigned int len;
 
+	va_list ap;
 	va_start(ap, fmt);
-	len = Q_vsnprintf(buf, sizeof buf, fmt, ap);
+	size_t len = Q_vsnprintf(buf, sizeof buf - 1, fmt, ap);
 	va_end(ap);
 
 	buf[len] = '\n';
@@ -43,7 +42,6 @@ void META_DEV(const char *fmt, ...)
 void META_INFO(const char *fmt, ...)
 {
 	va_list ap;
-
 	va_start(ap, fmt);
 	buffered_ALERT(mlsIWEL, at_logged, "[META] INFO:", fmt, ap);
 	va_end(ap);
@@ -52,7 +50,6 @@ void META_INFO(const char *fmt, ...)
 void META_WARNING(const char *fmt, ...)
 {
 	va_list ap;
-
 	va_start(ap, fmt);
 	buffered_ALERT(mlsIWEL, at_logged, "[META] WARNING:", fmt, ap);
 	va_end(ap);
@@ -61,7 +58,6 @@ void META_WARNING(const char *fmt, ...)
 void META_ERROR(const char *fmt, ...)
 {
 	va_list ap;
-
 	va_start(ap, fmt);
 	buffered_ALERT(mlsIWEL, at_logged, "[META] ERROR:", fmt, ap);
 	va_end(ap);
@@ -70,7 +66,6 @@ void META_ERROR(const char *fmt, ...)
 void META_LOG(const char *fmt, ...)
 {
 	va_list ap;
-
 	va_start(ap, fmt);
 	buffered_ALERT(mlsIWEL, at_logged, "[META]", fmt, ap);
 	va_end(ap);
@@ -79,12 +74,11 @@ void META_LOG(const char *fmt, ...)
 // Print to client.
 void META_CLIENT(edict_t *pEntity, const char *fmt, ...)
 {
-	va_list ap;
 	char buf[MAX_CLIENTMSG_LEN];
-	unsigned int len;
 
+	va_list ap;
 	va_start(ap, fmt);
-	len = Q_vsnprintf(buf, sizeof(buf) - 1, fmt, ap);
+	size_t len = Q_vsnprintf(buf, sizeof buf - 1, fmt, ap);
 	va_end(ap);
 
 	buf[len] = '\n';

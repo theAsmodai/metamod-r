@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-META_ERRNO meta_errno;
-
 void __declspec(noreturn) do_exit(int exitval)
 {
 	//TerminateProcess(GetCurrentProcess(), 1);

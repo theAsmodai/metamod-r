@@ -121,7 +121,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 	else
 	{
 		// Neither known-list found a gamedll.
-		RETURN_ERRNO(false, ME_NOTFOUND);
+		return false;
 	}
 
 	Q_snprintf(gamedll->pathname, sizeof(gamedll->pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);

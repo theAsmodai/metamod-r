@@ -356,7 +356,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 			}
 			// Output to both places, because we don't want the admin
 			// to miss this..
-			if (!findp && meta_errno == ME_NOTUNIQ)
+			if (!findp /*&& meta_errno == ME_NOTUNIQ*/) // TODO
 			{
 				META_ERROR("Unique match for required plugin '%s' was not found!  Exiting.", arg);
 				META_CONS("\nERROR: Unique match for required plugin '%s' was not found!  Exiting.\n", arg);
@@ -378,7 +378,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 
 		if (!findp)
 		{
-			if (meta_errno == ME_NOTUNIQ)
+			if (false /*meta_errno == ME_NOTUNIQ*/) // TODO
 				META_CONS("Couldn't find unique plugin matching '%s'", arg);
 			else
 				META_CONS("Couldn't find plugin matching '%s'", arg);
@@ -407,7 +407,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 				META_CONS("Unloaded plugin '%s'", findp->desc);
 				g_plugins->show();
 			}
-			else if (meta_errno == ME_DELAYED)
+			else if (false /*meta_errno == ME_DELAYED*/) // TODO
 				META_CONS("Unload delayed for plugin '%s'", findp->desc);
 			else
 				META_CONS("Unload failed for plugin '%s'", findp->desc);
@@ -430,9 +430,9 @@ void cmd_doplug(PLUG_CMD pcmd)
 			findp->action = PA_RELOAD;
 			if (findp->reload(PT_ANYTIME, PNL_COMMAND))
 				META_CONS("Reloaded plugin '%s'", findp->desc);
-			else if (meta_errno == ME_DELAYED)
+			else if (0/*meta_errno == ME_DELAYED*/)
 				META_CONS("Reload delayed for plugin '%s'", findp->desc);
-			else if (meta_errno == ME_NOTALLOWED)
+			else if (0/*meta_errno == ME_NOTALLOWED*/)
 				META_CONS("Reload not allowed for plugin '%s' now, only allowed %s", findp->desc, findp->str_loadable(SL_ALLOWED));
 			else
 				META_CONS("Reload failed for plugin '%s'", findp->desc);

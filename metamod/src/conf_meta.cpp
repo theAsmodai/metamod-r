@@ -22,7 +22,7 @@ option_t *MConfig::find(const char* lookup) const
 		}
 	}
 	
-	RETURN_ERRNO(NULL, ME_NOTFOUND);
+	return NULL;
 }
 
 bool MConfig::set(const char* key, const char* value) const
@@ -31,7 +31,7 @@ bool MConfig::set(const char* key, const char* value) const
 	if (optp)
 		return set(optp, value);
 
-	RETURN_ERRNO(false, ME_NOTFOUND);
+	return false;
 }
 
 bool MConfig::set(option_t* setp, const char* setstr)
@@ -51,7 +51,7 @@ bool MConfig::set(option_t* setp, const char* setstr)
 		if (!isdigit(setstr[0]))
 		{
 			META_ERROR("option '%s' invalid format '%s'", setp->name, setstr);
-			RETURN_ERRNO(false, ME_FORMAT);
+			return false;
 		}
 		*optval = Q_atoi(setstr);
 		META_DEBUG(3, ("set config int: %s = %d", setp->name, *optval));
@@ -69,7 +69,7 @@ bool MConfig::set(option_t* setp, const char* setstr)
 		{
 			META_ERROR("option '%s' invalid format '%s'", setp->name,
 			           setstr);
-			RETURN_ERRNO(false, ME_FORMAT);
+			return false;
 		}
 		META_DEBUG(3, ("set config bool: %s = %s", setp->name, *optval ? "true" : "false"));
 		break;
@@ -88,7 +88,7 @@ bool MConfig::set(option_t* setp, const char* setstr)
 		break;
 	default:
 		META_ERROR("unrecognized config type '%d'", setp->type);
-		RETURN_ERRNO(false, ME_ARGUMENT);
+		return false;
 	}
 
 	return true;
@@ -111,7 +111,7 @@ bool MConfig::load(const char* fn)
 	if (!fp)
 	{
 		META_ERROR("unable to open config file '%s': %s", loadfile, strerror(errno));
-		RETURN_ERRNO(false, ME_NOFILE);
+		return false;
 	}
 
 	META_DEBUG(2, ("Loading from config file: %s", loadfile));
