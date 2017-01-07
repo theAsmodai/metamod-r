@@ -1,125 +1,82 @@
 #include "precompiled.h"
 
-// Init values.  It would probably be more "proper" to use containers and
-// constructors, rather than arrays and init-functions.
-void MRegCmd::init(int idx)
+MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : pfnCmd(cmd_handler), status(RG_VALID), plugid(cmd_plugin->index)
 {
-	index = idx;
-	name = NULL;
-	pfnCmd = NULL;
+	name = _strdup(name);
+}
+
+bool MRegCmd::call() const
+{
+	pfnCmd();
+	return status != RG_INVALID;
+}
+
+void MRegCmd::disable()
+{
+	pfnCmd = [](){};
 	plugid = 0;
 	status = RG_INVALID;
 }
 
-// Try to call the function.  Relies on OS-specific routine to attempt
-// calling the function without generating a segfault from an unloaded
-// plugin DLL.
-// meta_errno values:
-//  - ME_BADREQ		function disabled/invalid
-//  - ME_ARGUMENT	function pointer is null
-bool MRegCmd::call()
+char* MRegCmd::getname() const
 {
-	bool ret;
-
-	// can we expect to call this function?
-	if (status != RG_VALID)
-		RETURN_ERRNO(false, ME_BADREQ);
-
-	if (!pfnCmd)
-		RETURN_ERRNO(false, ME_ARGUMENT);
-
-	// try to call this function
-	ret = os_safe_call(pfnCmd);
-	if (!ret)
-	{
-		META_DEBUG(4, ("Plugin reg_cmd '%s' called after unloaded; removed from list", name));
-		status = RG_INVALID;
-		pfnCmd = NULL;
-		// NOTE: we can't free the malloc'd space for the name, as that
-		// would just re-introduce the segfault problem..
-	}
-
-	// meta_errno (if failed) is set already in os_safe_call()
-	return ret;
+	return name;
 }
 
-MRegCmdList::MRegCmdList() : mlist(0), size(REG_CMD_GROWSIZE), endlist(0)
+MRegCmdList::MRegCmdList() : m_list()
 {
-	mlist = (MRegCmd *)Q_malloc(size * sizeof(MRegCmd));
-
-	// initialize array
-	for (int i = 0; i < size; i++)
-		mlist[i].init(i + 1); // 1-based index
-
-	endlist = 0;
 }
 
-// Try to find a registered function with the given name.
-// meta_errno values:
-//  - ME_NOTFOUND	couldn't find a matching function
-MRegCmd *MRegCmdList::find(const char *findname) const
+MRegCmd *MRegCmdList::find(const char *name) const
 {
-	for (int i = 0; i < endlist; i++)
+	for (auto icmd : m_list)
 	{
-		if (!Q_stricmp(mlist[i].name, findname))
-			return &mlist[i];
+		if (!Q_stricmp(icmd->name, name))
+			return icmd;
 	}
 
-	RETURN_ERRNO(NULL, ME_NOTFOUND);
+	return nullptr;
 }
 
-// Add the given name to the list and return the instance.  This only
-// writes the "name" to the new cmd; other fields are writtin by caller
-// (meta_AddServerCommand).
-// meta_errno values:
-//  - ME_NOMEM			couldn't realloc or malloc for various parts
-MRegCmd *MRegCmdList::add(const char *addname)
+MRegCmd *MRegCmdList::add(char *addname, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin)
 {
-	if (endlist == size)
-	{
-		// grow array
-		int newsize = size + REG_CMD_GROWSIZE;
-		META_DEBUG(6, ("Growing reg cmd list from %d to %d", size, newsize));
-
-		MRegCmd *temp = (MRegCmd *) realloc(mlist, newsize * sizeof(MRegCmd));
-		if (!temp)
-		{
-			META_ERROR("Couldn't grow registered command list to %d for '%s': %s", newsize, addname, strerror(errno));
-			RETURN_ERRNO(NULL, ME_NOMEM);
-		}
-
-		mlist = temp;
-		size = newsize;
-
-		// initialize new (unused) entries
-		for (int i = endlist; i < size; i++)
-			mlist[i].init(i + 1); // 1-based
-	}
-
-	MRegCmd *icmd = &mlist[endlist];
-	// Malloc space separately for the command name, because:
-	//  - Can't point to memory loc in plugin (another segv waiting to
-	//    happen).
-	//  - Can't point to memory in mlist which might get moved later by
-	//    realloc (again, segv).
-	icmd->name = Q_strdup(addname);
-	if (!icmd->name)
-	{
-		META_ERROR("Couldn't Q_strdup for adding reg cmd name '%s': %s", addname, strerror(errno));
-		RETURN_ERRNO(NULL, ME_NOMEM);
-	}
-
-	endlist++;
+	auto icmd = new MRegCmd(addname, cmd_handler, cmd_plugin);
+	m_list.push_back(icmd);
 	return icmd;
 }
 
-// Disable any functions belonging to the given plugin (by index id).
-void MRegCmdList::disable(int plugin_id) const
+void MRegCmdList::remove(char* cmd_name)
 {
-	for (int i = 0; i < size; i++)
-	{
-		if (mlist[i].plugid == plugin_id)
-			mlist[i].status = RG_INVALID;
+	for (auto it = m_list.begin(), end = m_list.end(); it != end; ++it) {
+		auto icmd = *it;
+
+		if (!Q_stricmp(icmd->name, cmd_name)) {
+			if (g_RehldsFuncs) {
+				g_RehldsFuncs->Cmd_RemoveCmd(cmd_name);
+				m_list.erase(it);
+			}
+			else {
+				icmd->disable();
+			}
+		}
+	}
+}
+
+// Disable any functions belonging to the given plugin (by index id).
+void MRegCmdList::remove(int owner_plugin_id)
+{
+	for (auto it = m_list.begin(), end = m_list.end(); it != end; ++it) {
+		auto icmd = *it;
+
+		if (icmd->plugid == owner_plugin_id) {
+			if (g_RehldsFuncs) {
+				g_RehldsFuncs->Cmd_RemoveCmd(icmd->name);
+				m_list.erase(it);
+			}
+			else {
+				icmd->disable();
+			}
+		}
 	}
 }
 
@@ -127,28 +84,19 @@ void MRegCmdList::disable(int plugin_id) const
 void MRegCmdList::show() const
 {
 	int n = 0, a = 0;
-	MRegCmd *icmd;
-	MPlugin *iplug;
 	char bplug[18 + 1]; // +1 for term null
 
 	META_CONS("Registered plugin commands:");
-	META_CONS("  %*s  %-*s  %-s", WIDTH_MAX_REG, "", sizeof(bplug) - 1, "plugin", "command");
-	for (int i = 0; i < endlist; i++)
+	META_CONS("  %*s  %-*s  %-s", WIDTH_MAX_REG, "", sizeof bplug - 1, "plugin", "command");
+
+	for (auto icmd : m_list)
 	{
-		icmd = &mlist[i];
 		if (icmd->status == RG_VALID)
 		{
-			iplug = g_plugins->find(icmd->plugid);
-			if (iplug)
-			{
-				Q_strncpy(bplug, iplug->desc, sizeof bplug - 1);
-				bplug[sizeof bplug - 1] = '\0';
-			}
-			else
-			{
-				Q_strncpy(bplug, "(unknown)", sizeof bplug - 1);
-				bplug[sizeof bplug - 1] = '\0';
-			}
+			auto iplug = g_plugins->find(icmd->plugid);
+
+			Q_strncpy(bplug, iplug ? iplug->desc : "(unknown)", sizeof bplug - 1);
+			bplug[sizeof bplug - 1] = '\0';
 		}
 		else
 		{
@@ -156,27 +104,23 @@ void MRegCmdList::show() const
 			bplug[sizeof bplug - 1] = '\0';
 		}
 
-		META_CONS(" [%*d] %-*s  %-s", WIDTH_MAX_REG, icmd->index, sizeof(bplug) - 1, bplug, icmd->name);
+		META_CONS(" [%*d] %-*s  %-s", WIDTH_MAX_REG, ++n, sizeof bplug - 1, bplug, icmd->name);
+
 		if (icmd->status == RG_VALID)
 			a++;
-
-		n++;
 	}
 
-	META_CONS("%d commands, %d available (%d allocated)", n, a, size);
+	META_CONS("%d commands, %d available", n, a);
 }
 
 // List all the registered commands for the given plugin id.
 void MRegCmdList::show(int plugin_id) const
 {
 	int n = 0;
-	MRegCmd *icmd;
 
 	META_CONS("Registered commands:");
-	for (int i = 0; i < endlist; i++)
+	for (auto icmd : m_list)
 	{
-		icmd = &mlist[i];
-
 		if (icmd->plugid != plugin_id)
 			continue;
 

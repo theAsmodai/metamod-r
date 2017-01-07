@@ -20,7 +20,7 @@ void META_CONS(const char *fmt, ...)
 	unsigned int len;
 
 	va_start(ap, fmt);
-	len = Q_vsnprintf(buf, sizeof(buf) - 1, fmt, ap);
+	len = Q_vsnprintf(buf, sizeof buf, fmt, ap);
 	va_end(ap);
 
 	buf[len] = '\n';

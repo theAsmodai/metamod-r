@@ -186,6 +186,7 @@
     <ClCompile Include="..\src\linkent.cpp" />
     <ClCompile Include="..\src\linkgame.cpp" />
     <ClCompile Include="..\src\log_meta.cpp" />
+    <ClCompile Include="..\src\metamod_rehlds_api.cpp" />
     <ClCompile Include="..\src\meta_eiface.cpp" />
     <ClCompile Include="..\src\metamod.cpp" />
     <ClCompile Include="..\src\mlist.cpp" />
@@ -198,6 +199,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\src\public_amalgamation.cpp" />
     <ClCompile Include="..\src\reg_support.cpp" />
     <ClCompile Include="..\src\sdk_util.cpp" />
     <ClCompile Include="..\src\studioapi.cpp" />
@@ -218,6 +220,7 @@
     <ClInclude Include="..\src\jitasm.h" />
     <ClInclude Include="..\src\linkent.h" />
     <ClInclude Include="..\src\log_meta.h" />
+    <ClInclude Include="..\src\metamod_rehlds_api.h" />
     <ClInclude Include="..\src\meta_api.h" />
     <ClInclude Include="..\src\meta_eiface.h" />
     <ClInclude Include="..\src\metamod.h" />

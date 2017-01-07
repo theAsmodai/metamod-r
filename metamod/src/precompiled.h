@@ -12,14 +12,17 @@
 #include <signal.h>			// sigaction, etc
 #endif
 
+#include <vector>
+#include <array>
+
 #include "jitasm.h"
+
+#define CreateInterface mm_CreateInterface
 
 #include <extdll.h>
 #include <studio.h>
 #include <studioapi.h>
-
-#include <vector>
-#include <array>
+#include <rehlds_api.h>
 
 #include "osdep.h"
 #include "api_info.h"
@@ -32,7 +35,6 @@
 #include "engine_api.h"
 #include "game_support.h"
 #include "h_export.h"
-#include "linkent.h"
 #include "meta_eiface.h"
 #include "mreg.h"
 #include "meta_api.h"
@@ -47,3 +49,7 @@
 #include "enginecallbacks.h"
 #include "utils.h"
 #include "callback_jit.h"
+#include "metamod_rehlds_api.h"
+
+#undef CreateInterface
+#include "linkent.h"

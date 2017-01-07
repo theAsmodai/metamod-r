@@ -1068,7 +1068,7 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASO
 	// successful detach, or forced unload
 
 	// Unmark registered commands for this plugin (by index number).
-	g_regCmds->disable(index);
+	g_regCmds->remove(index);
 	// Unmark registered cvars for this plugin (by index number).
 	g_regCvars->disable(index);
 

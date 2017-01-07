@@ -24,21 +24,23 @@ enum REG_STATUS { RG_INVALID, RG_VALID };
 // Pointer to function registered by AddServerCommand.
 typedef void (*REG_CMD_FN)();
 
+class MPlugin;
+
 // An individual registered function/command.
 class MRegCmd {
 public:
-	friend class MRegCmdList;
+	MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
+	bool call() const;			// try to call the function
+	void disable();
+	char* getname() const;
 
+private:
 	char *name;			// space is malloc'd
 	REG_CMD_FN pfnCmd;		// pointer to the function
 	int plugid;			// index id of corresponding plugin
 	REG_STATUS status;		// whether corresponding plugin is loaded
 
-	void init(int idx);		// init values, as not using constructors
-	bool call();			// try to call the function
-
-private:
-	int index;			// 1-based
+	friend class MRegCmdList;
 };
 
 // A list of registered commands.
@@ -46,21 +48,15 @@ class MRegCmdList {
 public:
 	MRegCmdList();
 
-	MRegCmd *find(const char *findname) const;	// find by MRegCmd->name
-	MRegCmd *add(const char *addname);
-	void disable(int plugin_id) const;		// change status to Invalid
+	MRegCmd *find(const char *name) const;	// find by MRegCmd->name
+	MRegCmd *add(char *name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
+	void remove(char* cmd_name);
+	void remove(int owner_plugin_id);		// change status to Invalid
 	void show() const;				// list all funcs to console
 	void show(int plugin_id) const;		// list given plugin's funcs to console
 
 private:
-	MRegCmd *mlist;				// malloc'd array of registered commands
-	int size;				// current size of list
-	int endlist;				// index of last used entry
-
-	// Private; to satisfy -Weffc++ "has pointer data members but does
-	// not override" copy/assignment constructor.
-	void operator=(const MRegCmdList &src);
-	MRegCmdList(const MRegCmdList &src);
+	std::vector<MRegCmd *> m_list;
 };
 
 // An individual registered cvar.
