@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-hudtextparms_t default_csay_tparms = {
+static hudtextparms_t g_default_csay_tparms = {
 	-1, 0.25, // x, y
 	2, // effect
 	0, 255, 0, 0, // r, g, b,  a1
@@ -9,23 +9,81 @@ hudtextparms_t default_csay_tparms = {
 	1 // channel
 };
 
+static const char* g_engine_msg_names[] =
+{
+	"svc_bad",
+	"svc_nop",
+	"svc_disconnect",
+	"svc_event",
+	"svc_version",
+	"svc_setview",
+	"svc_sound",
+	"svc_time",
+	"svc_print",
+	"svc_stufftext",
+	"svc_setangle",
+	"svc_serverinfo",
+	"svc_lightstyle",
+	"svc_updateuserinfo",
+	"svc_deltadescription",
+	"svc_clientdata",
+	"svc_stopsound",
+	"svc_pings",
+	"svc_particle",
+	"svc_damage",
+	"svc_spawnstatic",
+	"svc_event_reliable",
+	"svc_spawnbaseline",
+	"svc_temp_entity",
+	"svc_setpause",
+	"svc_signonnum",
+	"svc_centerprint",
+	"svc_killedmonster",
+	"svc_foundsecret",
+	"svc_spawnstaticsound",
+	"svc_intermission",
+	"svc_finale",
+	"svc_cdtrack",
+	"svc_restore",
+	"svc_cutscene",
+	"svc_weaponanim",
+	"svc_decalname",
+	"svc_roomtype",
+	"svc_addangle",
+	"svc_newusermsg",
+	"svc_packetentities",
+	"svc_deltapacketentities",
+	"svc_choke",
+	"svc_resourcelist",
+	"svc_newmovevars",
+	"svc_resourcerequest",
+	"svc_customization",
+	"svc_crosshairangle",
+	"svc_soundfade",
+	"svc_filetxferfailed",
+	"svc_hltv",
+	"svc_director",
+	"svc_voiceinit",
+	"svc_voicedata",
+	"svc_sendextrainfo",
+	"svc_timescale",
+	"svc_resourcelocation",
+	"svc_sendcvarvalue",
+	"svc_sendcvarvalue2"
+};
+
 // Log to console; newline added.
 void EXT_FUNC mutil_LogConsole(plid_t plid, const char *fmt, ...)
 {
-	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
-	unsigned int len;
 
+	va_list ap;
 	va_start(ap, fmt);
-	Q_vsnprintf(buf, sizeof(buf), fmt, ap);
+	size_t len = Q_vsnprintf(buf, sizeof buf - 1, fmt, ap);
 	va_end(ap);
 
-	// end msg with newline
-	len = Q_strlen(buf);
-	if (len < sizeof(buf) - 2) // -1 null, -1 for newline
-		Q_strcat(buf, "\n");
-	else
-		buf[len - 1] = '\n';
+	buf[len] = '\n';
+	buf[len + 1] = '\0';
 
 	SERVER_PRINT(buf);
 }
@@ -33,44 +91,43 @@ void EXT_FUNC mutil_LogConsole(plid_t plid, const char *fmt, ...)
 // Log regular message to logs; newline added.
 void EXT_FUNC mutil_LogMessage(plid_t plid, const char *fmt, ...)
 {
-	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
-	plugin_info_t *plinfo = (plugin_info_t *)plid;
 
+	va_list ap;
 	va_start(ap, fmt);
-	Q_vsnprintf(buf, sizeof(buf), fmt, ap);
+	Q_vsnprintf(buf, sizeof buf, fmt, ap);
 	va_end(ap);
-	ALERT(at_logged, "[%s] %s\n", plinfo->logtag, buf);
+
+	ALERT(at_logged, "[%s] %s\n", plid->logtag, buf);
 }
 
 // Log an error message to logs; newline added.
 void EXT_FUNC mutil_LogError(plid_t plid, const char *fmt, ...)
 {
-	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
-	plugin_info_t *plinfo = (plugin_info_t *)plid;
 
+	va_list ap;
 	va_start(ap, fmt);
-	Q_vsnprintf(buf, sizeof(buf), fmt, ap);
+	Q_vsnprintf(buf, sizeof buf, fmt, ap);
 	va_end(ap);
-	ALERT(at_logged, "[%s] ERROR: %s\n", plinfo->logtag, buf);
+
+	ALERT(at_logged, "[%s] ERROR: %s\n", plid->logtag, buf);
 }
 
 // Log a message only if cvar "developer" set; newline added.
 void EXT_FUNC mutil_LogDeveloper(plid_t plid, const char* fmt, ...)
 {
-	va_list ap;
 	char buf[MAX_LOGMSG_LEN];
-	plugin_info_t* plinfo;
 
-	if ((int) CVAR_GET_FLOAT("developer") == 0)
+	if ((int)CVAR_GET_FLOAT("developer") == 0)
 		return;
 
-	plinfo = (plugin_info_t *)plid;
+	va_list ap;
 	va_start(ap, fmt);
-	Q_vsnprintf(buf, sizeof(buf), fmt, ap);
+	Q_vsnprintf(buf, sizeof buf, fmt, ap);
 	va_end(ap);
-	ALERT(at_logged, "[%s] dev: %s\n", plinfo->logtag, buf);
+
+	ALERT(at_logged, "[%s] dev: %s\n", plid->logtag, buf);
 }
 
 // Print message on center of all player's screens.  Uses default text
@@ -79,7 +136,7 @@ void EXT_FUNC mutil_CenterSay(plid_t plid, const char* fmt, ...)
 {
 	va_list ap;
 	va_start(ap, fmt);
-	mutil_CenterSayVarargs(plid, default_csay_tparms, fmt, ap);
+	mutil_CenterSayVarargs(plid, g_default_csay_tparms, fmt, ap);
 	va_end(ap);
 }
 
@@ -97,18 +154,18 @@ void EXT_FUNC mutil_CenterSayParms(plid_t plid, hudtextparms_t tparms, const cha
 void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const char* fmt, va_list ap)
 {
 	char buf[MAX_LOGMSG_LEN];
-	int n;
-	edict_t *pEntity;
-
-	Q_vsnprintf(buf, sizeof(buf), fmt, ap);
+	Q_vsnprintf(buf, sizeof buf, fmt, ap);
 
 	mutil_LogMessage(plid, "(centersay) %s", buf);
-	for (n = 1; n <= gpGlobals->maxClients; n++)
+
+	for (int n = 1; n <= gpGlobals->maxClients; n++)
 	{
-		pEntity = INDEXENT(n);
+		auto pEntity = INDEXENT(n);
+
 		if (FNullEnt(pEntity) || pEntity->free)
 			continue;
-		//META_UTIL_HudMessage(pEntity, tparms, buf); // TODO
+		
+		UTIL_HudMessage(pEntity, tparms, buf);
 	}
 }
 
@@ -117,16 +174,16 @@ void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const c
 // Jussi Kivilinna.
 qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_t *pev)
 {
-	plugin_info_t *plinfo = (plugin_info_t *)plid;
-	META_DEBUG(8, ("Looking up game entity '%s' for plugin '%s'", entStr, plinfo->name));
+	META_DEBUG(8, ("Looking up game entity '%s' for plugin '%s'", entStr, plid->name));
 	ENTITY_FN pfnEntity = (ENTITY_FN)GameDLL.sys_module.getsym(entStr);
+	
 	if (!pfnEntity)
 	{
-		META_ERROR("Couldn't find game entity '%s' in game DLL '%s' for plugin '%s'", entStr, GameDLL.name, plinfo->name);
+		META_ERROR("Couldn't find game entity '%s' in game DLL '%s' for plugin '%s'", entStr, GameDLL.name, plid->name);
 		return false;
 	}
 
-	META_DEBUG(7, ("Calling game entity '%s' for plugin '%s'", entStr, plinfo->name));
+	META_DEBUG(7, ("Calling game entity '%s' for plugin '%s'", entStr, plid->name));
 	(*pfnEntity)(pev);
 	return true;
 }
@@ -135,18 +192,24 @@ qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_
 // msgname, and return remaining info about it (msgid, size).
 int EXT_FUNC mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 {
-	plugin_info_t *plinfo = (plugin_info_t *)plid;
-	META_DEBUG(8, ("Looking up usermsg name '%s' for plugin '%s'", msgname, plinfo->name));
+	META_DEBUG(8, "Looking up usermsg name '%s' for plugin '%s'", msgname, plid->name);
 
 	MRegMsg *umsg = g_regMsgs->find(msgname);
+
 	if (umsg)
 	{
-		if (size)
-			*size = umsg->size;
-		return umsg->msgid;
+		if (size) *size = umsg->getsize();
+		return umsg->getid();
 	}
-	else
-		return 0;
+
+	for (int n = 1; n < arraysize(g_engine_msg_names); n++) {
+		if (!strcmp(msgname, g_engine_msg_names[n])) {
+			if (size) *size = -1;
+			return n;
+		}
+	}
+	
+	return 0;
 }
 
 // Find a usermsg, registered by the gamedll, with the corresponding
@@ -154,59 +217,39 @@ int EXT_FUNC mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 const char* EXT_FUNC mutil_GetUserMsgName(plid_t plid, int msgid, int *size)
 {
 	plugin_info_t *plinfo = (plugin_info_t *)plid;
-	META_DEBUG(8, ("Looking up usermsg id '%d' for plugin '%s'", msgid, plinfo->name));
+	META_DEBUG(8, "Looking up usermsg id '%d' for plugin '%s'", msgid, plinfo->name);
 
 	// Guess names for any built-in g_engine messages mentioned in the SDK;
 	// from dlls/util.h.
-	if (msgid < 64)
+	if (msgid < arraysize(g_engine_msg_names))
 	{
-		switch (msgid)
-		{
-		case SVC_TEMPENTITY:
-			if (size) *size = -1;
-			return "tempentity?";
-		case SVC_INTERMISSION:
-			if (size) *size = -1;
-			return "intermission?";
-		case SVC_CDTRACK:
-			if (size) *size = -1;
-			return "cdtrack?";
-		case SVC_WEAPONANIM:
-			if (size) *size = -1;
-			return "weaponanim?";
-		case SVC_ROOMTYPE:
-			if (size) *size = -1;
-			return "roomtype?";
-		case SVC_DIRECTOR:
-			if (size) *size = -1;
-			return "director?";
-		}
+		if (size) *size = -1;
+		return g_engine_msg_names[msgid];
 	}
 
 	MRegMsg *umsg = g_regMsgs->find(msgid);
+	
 	if (umsg)
 	{
-		if (size)
-			*size = umsg->size;
+		if (size) *size = umsg->getsize();
 		// 'name' is assumed to be a constant string, allocated in the
 		// gamedll.
-		return umsg->name;
+		return umsg->getname();
 	}
-	else
-		return NULL;
+	
+	return nullptr;
 }
 
 // Return the full path of the plugin's loaded dll/so file.
 const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 {
-	static char buf[PATH_MAX ];
-	MPlugin *plug;
+	static char buf[PATH_MAX];
 
-	plug = g_plugins->find(plid);
+	auto plug = g_plugins->find(plid);
 	if (!plug)
 	{
 		META_ERROR("GetPluginPath: couldn't find plugin '%s'", plid->name);
-		return NULL;
+		return nullptr;
 	}
 
 	Q_strncpy(buf, plug->pathname, sizeof buf - 1);
@@ -219,6 +262,7 @@ const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 {
 	static char buf[MAX_STRBUF_LEN];
 	const char *cp;
+
 	switch (type)
 	{
 	case GINFO_NAME:
@@ -241,7 +285,7 @@ const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 		break;
 	default:
 		META_ERROR("GetGameInfo: invalid request '%d' from plugin '%s'", type, plid->name);
-		return NULL;
+		return nullptr;
 	}
 
 	Q_strncpy(buf, cp, sizeof buf - 1);
@@ -251,39 +295,41 @@ const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 
 int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME now, void **plugin_handle)
 {
-	MPlugin *pl_loaded;
 	if (!fname)
 	{
 		return 1;
 	}
 
-	if (!(pl_loaded = g_plugins->plugin_addload(plid, fname, now)))
+	auto pl_loaded = g_plugins->plugin_addload(plid, fname, now);
+
+	if (!pl_loaded)
 	{
 		if (plugin_handle)
 			*plugin_handle = nullptr;
 
-		return 1;
+		return 1; // TODO: WTF
 	}
 	else
 	{
 		if (plugin_handle)
 			*plugin_handle = (void *)pl_loaded->sys_module.gethandle();
+
 		return 0;
 	}
 }
 
 int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
-	MPlugin *findp = nullptr;
-	int pindex;
-	char *endptr;
+	MPlugin *findp;
 
 	if (!fname)
 	{
 		return 1;
 	}
 
-	pindex = strtol(fname, &endptr, 10);
+	char *endptr;
+	int pindex = strtol(fname, &endptr, 10);
+
 	if (*fname != '\0' && *endptr == '\0')
 		findp = g_plugins->find(pindex);
 	else
@@ -300,14 +346,14 @@ int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIM
 
 int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
-	MPlugin *findp;
-
 	if (!plugin_handle)
 	{
 		return 1;
 	}
 
-	if (!(findp = g_plugins->find((module_handle_t)plugin_handle)))
+	auto findp = g_plugins->find((module_handle_t)plugin_handle);
+
+	if (!findp)
 		return 1;
 
 	if (findp->plugin_unload(plid, now, reason))

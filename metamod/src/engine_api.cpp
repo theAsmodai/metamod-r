@@ -3,28 +3,28 @@
 #define CDATA_ENG_H(x, p, h)		CDATA_ENTRY(enginefuncs_t, x, p, size_t(h))
 #define CDATA_ENG(x)				CDATA_ENTRY(enginefuncs_t, x, P_PRE, 0u)
 
-meta_enginefuncs_t meta_engfuncs; // static addresses for gamedll
+meta_enginefuncs_t meta_engfuncs; // static trampolines to dynamic callbacks (for gamedll)
 meta_enginefuncs_t meta_engfuncs_jit; // dynamic jit callbacks
 
-void mm_QueryClientCvarValue(const edict_t* pEdict, const char* cvarName)
+void MM_PRE_HOOK mm_QueryClientCvarValue(const edict_t* pEdict, const char* cvarName)
 {
 	g_players.set_player_cvar_query(pEdict, cvarName);
 }
 
 // int -> void
-void mm_RegUserMsg(const char* pszName, int iSize)
+void MM_POST_HOOK mm_RegUserMsg(const char* pszName, int iSize)
 {
 	// Add the msgid, name, and size to our saved list, if we haven't already.
 	auto imsgid = *(int *)(g_metaGlobals.status == MRES_OVERRIDE ? g_metaGlobals.override_ret : g_metaGlobals.orig_ret);
 	auto nmsg = g_regMsgs->find(imsgid);
 	
 	if (nmsg) {
-		if (!strcmp(pszName, nmsg->name))
+		if (!Q_strcmp(pszName, nmsg->getname()))
 			// This name/msgid pair was already registered.
-			META_DEBUG(3, ("user message registered again: name=%s, msgid=%d", pszName, imsgid));
+			META_DEBUG(3, "user message registered again: name=%s, msgid=%d", pszName, imsgid);
 		else
 			// This msgid was previously used by a different message name.
-			META_ERROR("user message id reused: msgid=%d, oldname=%s, newname=%s", imsgid, nmsg->name, pszName);
+			META_ERROR("user message id reused: msgid=%d, oldname=%s, newname=%s", imsgid, nmsg->getname(), pszName);
 	}
 	else
 		g_regMsgs->add(pszName, imsgid, iSize);

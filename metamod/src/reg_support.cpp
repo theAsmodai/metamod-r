@@ -32,24 +32,17 @@ void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 
 	META_DEBUG(4, ("called: meta_AddServerCommand; cmd_name=%s, function=%d, plugin=%s", cmd_name, function, plug ? plug->file : "unknown"));
 
-	// try to find which plugin is registering this command
 	if (!plug) {
 		META_ERROR("Failed to find memloc for regcmd '%s'", cmd_name);
 	}
 
 	// See if this command was previously registered, ie a "reloaded" plugin.
-	auto icmd = g_regCmds->find(cmd_name);
-	if (!icmd)
+	auto cmd = g_regCmds->find(cmd_name);
+	if (!cmd)
 	{
 		// If not found, add.
-		icmd = g_regCmds->add(cmd_name, function, plug);
-		if (!icmd)
-		{
-			return;
-		}
-
-		// Only register if not previously registered..
-		REG_SVR_COMMAND(icmd->getname(), meta_command_handler);
+		cmd = g_regCmds->add(cmd_name, function, plug);
+		REG_SVR_COMMAND(cmd->getname(), g_RehldsFuncs ? cmd->gethandler() : meta_command_handler);
 	}
 }
 
@@ -68,43 +61,24 @@ void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 // it will fail to work properly.
 void EXT_FUNC meta_CVarRegister(cvar_t *pCvar)
 {
-	MPlugin *iplug = g_plugins->find_memloc(pCvar);
+	MPlugin *plug = g_plugins->find_memloc(pCvar);
 
-	META_DEBUG(4, ("called: meta_CVarRegister; name=%s", pCvar->name));
+	META_DEBUG(4, "called: meta_CVarRegister; name=%s", pCvar->name);
 
 	// try to find which plugin is registering this cvar
-	if (!iplug)
+	if (!plug)
 	{
-		META_DEBUG(1, ("Failed to find memloc for regcvar '%s'", pCvar->name));
+		META_DEBUG(1, "Failed to find memloc for regcvar '%s'", pCvar->name);
 	}
 
 	// See if this cvar was previously registered, ie a "reloaded" plugin.
-	auto icvar = g_regCvars->find(pCvar->name);
-	if (!icvar)
+	auto reg = g_regCvars->find(pCvar->name);
+
+	if (!reg)
 	{
-		// If not found, add.
-		icvar = g_regCvars->add(pCvar->name);
-		if (!icvar)
-		{
-			// error details logged in add()
-			return;
-		}
-
-		// Reset to given value
-		icvar->set(pCvar);
-		CVAR_REGISTER(icvar->data);
+		reg = g_regCvars->add(pCvar, plug);
+		CVAR_REGISTER(reg->getcvar());
 	}
-
-	// Note: if not a new cvar, then we don't set the values, and just keep
-	// the pre-existing value.
-	icvar->status = RG_VALID;
-
-	// Store which plugin this is for, if we know.  Use '0' for unknown
-	// plugin, as plugin index starts at 1.
-	if (iplug)
-		icvar->plugid = iplug->index;
-	else
-		icvar->plugid = 0;
 }
 
 // Replacement for engine routine RegUserMsg; called by plugins.  Rather

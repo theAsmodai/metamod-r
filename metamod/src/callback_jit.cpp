@@ -315,6 +315,10 @@ void CSimpleJmp::naked_main()
 	}*/
 }
 
+CJit::CJit() : m_callback_allocator(static_allocator::mp_rwx), m_tramp_allocator(static_allocator::mp_rwx)
+{
+}
+
 size_t CJit::compile_callback(jitdata_t* jitdata)
 {
 	if (!is_hook_needed(jitdata)) {
@@ -326,7 +330,7 @@ size_t CJit::compile_callback(jitdata_t* jitdata)
 
 	auto code = callback.GetCode();
 	auto codeSize = callback.GetCodeSize();
-	auto ptr = m_allocator.allocate(codeSize);
+	auto ptr = m_callback_allocator.allocate(codeSize);
 
 	return (size_t)memcpy(ptr, code, codeSize);
 }
@@ -338,14 +342,19 @@ size_t CJit::compile_tramp(size_t ptr_to_func/*, size_t hook, size_t hook_time*/
 
 	auto code = jmp.GetCode();
 	auto codeSize = jmp.GetCodeSize();
-	auto ptr = m_static_allocator.allocate(codeSize);
+	auto ptr = m_tramp_allocator.allocate(codeSize);
 
 	return (size_t)memcpy(ptr, code, codeSize);
 }
 
 void CJit::clear_callbacks()
 {
-	m_allocator.deallocate_all();
+	m_callback_allocator.deallocate_all();
+}
+
+void CJit::clear_tramps()
+{
+	m_tramp_allocator.deallocate_all();
 }
 
 bool CJit::is_hook_needed(jitdata_t* jitdata)

@@ -54,7 +54,7 @@ bool MConfig::set(option_t* setp, const char* setstr)
 			return false;
 		}
 		*optval = Q_atoi(setstr);
-		META_DEBUG(3, ("set config int: %s = %d", setp->name, *optval));
+		META_DEBUG(3, "set config int: %s = %d", setp->name, *optval);
 		break;
 	case CF_BOOL:
 		if (is_yes(setstr))

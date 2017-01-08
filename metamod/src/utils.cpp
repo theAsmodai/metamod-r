@@ -1,5 +1,7 @@
 #include "precompiled.h"
 
+static_allocator g_static_allocator(static_allocator::mp_readwrite);
+
 bool is_yes(const char* str)
 {
 	return !Q_strcmp(str, "true") || !Q_strcmp(str, "yes") || !Q_strcmp(str, "1");
@@ -20,7 +22,12 @@ const char* LOCALINFO(char* key)
 	return ENTITY_KEYVALUE(NULL, key);
 }
 
-char* execmem_allocator::allocate(const size_t n)
+static_allocator::static_allocator(memory_protection protection) : m_protection(protection)
+{
+
+}
+
+char* static_allocator::allocate(const size_t n)
 {
 	if (!m_pages.size() || m_used + n > Pagesize)
 		allocate_page();
@@ -30,7 +37,13 @@ char* execmem_allocator::allocate(const size_t n)
 	return ptr;
 }
 
-void execmem_allocator::deallocate_all()
+char* static_allocator::strdup(const char* string)
+{
+	size_t len = strlen(string) + 1;
+	return (char *)memcpy(allocate(len), string, len);
+}
+
+void static_allocator::deallocate_all()
 {
 	for (auto page : m_pages)
 #ifdef WIN32
@@ -42,12 +55,12 @@ void execmem_allocator::deallocate_all()
 	m_pages.clear();
 }
 
-size_t execmem_allocator::memoryUsed() const
+size_t static_allocator::memory_used() const
 {
 	return (m_pages.size() - 1) * Pagesize + m_used;
 }
 
-void execmem_allocator::allocate_page()
+void static_allocator::allocate_page()
 {
 #ifdef WIN32
 	auto page = VirtualAlloc(NULL, Pagesize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);

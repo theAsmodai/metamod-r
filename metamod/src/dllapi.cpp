@@ -12,17 +12,17 @@ NEW_DLL_FUNCTIONS sNewFunctionTable;
 NEW_DLL_FUNCTIONS sNewFunctionTable_jit;
 NEW_DLL_FUNCTIONS *pHookedNewDllFunctions = &sNewFunctionTable;
 
-void mm_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] )
+void MM_PRE_HOOK EXT_FUNC mm_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128] )
 {
 	g_players.clear_player_cvar_query(pEntity);
 }
 
-void mm_ClientDisconnect(edict_t *pEntity)
+void MM_PRE_HOOK EXT_FUNC mm_ClientDisconnect(edict_t *pEntity)
 {
 	g_players.clear_player_cvar_query(pEntity);
 }
 
-void mm_ClientCommand(edict_t *pEntity)
+void MM_PRE_HOOK mm_ClientCommand(edict_t *pEntity)
 {
 	if (!strcmp(CMD_ARGV(0), "meta")) {
 		client_meta(pEntity);
@@ -147,7 +147,7 @@ compile_data_t g_newdllfunc_cdata[] =
 // GetAPI or not..
 C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion)
 {
-	META_DEBUG(3, ("called: GetEntityAPI; version=%d", interfaceVersion));
+	META_DEBUG(3, "called: GetEntityAPI; version=%d", interfaceVersion);
 	if (!pFunctionTable)
 	{
 		META_ERROR("GetEntityAPI called with null pFunctionTable");
@@ -165,7 +165,7 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 
 C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
-	META_DEBUG(3, ("called: GetEntityAPI2; version=%d", *interfaceVersion));
+	META_DEBUG(3, "called: GetEntityAPI2; version=%d", *interfaceVersion);
 
 	if (!pFunctionTable)
 	{
@@ -186,7 +186,7 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 
 C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion)
 {
-	META_DEBUG(6, ("called: GetNewDLLFunctions; version=%d", *interfaceVersion));
+	META_DEBUG(6, "called: GetNewDLLFunctions; version=%d", *interfaceVersion);
 #if 0 // ~dvander - but then you can't use cvar querying on many mods...
 	// Don't provide these functions to engine if gamedll doesn't provide
 	// them. Otherwise, we're in the position of having to provide answers

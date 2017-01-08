@@ -11,11 +11,11 @@
 extern cvar_t meta_debug;
 
 template<typename ...t_args>
-void META_DEBUG(int level, t_args... args)
+void META_DEBUG(int level, const char* fmt, t_args... args)
 {
 	if (meta_debug.value < level)
 		return;
-	ALERT(at_logged, "[META] (debug:%i) %s\n", level, args...);
+	ALERT(at_logged, "[META] (debug:%i) %s\n", level, args...); // TODO
 }
 
 void META_CONS(const char *fmt, ...);

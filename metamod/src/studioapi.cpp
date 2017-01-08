@@ -35,24 +35,24 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version,
 	// "Couldn't get server .dll studio model blending interface.  Version
 	// mismatch?", but this will only show in "developer" (-dev) mode.
 
-	META_DEBUG(6, ("called: Server_GetBlendingInterface; version=%d", version));
+	META_DEBUG(6, "called: Server_GetBlendingInterface; version=%d", version);
 	if (missing)
 	{
-		META_DEBUG(6, ("Skipping Server_GetBlendingInterface; was previously found missing"));
+		META_DEBUG(6, "Skipping Server_GetBlendingInterface; was previously found missing");
 		return 0;
 	}
 	if (!getblend)
 	{
-		META_DEBUG(6, ("Looking up Server_GetBlendingInterface"));
+		META_DEBUG(6, "Looking up Server_GetBlendingInterface");
 		getblend = (GETBLENDAPI_FN)GameDLL.sys_module.getsym("Server_GetBlendingInterface");
 	}
 	if (!getblend)
 	{
-		META_DEBUG(6, ("Couldn't find Server_GetBlendingInterface in game DLL '%s': %s", GameDLL.name, "function not found"));
+		META_DEBUG(6, "Couldn't find Server_GetBlendingInterface in game DLL '%s': %s", GameDLL.name, "function not found");
 		missing = 1;
 		return 0;
 	}
 
-	META_DEBUG(6, ("Calling Server_GetBlendingInterface"));
-	return (getblend)(version, ppinterface, pstudio, rotationmatrix, bonetransform);
+	META_DEBUG(6, "Calling Server_GetBlendingInterface");
+	return getblend(version, ppinterface, pstudio, rotationmatrix, bonetransform);
 }

@@ -1,10 +1,4 @@
 #pragma once
-#include "types_meta.h"		// bool
-
-// Number of entries to add to reglists when they need to grow. Typically
-// more cvars than commands, so we grow them at different increments.
-#define REG_CMD_GROWSIZE	32
-#define REG_CVAR_GROWSIZE	64
 
 // Width required to printf a Reg*List index number, for show() functions.
 // This used to correspond to the number of digits in MAX_REG, which was a
@@ -27,101 +21,97 @@ typedef void (*REG_CMD_FN)();
 class MPlugin;
 
 // An individual registered function/command.
-class MRegCmd {
+class MRegCmd
+{
 public:
 	MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
 	bool call() const;			// try to call the function
 	void disable();
 	char* getname() const;
+	REG_CMD_FN gethandler() const;
 
 private:
-	char *name;			// space is malloc'd
-	REG_CMD_FN pfnCmd;		// pointer to the function
-	int plugid;			// index id of corresponding plugin
-	REG_STATUS status;		// whether corresponding plugin is loaded
+	char*		m_name;			// space is malloc'd
+	REG_CMD_FN	m_pfunction;		// pointer to the function
+	int			m_plugid;			// index id of corresponding plugin
+	REG_STATUS	m_status;		// whether corresponding plugin is loaded
 
 	friend class MRegCmdList;
 };
 
 // A list of registered commands.
-class MRegCmdList {
+class MRegCmdList
+{
 public:
 	MRegCmdList();
-
-	MRegCmd *find(const char *name) const;	// find by MRegCmd->name
+	MRegCmd *find(const char *name) const;
 	MRegCmd *add(char *name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
 	void remove(char* cmd_name);
-	void remove(int owner_plugin_id);		// change status to Invalid
-	void show() const;				// list all funcs to console
-	void show(int plugin_id) const;		// list given plugin's funcs to console
+	void remove(int owner_plugin_id);
+	void show() const;
+	void show(int plugin_id) const;
 
 private:
 	std::vector<MRegCmd *> m_list;
 };
 
 // An individual registered cvar.
-class MRegCvar {
+class MRegCvar
+{
 public:
-	friend class MRegCvarList;
-
-	cvar_t *data;				// actual cvar structure, malloc'd
-	int plugid;				// index id of corresponding plugin
-	REG_STATUS status;			// whether corresponding plugin is loaded
-
-	void init(int idx);			// init values, as not using constructors
-	bool set(cvar_t *src) const;
+	MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin);
+	cvar_t* getcvar() const;
 
 private:
-	int index;				// 1-based
+	cvar_t*		m_cvar;
+	int			m_plugid;
+	REG_STATUS	m_status;
+
+	friend class MRegCvarList;
 };
 
 // A list of registered cvars.
-class MRegCvarList {
-
+class MRegCvarList
+{
 public:
 	MRegCvarList();
-
-	MRegCvar *add(const char *addname);
+	MRegCvar *add(cvar_t* src, MPlugin* plugin);
 	MRegCvar *find(const char *findname);		// find by MRegCvar->data.name
 	void disable(int plugin_id) const;			// change status to Invalid
 	void show() const;					// list all cvars to console
 	void show(int plugin_id) const;			// list given plugin's cvars to console
 
 private:
-	MRegCvar *vlist;				// malloc'd array of registered cvars
-	int size;					// size of list, ie MAX_REG_CVARS
-	int endlist;					// index of last used entry
-							// Private; to satisfy -Weffc++ "has pointer data members but does
-							// not override" copy/assignment constructor.
-	void operator=(const MRegCvarList &src);
-	MRegCvarList(const MRegCvarList &src);
+	std::vector<MRegCvar *> m_list;
 };
 
 // An individual registered user msg, from gamedll.
-class MRegMsg {
+class MRegMsg
+{
 public:
-	friend class MRegMsgList;
-
-	const char *name;		// name, assumed constant string in gamedll
-	int msgid;			// msgid, assigned by engine
-	int size;			// size, if given by gamedll
+	MRegMsg(const char* name, int msgid, int size);
+	const char* getname() const;
+	int getid() const;
+	int getsize() const;
 
 private:
-	int index;			// 1-based
+	const char*	m_name;
+	int			m_msgid;
+	int			m_size;
+
+	friend class MRegMsgList;
 };
 
 // A list of registered user msgs.
-class MRegMsgList {
+class MRegMsgList
+{
 public:
 	MRegMsgList();
-
 	MRegMsg *add(const char *addname, int addmsgid, int addsize);
 	MRegMsg *find(const char *findname);
 	MRegMsg *find(int findmsgid);
-	void show();			// list all msgs to console
+	void show();
 
 private:
-	MRegMsg mlist[MAX_REG_MSGS];	// array of registered msgs
-	int size;			// size of list, ie MAX_REG_MSGS
-	int endlist;			// index of last used entry
+	std::vector<MRegMsg *> m_list;
 };

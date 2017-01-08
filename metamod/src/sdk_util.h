@@ -12,3 +12,5 @@
 // defined.
 #include "enginecallbacks.h"
 #include <util.h>
+
+void UTIL_HudMessage(edict_t *pEntity, const hudtextparms_t &textparms, const char *pMessage);

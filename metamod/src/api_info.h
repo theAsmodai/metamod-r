@@ -1,5 +1,8 @@
 #pragma once
 
+#define MM_PRE_HOOK
+#define MM_POST_HOOK
+
 enum
 {
 	P_PRE,		// plugin function called before gamedll

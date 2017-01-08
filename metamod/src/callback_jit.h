@@ -80,16 +80,18 @@ bool is_varargs(ret_t (*)(t_args..., ...))
 class CJit
 {
 public:
+	CJit();
 	size_t compile_callback(jitdata_t* jitdata);
 	size_t compile_tramp(size_t ptr_to_func/*, size_t hook, size_t hook_time*/);
 	void clear_callbacks();
+	void clear_tramps();
 
 private:
 	static bool is_hook_needed(jitdata_t* jitdata);
 
 private:
-	execmem_allocator m_allocator;
-	execmem_allocator m_static_allocator;
+	static_allocator m_callback_allocator;
+	static_allocator m_tramp_allocator;
 };
 
 extern CJit g_jit;

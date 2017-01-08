@@ -391,11 +391,11 @@ bool MPluginList::ini_startup()
 		{
 			if (pmatch->pfspecific >= plist[n].pfspecific)
 			{
-				META_DEBUG(1, ("ini: Skipping plugin, line %d of %s: plugin with higher platform specific level already exists. (%d >= %d)", ln, inifile, pmatch->pfspecific, plist[n].pfspecific));
+				META_DEBUG(1, "ini: Skipping plugin, line %d of %s: plugin with higher platform specific level already exists. (%d >= %d)", ln, inifile, pmatch->pfspecific, plist[n].pfspecific);
 				continue;
 			}
 
-			META_DEBUG(1, ("ini: Plugin in line %d overrides existing plugin with lower platform specific level %d, ours %d", ln, pmatch->pfspecific, plist[n].pfspecific));
+			META_DEBUG(1, "ini: Plugin in line %d overrides existing plugin with lower platform specific level %d, ours %d", ln, pmatch->pfspecific, plist[n].pfspecific);
 			int _index = pmatch->index;
 			Q_memset(pmatch, 0, sizeof(MPlugin));
 			pmatch->index = _index;
@@ -462,19 +462,19 @@ bool MPluginList::ini_refresh()
 			{
 				if (pl_found->pfspecific >= pl_temp.pfspecific)
 				{
-					META_DEBUG(1, ("ini: Skipping plugin, line %d of %s: plugin with higher platform specific level already exists. (%d >= %d)", ln, inifile, pl_found->pfspecific, pl_temp.pfspecific));
+					META_DEBUG(1, "ini: Skipping plugin, line %d of %s: plugin with higher platform specific level already exists. (%d >= %d)", ln, inifile, pl_found->pfspecific, pl_temp.pfspecific);
 					continue;
 				}
 				if (PA_LOAD == pl_found->action)
 				{
-					META_DEBUG(1, ("ini: Plugin in line %d overrides loading of plugin with lower platform specific level %d, ours %d", ln, pl_found->pfspecific, pl_temp.pfspecific));
+					META_DEBUG(1, "ini: Plugin in line %d overrides loading of plugin with lower platform specific level %d, ours %d", ln, pl_found->pfspecific, pl_temp.pfspecific);
 					int _index = pl_found->index;
 					Q_memset(pl_found, 0, sizeof(MPlugin));
 					pl_found->index = _index;
 				}
 				else
 				{
-					META_DEBUG(1, ("ini: Plugin in line %d should override existing plugin with lower platform specific level %d, ours %d. Unable to comply.", ln, pl_found->pfspecific, pl_temp.pfspecific));
+					META_DEBUG(1, "ini: Plugin in line %d should override existing plugin with lower platform specific level %d, ours %d. Unable to comply.", ln, pl_found->pfspecific, pl_temp.pfspecific);
 					continue;
 				}
 			}

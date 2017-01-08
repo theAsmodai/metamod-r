@@ -946,7 +946,8 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 		if (!engine_table) engine_table = (meta_enginefuncs_t *)calloc(1, sizeof(meta_enginefuncs_t));
 		if (meta_table.pfnGetEngineFunctions(engine_table, &iface_vers)) {
 			do {
-				if (meta_debug.value < 3) break; else (*g_engfuncs.pfnAlertMessage)(at_logged, "[META] (debug:%d) %s\n", 3, UTIL_VarArgs("dll: Plugin '%s': Found %s", desc, "GetEngineFunctions"));
+				if (meta_debug.value < 3) break;
+				else (*g_engfuncs.pfnAlertMessage)(at_logged, "[META] (debug:%d) %s\n", 3, UTIL_VarArgs("dll: Plugin '%s': Found %s", desc, "GetEngineFunctions"));
 			}
 			while (0);
 		}
@@ -1412,7 +1413,7 @@ bool MPlugin::newer_file()
 		return false;
 
 	file_time = st.st_ctime > st.st_mtime ? st.st_ctime : st.st_mtime;
-	META_DEBUG(5, ("newer_file? file=%s; load=%d, file=%d; ctime=%d, mtime=%d", file, time_loaded, file_time, st.st_ctime, st.st_mtime));
+	META_DEBUG(5, "newer_file? file=%s; load=%d, file=%d; ctime=%d, mtime=%d", file, time_loaded, file_time, st.st_ctime, st.st_mtime);
 	if (file_time > time_loaded)
 		return true;
 	else

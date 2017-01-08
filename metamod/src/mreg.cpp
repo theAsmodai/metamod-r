@@ -1,26 +1,31 @@
 #include "precompiled.h"
 
-MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : pfnCmd(cmd_handler), status(RG_VALID), plugid(cmd_plugin->index)
+MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_status(RG_VALID), m_plugid(cmd_plugin->index)
 {
-	name = _strdup(name);
+	m_name = _strdup(m_name);
 }
 
 bool MRegCmd::call() const
 {
-	pfnCmd();
-	return status != RG_INVALID;
+	m_pfunction();
+	return m_status != RG_INVALID;
 }
 
 void MRegCmd::disable()
 {
-	pfnCmd = [](){};
-	plugid = 0;
-	status = RG_INVALID;
+	m_pfunction = [](){};
+	m_plugid = 0;
+	m_status = RG_INVALID;
 }
 
 char* MRegCmd::getname() const
 {
-	return name;
+	return m_name;
+}
+
+REG_CMD_FN MRegCmd::gethandler() const
+{
+	return m_pfunction;
 }
 
 MRegCmdList::MRegCmdList() : m_list()
@@ -29,10 +34,10 @@ MRegCmdList::MRegCmdList() : m_list()
 
 MRegCmd *MRegCmdList::find(const char *name) const
 {
-	for (auto icmd : m_list)
+	for (auto reg : m_list)
 	{
-		if (!Q_stricmp(icmd->name, name))
-			return icmd;
+		if (!Q_stricmp(reg->m_name, name))
+			return reg;
 	}
 
 	return nullptr;
@@ -40,23 +45,23 @@ MRegCmd *MRegCmdList::find(const char *name) const
 
 MRegCmd *MRegCmdList::add(char *addname, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin)
 {
-	auto icmd = new MRegCmd(addname, cmd_handler, cmd_plugin);
-	m_list.push_back(icmd);
-	return icmd;
+	auto reg = new MRegCmd(addname, cmd_handler, cmd_plugin);
+	m_list.push_back(reg);
+	return reg;
 }
 
 void MRegCmdList::remove(char* cmd_name)
 {
 	for (auto it = m_list.begin(), end = m_list.end(); it != end; ++it) {
-		auto icmd = *it;
+		auto reg = *it;
 
-		if (!Q_stricmp(icmd->name, cmd_name)) {
+		if (!Q_stricmp(reg->m_name, cmd_name)) {
 			if (g_RehldsFuncs) {
 				g_RehldsFuncs->Cmd_RemoveCmd(cmd_name);
 				m_list.erase(it);
 			}
 			else {
-				icmd->disable();
+				reg->disable();
 			}
 		}
 	}
@@ -66,15 +71,15 @@ void MRegCmdList::remove(char* cmd_name)
 void MRegCmdList::remove(int owner_plugin_id)
 {
 	for (auto it = m_list.begin(), end = m_list.end(); it != end; ++it) {
-		auto icmd = *it;
+		auto reg = *it;
 
-		if (icmd->plugid == owner_plugin_id) {
+		if (reg->m_plugid == owner_plugin_id) {
 			if (g_RehldsFuncs) {
-				g_RehldsFuncs->Cmd_RemoveCmd(icmd->name);
+				g_RehldsFuncs->Cmd_RemoveCmd(reg->m_name);
 				m_list.erase(it);
 			}
 			else {
-				icmd->disable();
+				reg->disable();
 			}
 		}
 	}
@@ -83,17 +88,17 @@ void MRegCmdList::remove(int owner_plugin_id)
 // List all the registered commands.
 void MRegCmdList::show() const
 {
-	int n = 0, a = 0;
+	int total_count = 0, valid_count = 0;
 	char bplug[18 + 1]; // +1 for term null
 
 	META_CONS("Registered plugin commands:");
 	META_CONS("  %*s  %-*s  %-s", WIDTH_MAX_REG, "", sizeof bplug - 1, "plugin", "command");
 
-	for (auto icmd : m_list)
+	for (auto reg : m_list)
 	{
-		if (icmd->status == RG_VALID)
+		if (reg->m_status == RG_VALID)
 		{
-			auto iplug = g_plugins->find(icmd->plugid);
+			auto iplug = g_plugins->find(reg->m_plugid);
 
 			Q_strncpy(bplug, iplug ? iplug->desc : "(unknown)", sizeof bplug - 1);
 			bplug[sizeof bplug - 1] = '\0';
@@ -104,136 +109,67 @@ void MRegCmdList::show() const
 			bplug[sizeof bplug - 1] = '\0';
 		}
 
-		META_CONS(" [%*d] %-*s  %-s", WIDTH_MAX_REG, ++n, sizeof bplug - 1, bplug, icmd->name);
+		META_CONS(" [%*d] %-*s  %-s", WIDTH_MAX_REG, ++total_count, sizeof bplug - 1, bplug, reg->m_name);
 
-		if (icmd->status == RG_VALID)
-			a++;
+		if (reg->m_status == RG_VALID)
+			valid_count++;
 	}
 
-	META_CONS("%d commands, %d available", n, a);
+	META_CONS("%d commands, %d available", total_count, valid_count);
 }
 
 // List all the registered commands for the given plugin id.
 void MRegCmdList::show(int plugin_id) const
 {
-	int n = 0;
+	int total_count = 0;
 
 	META_CONS("Registered commands:");
-	for (auto icmd : m_list)
+
+	for (auto reg : m_list)
 	{
-		if (icmd->plugid != plugin_id)
+		if (reg->m_plugid != plugin_id)
 			continue;
 
-		META_CONS("   %s", icmd->name);
-		n++;
+		META_CONS("   %s", reg->m_name);
+		total_count++;
 	}
 
-	META_CONS("%d commands", n);
+	META_CONS("%d commands", total_count);
 }
 
-// Init values.  It would probably be more "proper" to use containers and
-// constructors, rather than arrays and init-functions.
-void MRegCvar::init(int idx)
+MRegCvar::MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin) : m_cvar(cv_ptr), m_plugid(cv_plugin->index), m_status(RG_VALID)
 {
-	index = idx;
-	data = NULL;
-	plugid = 0;
-	status = RG_INVALID;
+	m_cvar = g_static_allocator.allocate<cvar_t>();
+	m_cvar->name = _strdup(cv_ptr->name);
+	m_cvar->string = _strdup(cv_ptr->string);
+	m_cvar->flags = cv_ptr->flags;
+	m_cvar->value = cv_ptr->value;
+	m_cvar->next = cv_ptr->next;
 }
 
-// Set the cvar, copying values from given cvar.
-// meta_errno values:
-//  - ME_ARGUMENT	given cvar doesn't match this cvar
-bool MRegCvar::set(cvar_t *src) const
+cvar_t* MRegCvar::getcvar() const
 {
-	if (Q_stricmp(src->name, data->name))
-	{
-		META_ERROR("Tried to set cvar with mismatched name; src=%s dst=%s", src->name, data->name);
-		return false;
-	}
-
-	// Would like to free() existing string, but can't tell where it was
-	// allocated...
-	data->string = Q_strdup(src->string);
-	data->flags = src->flags;
-	data->value = src->value;
-	data->next = src->next;
-	return true;
+	return m_cvar;
 }
 
 // Constructor
-MRegCvarList::MRegCvarList()
-	: vlist(0), size(REG_CVAR_GROWSIZE), endlist(0)
+MRegCvarList::MRegCvarList() : m_list()
 {
-	vlist = (MRegCvar *)Q_malloc(size * sizeof(MRegCvar));
-
-	// initialize array
-	for (int i = 0; i < size; i++)
-		vlist[i].init(i + 1); // 1 - based
-
-	endlist = 0;
 }
 
-// Add the given cvar name to the list and return the instance.  This only
-// writes the "name" to the new cvar; other fields are written with
-// cvar::set().
-// meta_errno values:
-//  - ME_NOMEM			couldn't alloc or realloc for various parts
-MRegCvar *MRegCvarList::add(const char *addname)
+MRegCvar *MRegCvarList::add(cvar_t* src, MPlugin* plugin)
 {
-	MRegCvar *icvar;
-	if (endlist == size)
-	{
-		// grow array
-		int newsize = size + REG_CVAR_GROWSIZE;
-
-		META_DEBUG(6, ("Growing reg cvar list from %d to %d", size, newsize));
-		MRegCvar *temp = (MRegCvar *) realloc(vlist, newsize * sizeof(MRegCvar));
-		if (!temp)
-		{
-			META_ERROR("Couldn't grow registered cvar list to %d for '%s'; %s", newsize, addname, strerror(errno));
-			return NULL;
-		}
-		vlist = temp;
-		size = newsize;
-		// initialize new (unused) entries
-		for (int i = endlist; i < size; i++)
-			vlist[i].init(i + 1); // 1-based
-	}
-
-	icvar = &vlist[endlist];
-
-	// Malloc space for the cvar and cvar name, for two reasons:
-	//  - Can't point to memory loc in plugin (another segv waiting to
-	//    happen).
-	//  - Can't point to memory in vlist which might get moved later by
-	//    realloc (again, segv).
-	icvar->data = (cvar_t *)Q_malloc(sizeof(cvar_t));
-	if (!icvar->data)
-	{
-		META_ERROR("Couldn't malloc cvar for adding reg cvar name '%s': %s", addname, strerror(errno));
-		return NULL;
-	}
-
-	icvar->data->name = Q_strdup(addname);
-	if (!icvar->data->name)
-	{
-		META_ERROR("Couldn't Q_strdup for adding reg cvar name '%s': %s", addname, strerror(errno));
-		return NULL;
-	}
-	endlist++;
-	return icvar;
+	MRegCvar *reg_cvar = new(g_static_allocator.allocate<MRegCvar>()) MRegCvar(src, plugin);
+	m_list.push_back(reg_cvar);
+	return reg_cvar;
 }
 
-// Try to find a registered cvar with the given name.
-// meta_errno values:
-//  - ME_NOTFOUND	couldn't find a matching cvar
 MRegCvar *MRegCvarList::find(const char *findname)
 {
-	for (int i = 0; i < endlist; i++)
+	for (auto reg : m_list)
 	{
-		if (!_stricmp(vlist[i].data->name, findname))
-			return &vlist[i];
+		if (!Q_stricmp(reg->m_cvar->name, findname))
+			return reg;
 	}
 
 	return NULL;
@@ -242,18 +178,12 @@ MRegCvar *MRegCvarList::find(const char *findname)
 // Disable any cvars belonging to the given plugin (by index id).
 void MRegCvarList::disable(int plugin_id) const
 {
-	int i;
-	MRegCvar *icvar;
-	for (i = 0; i < size; i++)
+	for (auto reg : m_list)
 	{
-		icvar = &vlist[i];
-		if (icvar->plugid == plugin_id)
+		if (reg->m_plugid == plugin_id)
 		{
-			icvar->status = RG_INVALID;
-			icvar->plugid = 0;
-			// Decided not to do this, in order to keep pre-existing values
-			// after a plugin reload.
-			// CVAR_SET_STRING(icvar->data->name, "[metamod: cvar invalid; plugin unloaded]");
+			reg->m_status = RG_INVALID;
+			reg->m_plugid = 0;
 		}
 	}
 }
@@ -261,29 +191,19 @@ void MRegCvarList::disable(int plugin_id) const
 // List all the registered cvars.
 void MRegCvarList::show() const
 {
-	int i, n = 0, a = 0;
-	MRegCvar *icvar;
-	MPlugin *iplug;
+	int total_count = 0, valid_count = 0;
 	char bplug[13 + 1], bname[20 + 1], bval[15 + 1]; // +1 for term null
 
 	META_CONS("Registered plugin cvars:");
-	META_CONS("  %*s  %-*s  %-*s  %*s  %s", WIDTH_MAX_REG, "", sizeof(bplug) - 1, "plugin", sizeof(bname) - 1, "cvar", sizeof(bval) - 1, "float value", "string value");
-	for (i = 0; i < endlist; i++)
+	META_CONS("  %*s  %-*s  %-*s  %*s  %s", WIDTH_MAX_REG, "", sizeof bplug - 1, "plugin", sizeof bname - 1, "cvar", sizeof bval - 1, "float value", "string value");
+	
+	for (auto reg : m_list)
 	{
-		icvar = &vlist[i];
-		if (icvar->status == RG_VALID)
+		if (reg->m_status == RG_VALID)
 		{
-			iplug = g_plugins->find(icvar->plugid);
-			if (iplug)
-			{
-				Q_strncpy(bplug, iplug->desc, sizeof bplug - 1);
-				bplug[sizeof bplug - 1] = '\0';
-			}
-			else
-			{
-				Q_strncpy(bplug, "(unknown)", sizeof bplug - 1);
-				bplug[sizeof bplug - 1] = '\0';
-			}
+			auto plug = g_plugins->find(reg->m_plugid);
+			Q_strncpy(bplug, plug ? plug->desc : "(unknown)", sizeof bplug - 1);
+			bplug[sizeof bplug - 1] = '\0';
 		}
 		else
 		{
@@ -291,127 +211,110 @@ void MRegCvarList::show() const
 			bplug[sizeof bplug - 1] = '\0';
 		}
 
-		Q_strncpy(bname, icvar->data->name, sizeof bname - 1);
+		Q_strncpy(bname, reg->m_cvar->name, sizeof bname - 1);
 		bname[sizeof bname - 1] = '\0';
-		Q_snprintf(bval, sizeof(bval), "%f", icvar->data->value);
-		META_CONS(" [%*d] %-*s  %-*s  %*s  %s", WIDTH_MAX_REG, icvar->index, sizeof(bplug) - 1, bplug, sizeof(bname) - 1, bname, sizeof(bval) - 1, bval, icvar->data->string);
+		Q_snprintf(bval, sizeof bval, "%f", reg->m_cvar->value);
+		META_CONS(" [%*d] %-*s  %-*s  %*s  %s", WIDTH_MAX_REG, ++total_count, sizeof bplug - 1, bplug, sizeof bname - 1, bname, sizeof bval - 1, bval, reg->m_cvar->string);
 
-		if (icvar->status == RG_VALID)
-			a++;
-
-		n++;
+		if (reg->m_status == RG_VALID)
+			valid_count++;
 	}
-	META_CONS("%d cvars, %d available (%d allocated)", n, a, size);
+
+	META_CONS("%d cvars, %d available", total_count, valid_count);
 }
 
 // List the registered cvars for the given plugin id.
 void MRegCvarList::show(int plugin_id) const
 {
-	int n = 0;
-	MRegCvar *icvar;
+	int total_count = 0;
 	char bname[30 + 1], bval[15 + 1]; // +1 for term null
 
-	META_CONS("%-*s     %*s  %s", sizeof(bname) - 1, "Registered cvars:", sizeof(bval) - 1, "float value", "string value");
-	for (int i = 0; i < endlist; i++)
+	META_CONS("%-*s     %*s  %s", sizeof(bname) - 1, "Registered cvars:", sizeof bval - 1, "float value", "string value");
+	
+	for (auto reg : m_list)
 	{
-		icvar = &vlist[i];
-		if (icvar->plugid != plugin_id)
+		if (reg->m_plugid != plugin_id)
 			continue;
 
-		Q_strncpy(bname, icvar->data->name, sizeof bname - 1);
+		Q_strncpy(bname, reg->m_cvar->name, sizeof bname - 1);
 		bname[sizeof bname - 1] = '\0';
-		Q_snprintf(bval, sizeof(bval), "%f", icvar->data->value);
-		META_CONS("   %-*s  %*s  %s", sizeof(bname) - 1, bname, sizeof(bval) - 1, bval, icvar->data->string);
-		n++;
+		Q_snprintf(bval, sizeof(bval), "%f", reg->m_cvar->value);
+		META_CONS("   %-*s  %*s  %s", sizeof(bname) - 1, bname, sizeof(bval) - 1, bval, reg->m_cvar->string);
+		total_count++;
 	}
 
-	META_CONS("%d cvars", n);
+	META_CONS("%d cvars", total_count);
 }
 
-// Constructor
-MRegMsgList::MRegMsgList()
-	: size(MAX_REG_MSGS), endlist(0)
+MRegMsg::MRegMsg(const char* name, int msgid, int size) : m_name(name), m_msgid(msgid), m_size(size)
 {
-	// initialize array
-	Q_memset(mlist, 0, sizeof(mlist));
-	for (int i = 0; i < size; i++)
-	{
-		mlist[i].index = i + 1; // 1-based
-	}
-
-	endlist = 0;
+	
 }
 
-// Add the given user msg the list and return the instance.
-// meta_errno values:
-//  - ME_MAXREACHED		reached max number of msgs allowed
+const char* MRegMsg::getname() const
+{
+	return m_name;
+}
+
+int MRegMsg::getid() const
+{
+	return m_msgid;
+}
+
+int MRegMsg::getsize() const
+{
+	return m_size;
+}
+
+MRegMsgList::MRegMsgList() : m_list()
+{
+}
+
 MRegMsg *MRegMsgList::add(const char *addname, int addmsgid, int addsize)
 {
-	if (endlist == size)
-	{
-		// all slots used
-		META_ERROR("Couldn't add registered msg '%s' to list; reached max msgs (%d)", addname, size);
-		return NULL;
-	}
-
-	MRegMsg *imsg = &mlist[endlist];
-	endlist++;
-
 	// Copy msg data into empty slot.
 	// Note: 'addname' assumed to be a constant string allocated in the
 	// gamedll.
-	imsg->name = addname;
-	imsg->msgid = addmsgid;
-	imsg->size = addsize;
-
-	return imsg;
+	auto msg = new(g_static_allocator.allocate<MRegMsg>()) MRegMsg(addname, addmsgid, addsize);
+	m_list.push_back(msg);
+	return msg;
 }
 
-// Try to find a registered msg with the given name.
-// meta_errno values:
-//  - ME_NOTFOUND	couldn't find a matching cvar
 MRegMsg *MRegMsgList::find(const char *findname)
 {
-	for (int i = 0; i < endlist; i++)
+	for (auto msg : m_list)
 	{
-		if (!Q_strcmp(mlist[i].name, findname))
-			return &mlist[i];
+		if (!Q_strcmp(msg->m_name, findname))
+			return msg;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
-// Try to find a registered msg with the given msgid.
-// meta_errno values:
-//  - ME_NOTFOUND	couldn't find a matching cvar
 MRegMsg *MRegMsgList::find(int findmsgid)
 {
-	for (int i = 0; i < endlist; i++)
-	{
-		if (mlist[i].msgid == findmsgid)
-			return &mlist[i];
+	for (auto msg : m_list) {
+		if (msg->m_msgid == findmsgid)
+			return msg;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // List the registered usermsgs for the gamedll.
 void MRegMsgList::show()
 {
-	int i, n = 0;
-	MRegMsg *imsg;
+	int total_count = 0;
 	char bname[25 + 1]; // +1 for term null
 
 	META_CONS("%-*s    %5s  %5s", sizeof(bname) - 1, "Game registered user msgs:", "msgid", "size");
-	for (i = 0; i < endlist; i++)
-	{
-		imsg = &mlist[i];
-
-		Q_strncpy(bname, imsg->name, sizeof bname - 1);
+	
+	for (auto msg : m_list) {
+		Q_strncpy(bname, msg->m_name, sizeof bname - 1);
 		bname[sizeof bname - 1] = '\0';
-		META_CONS("   %-*s   %3d    %3d", sizeof(bname) - 1, bname, imsg->msgid, imsg->size);
-		n++;
+		META_CONS("   %-*s   %3d    %3d", sizeof(bname) - 1, bname, msg->m_msgid, msg->m_size);
+		total_count++;
 	}
 
-	META_CONS("%d game user msgs", n);
+	META_CONS("%d game user msgs", total_count);
 }

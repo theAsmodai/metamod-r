@@ -40,11 +40,6 @@ private:
 	uintptr_t m_size;
 };
 
-bool IS_VALID_PTR(void *memptr);
-
-// Attempt to call the given function pointer, without segfaulting.
-bool os_safe_call(REG_CMD_FN pfn);
-
 // Windows doesn't have an strtok_r() routine, so we write our own.
 #ifdef _WIN32
 	#define strtok_r(s, delim, ptrptr)	mm_strtok_r(s, delim, ptrptr)
