@@ -7,13 +7,13 @@ void do_link_ent(ENTITY_FN *pfnEntity, int *missing, const char *entStr, entvars
 {
 	if (*missing)
 	{
-		META_DEBUG(9, ("Skipping entity '%s'; was previously found missing", entStr));
+		META_DEBUG(9, "Skipping entity '%s'; was previously found missing", entStr);
 		return;
 	}
 
 	if (!*pfnEntity)
 	{
-		META_DEBUG(9, ("Looking up game entity '%s'", entStr));
+		META_DEBUG(9, "Looking up game entity '%s'", entStr);
 		*pfnEntity = (ENTITY_FN)GameDLL.sys_module.getsym(entStr);
 	}
 
@@ -24,6 +24,6 @@ void do_link_ent(ENTITY_FN *pfnEntity, int *missing, const char *entStr, entvars
 		return;
 	}
 
-	META_DEBUG(8, ("Linking game entity '%s'", entStr));
+	META_DEBUG(8, "Linking game entity '%s'", entStr);
 	(*pfnEntity)(pev);
 }

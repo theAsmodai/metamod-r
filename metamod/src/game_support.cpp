@@ -50,7 +50,7 @@ bool install_gamedll(char *from, const char *to)
 		int fd = open(to, O_WRONLY | O_CREAT | O_EXCL | O_BINARY, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
 		if (fd < 0)
 		{
-			META_DEBUG(3, ("Installing gamedll from cache: Failed to create file %s: %s", to, strerror(errno)) );
+			META_DEBUG(3, "Installing gamedll from cache: Failed to create file %s: %s", to, strerror(errno));
 			FREE_FILE(cachefile);
 			return false;
 		}
@@ -62,7 +62,7 @@ bool install_gamedll(char *from, const char *to)
 		// Writing the file was not successfull
 		if (length_out != length_in)
 		{
-			META_DEBUG(3, ("Installing gamedll from chache: Failed to write all %d bytes to file, only %d written: %s", length_in, length_out, strerror(errno)));
+			META_DEBUG(3, "Installing gamedll from chache: Failed to write all %d bytes to file, only %d written: %s", length_in, length_out, strerror(errno));
 
 			// Let's not leave a mess but clean up nicely.
 			if (length_out >= 0)
@@ -75,7 +75,7 @@ bool install_gamedll(char *from, const char *to)
 	}
 	else
 	{
-		META_DEBUG(3, ("Failed to install gamedll from cache: file %s not found in cache.", from));
+		META_DEBUG(3, "Failed to install gamedll from cache: file %s not found in cache.", from);
 		return false;
 	}
 
@@ -108,7 +108,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 		knownfn = known->linux_so;
 #endif
 
-		META_DEBUG(4, ("Checking for old version game DLL name '%s'.\n", knownfn));
+		META_DEBUG(4, "Checking for old version game DLL name '%s'.\n", knownfn);
 		Q_snprintf(gamedll->pathname, sizeof(gamedll->pathname), "dlls/%s", knownfn);
 
 		// Check if the gamedll file exists. If not, try to install it from the cache.

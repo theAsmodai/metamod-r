@@ -21,13 +21,13 @@ bool MPlugin::ini_parseline(char *line)
 	// skip empty lines
 	if (line[0] == '\0')
 	{
-		META_DEBUG(7, ("ini: Ignoring empty line: %s", line));
+		META_DEBUG(7, "ini: Ignoring empty line: %s", line);
 		return false;
 	}
 
 	if (line[0] == '#' || line[0] == ';' || Q_strstr(line, "//") == line)
 	{
-		META_DEBUG(7, ("ini: Ignoring commented line: %s", line));
+		META_DEBUG(7, "ini: Ignoring commented line: %s", line);
 		return false;
 	}
 
@@ -46,7 +46,7 @@ bool MPlugin::ini_parseline(char *line)
 	else
 	{
 		// plugin is not for this OS
-		META_DEBUG(7, ("ini: Ignoring entry for %s", token));
+		META_DEBUG(7, "ini: Ignoring entry for %s", token);
 		return false;
 	}
 
@@ -140,7 +140,7 @@ bool MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON rea
 	if (0/*meta_errno == ME_DELAYED*/)
 	{
 		action = old_action;
-		META_DEBUG(2, ("dll: Failed unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(PT_ANYTIME, SL_SIMPLE)));
+		META_DEBUG(2, "dll: Failed unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(PT_ANYTIME, SL_SIMPLE));
 	}
 
 	return false;
@@ -306,11 +306,11 @@ bool MPlugin::resolve(void)
 
 	if (!found)
 	{
-		META_DEBUG(2, ("Couldn't resolve '%s' to file", filename));
+		META_DEBUG(2, "Couldn't resolve '%s' to file", filename);
 		return false;
 	}
 
-	META_DEBUG(2, ("Resolved '%s' to file '%s'", filename, found));
+	META_DEBUG(2, "Resolved '%s' to file '%s'", filename, found);
 
 	// store pathname: the resolved path (should be absolute)
 	Q_strncpy(pathname, found, sizeof pathname - 1);
@@ -610,12 +610,12 @@ bool MPlugin::load(PLUG_LOADTIME now)
 		if (info->loadable > PT_STARTUP)
 		{
 			// will try to attach again at next opportunity
-			META_DEBUG(2, ("dll: Delaying load plugin '%s'; can't attach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
+			META_DEBUG(2, "dll: Delaying load plugin '%s'; can't attach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE));
 			return false;
 		}
 		else
 		{
-			META_DEBUG(2, ("dll: Failed load plugin '%s'; can't attach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
+			META_DEBUG(2, "dll: Failed load plugin '%s'; can't attach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE));
 			// don't try to attach again later
 			action = PA_NONE;
 			return false;
@@ -718,11 +718,11 @@ bool MPlugin::query(void)
 	if (pfn_init)
 	{
 		pfn_init();
-		META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Init()", desc));
+		META_DEBUG(6, "dll: Plugin '%s': Called Meta_Init()", desc);
 	}
 	else
 	{
-		META_DEBUG(5, ("dll: no Meta_Init present in plugin '%s'", desc));
+		META_DEBUG(5, "dll: no Meta_Init present in plugin '%s'", desc);
 		// don't return; not an error
 	}
 
@@ -735,7 +735,7 @@ bool MPlugin::query(void)
 		return false;
 	}
 	pfn_give_engfuncs(g_engine.pl_funcs, g_engine.globals);
-	META_DEBUG(6, ("dll: Plugin '%s': Called GiveFnptrsToDll()", desc));
+	META_DEBUG(6, "dll: Plugin '%s': Called GiveFnptrsToDll()", desc);
 
 	// Call plugin's Meta_Query(), to pass our meta interface version, and get
 	// plugin's info structure.
@@ -752,8 +752,7 @@ bool MPlugin::query(void)
 	}
 	else
 	{
-		META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Query() successfully",
-			desc));
+		META_DEBUG(6, "dll: Plugin '%s': Called Meta_Query() successfully", desc);
 	}
 
 	// Check for interface differences...  Generally, a difference in major
@@ -768,7 +767,7 @@ bool MPlugin::query(void)
 	if (info && !FStrEq(info->ifvers, META_INTERFACE_VERSION))
 	{
 		int mmajor = 0, mminor = 0, pmajor = 0, pminor = 0;
-		META_DEBUG(3, ("dll: Note: Plugin '%s' interface version didn't match; expected %s, found %s", desc, META_INTERFACE_VERSION, info->ifvers));
+		META_DEBUG(3, "dll: Note: Plugin '%s' interface version didn't match; expected %s, found %s", desc, META_INTERFACE_VERSION, info->ifvers);
 		sscanf(META_INTERFACE_VERSION, "%d:%d", &mmajor, &mminor);
 		sscanf(info->ifvers, "%d:%d", &pmajor, &pminor);
 		// If plugin has later interface version, it's incompatible
@@ -816,7 +815,7 @@ bool MPlugin::query(void)
 		desc[sizeof desc - 1] = '\0';
 	}
 
-	META_DEBUG(6, ("dll: Plugin '%s': Query successful", desc));
+	META_DEBUG(6, "dll: Plugin '%s': Query successful", desc);
 	return true;
 }
 
@@ -887,7 +886,7 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 		return false;
 	}
 
-	META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Attach() successfully", desc));
+	META_DEBUG(6, "dll: Plugin '%s': Called Meta_Attach() successfully", desc);
 
 	// Rather than duplicate code, we use another ugly macro.  Again,
 	// a function isn't an option since we have varying types.
@@ -896,7 +895,7 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 		if (!struct_field) \
 			struct_field = (TABLE_TYPE *)Q_calloc(1, sizeof(TABLE_TYPE)); \
 		if (meta_table.pfnGetFuncs(struct_field, vers_pass)) { \
-			META_DEBUG(3, ("dll: Plugin '%s': Found %s", desc, STR_GetFuncs)); \
+			META_DEBUG(3, "dll: Plugin '%s': Found %s", desc, STR_GetFuncs); \
 		} \
 		else { \
 			META_ERROR("dll: Failure calling %s in plugin '%s'", STR_GetFuncs, desc); \
@@ -905,7 +904,7 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 		} \
 	} \
 	else { \
-		META_DEBUG(5, ("dll: Plugin '%s': No %s", desc, STR_GetFuncs)); \
+		META_DEBUG(5, "dll: Plugin '%s': No %s", desc, STR_GetFuncs); \
 		if (struct_field) \
 			Q_free(struct_field); \
 		struct_field = NULL; \
@@ -1011,20 +1010,20 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASO
 	{
 		if (reason == PNL_CMD_FORCED)
 		{
-			META_DEBUG(2, ("dll: Forced unload plugin '%s' overriding allowed times: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE)));
+			META_DEBUG(2, "dll: Forced unload plugin '%s' overriding allowed times: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE));
 		}
 		else
 		{
 			if (info->unloadable > PT_STARTUP)
 			{
-				META_DEBUG(2, ("dll: Delaying unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE)));
+				META_DEBUG(2, "dll: Delaying unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE));
 				// caller should give message to user
 				// try to unload again at next opportunity
 				return false;
 			}
 			else
 			{
-				META_DEBUG(2, ("dll: Failed unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE)));
+				META_DEBUG(2, "dll: Failed unload plugin '%s'; can't detach now: allowed=%s; now=%s", desc, str_unloadable(), str_loadtime(now, SL_SIMPLE));
 				// don't try to unload again later
 				action = PA_NONE;
 				return false;
@@ -1042,11 +1041,11 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASO
 	{
 		if (reason == PNL_RELOAD)
 		{
-			META_DEBUG(2, ("dll: Reload plugin '%s' overriding failed detach", desc));
+			META_DEBUG(2, "dll: Reload plugin '%s' overriding failed detach", desc);
 		}
 		else if (reason == PNL_CMD_FORCED)
 		{
-			META_DEBUG(2, ("dll: Forced unload plugin '%s' overriding failed detach"));
+			META_DEBUG(2, "dll: Forced unload plugin '%s' overriding failed detach");
 		}
 		else
 		{
@@ -1124,7 +1123,7 @@ bool MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 		return false;
 	}
 
-	META_DEBUG(6, ("dll: Plugin '%s': Called Meta_Detach() successfully", desc));
+	META_DEBUG(6, "dll: Plugin '%s': Called Meta_Detach() successfully", desc);
 	return true;
 }
 
@@ -1147,14 +1146,14 @@ bool MPlugin::reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 	{
 		if (info->loadable > PT_STARTUP)
 		{
-			META_DEBUG(2, ("dll: Delaying reload plugin '%s'; would not be able to reattach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
+			META_DEBUG(2, "dll: Delaying reload plugin '%s'; would not be able to reattach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE));
 			// caller should give message to user
 			// try to reload again at next opportunity
 			return false;
 		}
 		else
 		{
-			META_DEBUG(2, ("dll: Failed reload plugin '%s'; would not be able to reattach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE)));
+			META_DEBUG(2, "dll: Failed reload plugin '%s'; would not be able to reattach now: allowed=%s; now=%s", desc, str_loadable(), str_loadtime(now, SL_SIMPLE));
 			// don't try to reload again later
 			action = PA_NONE;
 			return false;

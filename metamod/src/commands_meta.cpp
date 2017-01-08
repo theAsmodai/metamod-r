@@ -351,7 +351,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 		{
 			if (findp && findp->status >= PL_RUNNING)
 			{
-				META_DEBUG(3, ("Required plugin '%s' found loaded and running.", arg));
+				META_DEBUG(3, "Required plugin '%s' found loaded and running.", arg);
 				return;
 			}
 			// Output to both places, because we don't want the admin

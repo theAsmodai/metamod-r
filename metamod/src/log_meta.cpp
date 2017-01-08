@@ -71,6 +71,18 @@ void META_LOG(const char *fmt, ...)
 	va_end(ap);
 }
 
+void NOINLINE META_DEBUG_(int level, const char* fmt, ...)
+{
+	char buf[MAX_LOGMSG_LEN];
+
+	va_list ap;
+	va_start(ap, fmt);
+	Q_vsnprintf(buf, sizeof buf, fmt, ap);
+	va_end(ap);
+
+	ALERT(at_logged, "[META] (debug:%i) %s\n", level, buf);
+}
+
 // Print to client.
 void META_CLIENT(edict_t *pEntity, const char *fmt, ...)
 {

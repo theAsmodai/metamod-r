@@ -71,20 +71,20 @@ bool MConfig::set(option_t* setp, const char* setstr)
 			           setstr);
 			return false;
 		}
-		META_DEBUG(3, ("set config bool: %s = %s", setp->name, *optval ? "true" : "false"));
+		META_DEBUG(3, "set config bool: %s = %s", setp->name, *optval ? "true" : "false");
 		break;
 	case CF_STR:
 		if (*optstr)
 			Q_free(*optstr);
 		*optstr = Q_strdup(setstr);
-		META_DEBUG(3, ("set config string: %s = %s", setp->name, *optstr));
+		META_DEBUG(3, "set config string: %s = %s", setp->name, *optstr);
 		break;
 	case CF_PATH:
 		if (*optstr)
 			Q_free(*optstr);
 		full_gamedir_path(setstr, pathbuf);
 		*optstr = Q_strdup(pathbuf);
-		META_DEBUG(3, ("set config path: %s = %s", setp->name, *optstr));
+		META_DEBUG(3, "set config path: %s = %s", setp->name, *optstr);
 		break;
 	default:
 		META_ERROR("unrecognized config type '%d'", setp->type);
@@ -114,7 +114,7 @@ bool MConfig::load(const char* fn)
 		return false;
 	}
 
-	META_DEBUG(2, ("Loading from config file: %s", loadfile));
+	META_DEBUG(2, "Loading from config file: %s", loadfile);
 	for (ln = 1; !feof(fp) && fgets(line, sizeof(line), fp); ln++)
 	{
 		if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2))

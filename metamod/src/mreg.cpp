@@ -1,8 +1,8 @@
 #include "precompiled.h"
 
-MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_status(RG_VALID), m_plugid(cmd_plugin->index)
+MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin->index), m_status(RG_VALID)
 {
-	m_name = _strdup(m_name);
+	m_name = _strdup(cmd_name);
 }
 
 bool MRegCmd::call() const

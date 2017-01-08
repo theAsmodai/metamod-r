@@ -83,23 +83,23 @@ MPlugin *MPluginList::find(const char* findpath)
 	if (!findpath)
 		return NULL;
 
-	META_DEBUG(8, ("Looking for loaded plugin with dlfnamepath: %s", findpath));
+	META_DEBUG(8, "Looking for loaded plugin with dlfnamepath: %s", findpath);
 
 	for (int i = 0; i < max_loaded_count; i++)
 	{
-		META_DEBUG(9, ("Looking at: plugin %s loadedpath: %s", plist[i].file, plist[i].pathname));
+		META_DEBUG(9, "Looking at: plugin %s loadedpath: %s", plist[i].file, plist[i].pathname);
 
 		if (plist[i].status < PL_VALID)
 			continue;
 
 		if (!Q_strcmp(plist[i].pathname, findpath))
 		{
-			META_DEBUG(8, ("Found loaded plugin %s", plist[i].file));
+			META_DEBUG(8, "Found loaded plugin %s", plist[i].file);
 			return &plist[i];
 		}
 	}
 
-	META_DEBUG(8, ("No loaded plugin found with path: %s", findpath));
+	META_DEBUG(8, "No loaded plugin found with path: %s", findpath);
 	return NULL;
 }
 
@@ -228,7 +228,7 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 
 	if (!(pl_loader = find(plid)))
 	{
-		META_DEBUG(1, ("Couldn't find plugin that gave this loading request!"));
+		META_DEBUG(1, "Couldn't find plugin that gave this loading request!");
 		return NULL;
 	}
 
@@ -241,20 +241,19 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 
 	if (pl_temp.resolve() != true)
 	{
-		META_DEBUG(1, ("Couldn't resolve given path into a file: %s", pl_temp.file));
+		META_DEBUG(1, "Couldn't resolve given path into a file: %s", pl_temp.file);
 		return NULL;
 	}
 
 	if ((pl_found = find(pl_temp.pathname)))
 	{
-		META_DEBUG(1, ("Plugin '%s' already in current list; file=%s desc='%s'",
-			pl_temp.file, pl_found->file, pl_found->desc));
+		META_DEBUG(1, "Plugin '%s' already in current list; file=%s desc='%s'", pl_temp.file, pl_found->file, pl_found->desc);
 		return NULL;
 	}
 
 	if (!(pl_added = add(&pl_temp)))
 	{
-		META_DEBUG(1, ("Couldn't add plugin '%s' to list; see log", pl_temp.desc));
+		META_DEBUG(1, "Couldn't add plugin '%s' to list; see log", pl_temp.desc);
 		return NULL;
 	}
 
@@ -263,21 +262,21 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 	{
 		if (1/*meta_errno == ME_NOTALLOWED || meta_errno == ME_DELAYED*/)
 		{
-			META_DEBUG(1, ("Plugin '%s' couldn't attach; only allowed %s", pl_added->desc, pl_added->str_loadable(SL_ALLOWED)));
+			META_DEBUG(1, "Plugin '%s' couldn't attach; only allowed %s", pl_added->desc, pl_added->str_loadable(SL_ALLOWED));
 			pl_added->clear();
 		}
 		else if (pl_added->status == PL_OPENED)
 		{
-			META_DEBUG(1, ("Opened plugin '%s', but failed to attach; see log", pl_added->desc));
+			META_DEBUG(1, "Opened plugin '%s', but failed to attach; see log", pl_added->desc);
 		}
 		else
 		{
-			META_DEBUG(1, ("Couldn't load plugin '%s'; see log", pl_added->desc));
+			META_DEBUG(1, "Couldn't load plugin '%s'; see log", pl_added->desc);
 		}
 		return NULL;
 	}
 
-	META_DEBUG(1, ("Loaded plugin '%s' successfully", pl_added->desc));
+	META_DEBUG(1, "Loaded plugin '%s' successfully", pl_added->desc);
 
 	return pl_added;
 }
@@ -518,7 +517,7 @@ bool MPluginList::ini_refresh()
 			// Newer file on disk.
 			else if (pl_found->status >= PL_OPENED)
 			{
-				META_DEBUG(2, ("ini: Plugin '%s' has newer file on disk", pl_found->desc));
+				META_DEBUG(2, "ini: Plugin '%s' has newer file on disk", pl_found->desc);
 				pl_found->action = PA_RELOAD;
 			}
 			else
@@ -679,19 +678,19 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 		switch (iplug->action)
 		{
 		case PA_KEEP:
-			META_DEBUG(1, ("Keeping plugin '%s'", iplug->desc));
+			META_DEBUG(1, "Keeping plugin '%s'", iplug->desc);
 			iplug->action = PA_NONE;
 			nkept++;
 			break;
 		case PA_LOAD:
-			META_DEBUG(1, ("Loading plugin '%s'", iplug->desc));
+			META_DEBUG(1, "Loading plugin '%s'", iplug->desc);
 			if (iplug->load(now))
 				nloaded++;
 			else if (1/*meta_errno == ME_DELAYED*/)
 				ndelayed++;
 			break;
 		case PA_RELOAD:
-			META_DEBUG(1, ("Reloading plugin '%s'", iplug->desc));
+			META_DEBUG(1, "Reloading plugin '%s'", iplug->desc);
 			if (iplug->reload(now, PNL_FILE_NEWER))
 				nreloaded++;
 			else if (1/*meta_errno == ME_DELAYED*/)
@@ -701,7 +700,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 			// If previously loaded from ini, but apparently removed from new ini.
 			if (iplug->source == PS_INI && iplug->status >= PL_RUNNING)
 			{
-				META_DEBUG(1, ("Unloading plugin '%s'", iplug->desc));
+				META_DEBUG(1, "Unloading plugin '%s'", iplug->desc);
 				iplug->action = PA_UNLOAD;
 				if (iplug->unload(now, PNL_INI_DELETED, PNL_INI_DELETED))
 					nunloaded++;
@@ -711,7 +710,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 			break;
 		case PA_ATTACH:
 			// Previously requested attach, but was delayed?
-			META_DEBUG(1, ("Retrying attach plugin '%s'", iplug->desc));
+			META_DEBUG(1, "Retrying attach plugin '%s'", iplug->desc);
 			if (iplug->retry(now, PNL_DELAYED))
 				nloaded++;
 			else if (1/*meta_errno == ME_DELAYED*/)
@@ -719,7 +718,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 			break;
 		case PA_UNLOAD:
 			// Previously requested unload, but was delayed?
-			META_DEBUG(1, ("Retrying unload plugin '%s'", iplug->desc));
+			META_DEBUG(1, "Retrying unload plugin '%s'", iplug->desc);
 			if (iplug->retry(now, PNL_DELAYED))
 				nunloaded++;
 			else if (1/*meta_errno == ME_DELAYED*/)

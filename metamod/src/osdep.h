@@ -7,12 +7,18 @@
 	#define PLATFORM	"mswin"
 	#define PLATFORM_SPC	"win32"
 	#define PLATFORM_DLEXT	".dll"
+
+	#define likely(x)      (x)
+	#define unlikely(x)    (x)
 #else
 	#define UNUSED		__attribute__((unused))
 
 	#define PLATFORM	"linux"
 	#define PLATFORM_SPC	"lin32"
 	#define PLATFORM_DLEXT	".so"
+
+	#define likely(x)      __builtin_expect(!!(x), 1)
+	#define unlikely(x)    __builtin_expect(!!(x), 0)
 #endif
 
 #include "mreg.h"

@@ -174,7 +174,7 @@ void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const c
 // Jussi Kivilinna.
 qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_t *pev)
 {
-	META_DEBUG(8, ("Looking up game entity '%s' for plugin '%s'", entStr, plid->name));
+	META_DEBUG(8, "Looking up game entity '%s' for plugin '%s'", entStr, plid->name);
 	ENTITY_FN pfnEntity = (ENTITY_FN)GameDLL.sys_module.getsym(entStr);
 	
 	if (!pfnEntity)
@@ -183,7 +183,7 @@ qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_
 		return false;
 	}
 
-	META_DEBUG(7, ("Calling game entity '%s' for plugin '%s'", entStr, plid->name));
+	META_DEBUG(7, "Calling game entity '%s' for plugin '%s'", entStr, plid->name);
 	(*pfnEntity)(pev);
 	return true;
 }

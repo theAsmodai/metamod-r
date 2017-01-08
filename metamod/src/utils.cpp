@@ -106,13 +106,10 @@ void normalize_pathname(char *path)
 #ifdef _WIN32
 	char *cp;
 
-	META_DEBUG(8, ("normalize: %s", path));
 	for (cp = path; *cp; cp++) {
 		if (isupper(*cp)) *cp = tolower(*cp);
 		if (*cp == '\\') *cp = '/';
 	}
-
-	META_DEBUG(8, ("normalized: %s", path));
 #endif
 }
 

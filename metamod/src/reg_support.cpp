@@ -30,7 +30,7 @@ void EXT_FUNC meta_AddServerCommand(char *cmd_name, void (*function)())
 {
 	MPlugin *plug = g_plugins->find_memloc(function);
 
-	META_DEBUG(4, ("called: meta_AddServerCommand; cmd_name=%s, function=%d, plugin=%s", cmd_name, function, plug ? plug->file : "unknown"));
+	META_DEBUG(4, "called: meta_AddServerCommand; cmd_name=%s, function=%d, plugin=%s", cmd_name, function, plug ? plug->file : "unknown");
 
 	if (!plug) {
 		META_ERROR("Failed to find memloc for regcmd '%s'", cmd_name);
