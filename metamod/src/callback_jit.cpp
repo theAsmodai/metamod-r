@@ -117,7 +117,7 @@ void CForwardCallbackJIT::naked_main()
 		CUniqueLabel go_next_plugin("go_next_plugin");
 
 		// check status and handler set
-		cmp(byte_ptr[size_t(&plug->status)], PL_RUNNING);
+		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
 		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
 		jnz(go_next_plugin);
 		jecxz(go_next_plugin);
@@ -194,7 +194,7 @@ void CForwardCallbackJIT::naked_main()
 		CUniqueLabel go_next_plugin("go_next_plugin");
 
 		// check status and handler set
-		cmp(byte_ptr[size_t(&plug->status)], PL_RUNNING);
+		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
 		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
 		jnz(go_next_plugin);
 		jecxz(go_next_plugin);

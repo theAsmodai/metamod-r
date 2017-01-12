@@ -117,7 +117,7 @@ void buffered_ALERT(MLOG_SERVICE service, ALERT_TYPE atype, const char *prefix, 
 
 	if (g_engfuncs.pfnAlertMessage)
 	{
-		Q_vsnprintf(buf, sizeof(buf), fmt, ap);
+		Q_vsnprintf(buf, sizeof buf, fmt, ap);
 		ALERT(atype, "%s %s\n", prefix, buf);
 		return;
 	}
@@ -133,7 +133,7 @@ void buffered_ALERT(MLOG_SERVICE service, ALERT_TYPE atype, const char *prefix, 
 	msg->service = service;
 	msg->atype = atype;
 	msg->prefix = prefix;
-	Q_vsnprintf(msg->buf, sizeof(buf), fmt, ap);
+	Q_vsnprintf(msg->buf, sizeof buf, fmt, ap);
 	msg->next = nullptr;
 
 	if (!messageQueueEnd)

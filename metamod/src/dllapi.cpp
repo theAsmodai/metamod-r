@@ -215,10 +215,10 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 void compile_dllfunc_callbacks()
 {
 	jitdata_t jitdata;
-	jitdata.plugins = g_plugins ? g_plugins->plist : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->max_loaded_count : 0;
-	jitdata.table_offset = offsetof(MPlugin, dllapi_table);
-	jitdata.post_table_offset = offsetof(MPlugin, dllapi_post_table);
+	jitdata.plugins = g_plugins ? g_plugins->getlist() : nullptr;
+	jitdata.plugins_count = g_plugins ? g_plugins->getmaxcount() : 0;
+	jitdata.table_offset = offsetof(MPlugin, m_dllapi_table);
+	jitdata.post_table_offset = offsetof(MPlugin, m_dllapi_post_table);
 
 	for (auto& cd : g_dllfunc_cdata) {
 		jitdata.pfn_original = *(size_t *)(size_t(GameDLL.funcs.dllapi_table) + cd.offset);
@@ -236,10 +236,10 @@ void compile_dllfunc_callbacks()
 void compile_newdllfunc_callbacks()
 {
 	jitdata_t jitdata;
-	jitdata.plugins = g_plugins ? g_plugins->plist : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->max_loaded_count : 0;
-	jitdata.table_offset = offsetof(MPlugin, newapi_table);
-	jitdata.post_table_offset = offsetof(MPlugin, newapi_post_table);
+	jitdata.plugins = g_plugins ? g_plugins->getlist() : nullptr;
+	jitdata.plugins_count = g_plugins ? g_plugins->getmaxcount() : 0;
+	jitdata.table_offset = offsetof(MPlugin, m_newapi_table);
+	jitdata.post_table_offset = offsetof(MPlugin, m_newapi_post_table);
 
 	for (auto& cd : g_newdllfunc_cdata) {
 		jitdata.pfn_original = *(size_t *)(size_t(GameDLL.funcs.newapi_table) + cd.offset);

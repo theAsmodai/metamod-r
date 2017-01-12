@@ -66,7 +66,7 @@ module_handle_t CSysModule::load(const char* filepath)
 
 	FILE* fp = fopen(buf, "r");
 
-	while (fgets(buf, sizeof(buf), fp)) {
+	while (fgets(buf, sizeof buf, fp)) {
 		uintptr_t start, end;
 
 		int args = sscanf(buf, "%x-%x %128s %128s %128s %128s %255s", &start, &end, dummy, dummy, dummy, dummy, path);
@@ -136,6 +136,7 @@ const char *str_GetLastError()
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&buf, MAX_STRBUF_LEN - 1, NULL);
 	return buf;
 }
+#endif
 
 const char* str_os_error()
 {
@@ -145,4 +146,3 @@ const char* str_os_error()
 	return strerror(errno);
 #endif
 }
-#endif

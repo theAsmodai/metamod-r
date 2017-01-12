@@ -101,6 +101,26 @@ char *mm_strtok_r(char *s, const char *delim, char **ptrptr)
 }
 #endif // _WIN32
 
+char* trimbuf(char *str)
+{
+	char *ibuf;
+
+	if (str == NULL) return NULL;
+	for (ibuf = str; *ibuf && (byte)(*ibuf) < (byte)0x80 && isspace(*ibuf); ++ibuf)
+		;
+
+	int i = strlen(ibuf);
+	if (str != ibuf)
+		memmove(str, ibuf, i);
+
+	while (--i >= 0) {
+		if (!isspace(str[i]))
+			break;
+	}
+	str[i + 1] = '\0';
+	return str;
+}
+
 void normalize_pathname(char *path)
 {
 #ifdef _WIN32

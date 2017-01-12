@@ -12,9 +12,8 @@ typedef void (*ENTITY_FN)(entvars_t *);
 void do_link_ent(ENTITY_FN *pfnEntity, int *missing, const char *entStr, entvars_t *pev);
 
 #define LINK_ENTITY_TO_GAME(entityName) \
-	C_DLLEXPORT void entityName(entvars_t *pev); \
-	void entityName(entvars_t *pev) { \
-		static ENTITY_FN pfnEntity = NULL; \
+	C_DLLEXPORT void entityName(entvars_t *pev) { \
+		static ENTITY_FN pfnEntity = nullptr; \
 		static int missing = 0; \
 		do_link_ent(&pfnEntity, &missing, STRINGIZE(entityName, 0), pev); \
 	}

@@ -54,6 +54,7 @@ const char* LOCALINFO(char* key);
 char *mm_strtok_r(char *s, const char *delim, char **ptrptr);
 #endif
 
+char* trimbuf(char *str);
 void normalize_pathname(char *path);
 bool is_absolute_path(const char *path);
 char *realpath(const char *file_name, char *resolved_name);

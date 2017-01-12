@@ -239,10 +239,10 @@ compile_data_t g_engfuncs_cdata[] =
 void compile_engfuncs_callbacks()
 {
 	jitdata_t jitdata;
-	jitdata.plugins = g_plugins ? g_plugins->plist : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->max_loaded_count : 0;
-	jitdata.table_offset = offsetof(MPlugin, engine_table);
-	jitdata.post_table_offset = offsetof(MPlugin, engine_post_table);
+	jitdata.plugins = g_plugins ? g_plugins->getlist() : nullptr;
+	jitdata.plugins_count = g_plugins ? g_plugins->getmaxcount() : 0;
+	jitdata.table_offset = offsetof(MPlugin, m_engine_table);
+	jitdata.post_table_offset = offsetof(MPlugin, m_engine_post_table);
 
 	for (auto& cd : g_engfuncs_cdata) {
 		jitdata.pfn_original = *(size_t *)(size_t(&g_engfuncs) + cd.offset);

@@ -17,11 +17,14 @@ class MPluginList {
 public:
 	MPluginList(const char *ifile);
 
+	MPlugin *getlist();
+	int getmaxcount() const;
+
 	MPlugin *find(int pindex);			// find by index
 	MPlugin *find(const char *findpath);		// find by pathname
 	MPlugin *find(plid_t id);			// find by plid_t
 	MPlugin *find_memloc(void *memptr);		// find by memory location
-	MPlugin *find_match(const char *prefix);	// find by partial prefix match
+	MPlugin *find_match(const char *prefix, bool& unique);	// find by partial prefix match
 	MPlugin *find_match(MPlugin *pmatch);		// find by platform_match()
 	MPlugin *find(module_handle_t handle);			// find by handle
 	MPlugin *find_empty_slot();
@@ -42,8 +45,8 @@ public:
 	void show_client(edict_t *pEntity);		// list plugins to player client
 	void clear_source_plugin_index(int source_index);
 
-public:
-	int max_loaded_count;					// index of last used entry
-	char inifile[PATH_MAX];				// full pathname
-	MPlugin plist[MAX_PLUGINS];			// array of plugins
+private:
+	int m_max_loaded_count;					// index of last used entry
+	MPlugin m_plist[MAX_PLUGINS];			// array of plugins
+	char m_inifile[PATH_MAX];				// full pathname
 };

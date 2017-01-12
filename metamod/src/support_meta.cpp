@@ -27,7 +27,7 @@ int valid_gamedir_file(const char* path)
 
 	if (is_absolute_path(path))
 	{
-		Q_strncpy(buf, path, sizeof(buf));
+		Q_strncpy(buf, path, sizeof buf);
 		buf[sizeof buf - 1] = '\0';
 	}
 	else
@@ -47,17 +47,16 @@ int valid_gamedir_file(const char* path)
 		return FALSE;
 	}
 
-	int size = st.st_size;
-	if (!size)
+	if (!st.st_size)
 	{
 		META_DEBUG(5, "Empty file: %s", buf);
 		return FALSE;
 	}
 
-	if (ret == 0 && reg && size)
+	if (ret == 0 && reg)
 		return TRUE;
-	else
-		return FALSE;
+
+	return FALSE;
 }
 
 // Turns path into a full path:
@@ -77,7 +76,7 @@ char* full_gamedir_path(const char* path, char* fullpath)
 		Q_strncpy(buf, path, sizeof buf - 1);
 		buf[sizeof buf - 1] = '\0';
 	}
-	else snprintf(buf, sizeof(buf), "%s/%s", GameDLL.gamedir, path);
+	else snprintf(buf, sizeof buf, "%s/%s", GameDLL.gamedir, path);
 
 	// Remove relative path components, if possible.
 	if (!realpath(buf, fullpath))

@@ -3,7 +3,7 @@
 // Function to perform common code of LINK_ENTITY_TO_GAME, rather than
 // duplicating the code in ~2000 expanded macros.  Based on code from Jussi
 // Kivilinna <kijuhe00@students.oamk.fi>.
-void do_link_ent(ENTITY_FN *pfnEntity, int *missing, const char *entStr, entvars_t *pev)
+void NOINLINE do_link_ent(ENTITY_FN *pfnEntity, int *missing, const char *entStr, entvars_t *pev)
 {
 	if (*missing)
 	{

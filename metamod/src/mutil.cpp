@@ -252,7 +252,7 @@ const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 		return nullptr;
 	}
 
-	Q_strncpy(buf, plug->pathname, sizeof buf - 1);
+	Q_strncpy(buf, plug->m_pathname, sizeof buf - 1);
 	buf[sizeof buf - 1] = '\0';
 	return buf;
 }
@@ -312,7 +312,7 @@ int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME 
 	else
 	{
 		if (plugin_handle)
-			*plugin_handle = (void *)pl_loaded->sys_module.gethandle();
+			*plugin_handle = (void *)pl_loaded->m_sys_module.gethandle();
 
 		return 0;
 	}
@@ -329,13 +329,14 @@ int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIM
 
 	char *endptr;
 	int pindex = strtol(fname, &endptr, 10);
+	bool unique = true;
 
 	if (*fname != '\0' && *endptr == '\0')
 		findp = g_plugins->find(pindex);
 	else
-		findp = g_plugins->find_match(fname);
+		findp = g_plugins->find_match(fname, unique);
 
-	if (!findp)
+	if (!findp || !unique)
 		return 1;
 
 	if (findp->plugin_unload(plid, now, reason))

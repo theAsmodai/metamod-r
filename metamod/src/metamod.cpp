@@ -252,14 +252,14 @@ bool meta_init_gamedll(void)
 		// New style; GET_GAME_DIR returned game name.  Copy this into our
 		// game name, and prepend the current working directory.
 		char buf[PATH_MAX];
-		if (!_getcwd(buf, sizeof(buf)))
+		if (!_getcwd(buf, sizeof buf))
 		{
 			META_WARNING("dll: Couldn't get cwd; %s", strerror(errno));
 			return false;
 		}
 
-		Q_snprintf(GameDLL.gamedir, sizeof(GameDLL.gamedir), "%s/%s", buf, gamedir);
-		Q_strncpy(GameDLL.name, gamedir, sizeof(GameDLL.name) - 1);
+		Q_snprintf(GameDLL.gamedir, sizeof GameDLL.gamedir, "%s/%s", buf, gamedir);
+		Q_strncpy(GameDLL.name, gamedir, sizeof GameDLL.name - 1);
 		GameDLL.name[sizeof(GameDLL.name) - 1] = '\0';
 	}
 
@@ -270,7 +270,7 @@ bool meta_init_gamedll(void)
 template<typename ifvers_t, typename table_t>
 bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size_t table_size = sizeof(table_t))
 {
-	typedef int (*getfunc_t)(table_t *pFunctionTable, ifvers_t interfaceVersion);
+	typedef int(*getfunc_t)(table_t *pFunctionTable, ifvers_t interfaceVersion);
 
 	auto pfnGetFuncs = (getfunc_t)GameDLL.sys_module.getsym(ifname);
 
@@ -300,6 +300,33 @@ bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size
 			META_CONS("==================");
 			ALERT(at_error, "Exiting...\n");
 		}
+	}
+	else {
+		META_DEBUG(5, "dll: Game '%s': No %s", GameDLL.name, ifname);
+		table = nullptr;
+	}
+
+	return false;
+}
+
+template<typename table_t>
+bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, size_t table_size = sizeof(table_t))
+{
+	typedef int (*getfunc_t)(table_t *pFunctionTable, int interfaceVersion);
+
+	auto pfnGetFuncs = (getfunc_t)GameDLL.sys_module.getsym(ifname);
+
+	if (pfnGetFuncs) {
+		table = (table_t *)Q_calloc(1, table_size);
+
+		if (pfnGetFuncs(table, ifvers_mm)) {
+			META_DEBUG(3, "dll: Game '%s': Found %s", GameDLL.name, ifname);
+			return true;
+		}
+
+		META_ERROR("dll: Failure calling %s in game '%s'", ifname, GameDLL.name);
+		Q_free(table);
+		table = nullptr;
 	}
 	else {
 		META_DEBUG(5, "dll: Game '%s': No %s", GameDLL.name, ifname);
@@ -359,7 +386,7 @@ bool meta_load_gamedll(void)
 
 	// Look for API-1 in plugin, if API2 interface wasn't found.
 	if (!found) {
-		found = get_function_table<int>("GetEntityAPI", INTERFACE_VERSION, GameDLL.funcs.dllapi_table);
+		found = get_function_table_old("GetEntityAPI", INTERFACE_VERSION, GameDLL.funcs.dllapi_table);
 	}
 
 	// If didn't find either, return failure.

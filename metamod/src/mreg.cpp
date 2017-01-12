@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin->index), m_status(RG_VALID)
+MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin->m_index), m_status(RG_VALID)
 {
 	m_name = _strdup(cmd_name);
 }
@@ -100,7 +100,7 @@ void MRegCmdList::show() const
 		{
 			auto iplug = g_plugins->find(reg->m_plugid);
 
-			Q_strncpy(bplug, iplug ? iplug->desc : "(unknown)", sizeof bplug - 1);
+			Q_strncpy(bplug, iplug ? iplug->m_desc : "(unknown)", sizeof bplug - 1);
 			bplug[sizeof bplug - 1] = '\0';
 		}
 		else
@@ -137,7 +137,7 @@ void MRegCmdList::show(int plugin_id) const
 	META_CONS("%d commands", total_count);
 }
 
-MRegCvar::MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin) : m_cvar(cv_ptr), m_plugid(cv_plugin->index), m_status(RG_VALID)
+MRegCvar::MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin) : m_cvar(cv_ptr), m_plugid(cv_plugin->m_index), m_status(RG_VALID)
 {
 	m_cvar = g_static_allocator.allocate<cvar_t>();
 	m_cvar->name = _strdup(cv_ptr->name);
@@ -202,7 +202,7 @@ void MRegCvarList::show() const
 		if (reg->m_status == RG_VALID)
 		{
 			auto plug = g_plugins->find(reg->m_plugid);
-			Q_strncpy(bplug, plug ? plug->desc : "(unknown)", sizeof bplug - 1);
+			Q_strncpy(bplug, plug ? plug->m_desc : "(unknown)", sizeof bplug - 1);
 			bplug[sizeof bplug - 1] = '\0';
 		}
 		else
