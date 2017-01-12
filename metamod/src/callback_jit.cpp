@@ -108,6 +108,10 @@ void CForwardCallbackJIT::naked_main()
 	// call pre
 	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
 		auto plug = &m_jitdata->plugins[i];
+
+		if (plug->m_status < PL_RUNNING)
+			continue;
+
 		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->table_offset);
 
 		// plugin don't want any hooks from that table
@@ -185,6 +189,10 @@ void CForwardCallbackJIT::naked_main()
 	// call post
 	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
 		auto plug = &m_jitdata->plugins[i];
+
+		if (plug->m_status < PL_RUNNING)
+			continue;
+
 		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->post_table_offset);
 
 		// plugin don't want any hooks from that table
@@ -279,42 +287,6 @@ void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
 		add(esp, m_jitdata->args_count * sizeof(int));
 }
 
-class CSimpleJmp : public jitasm::function<void, CSimpleJmp>
-{
-public:
-	CSimpleJmp(size_t addr/*, size_t hook, size_t hook_time, size_t ret_backup*/);
-	void naked_main();
-
-private:
-	size_t m_addr;
-	/*size_t m_hook;
-	size_t m_hook_time;
-	size_t m_ret_backup;*/
-};
-
-CSimpleJmp::CSimpleJmp(size_t addr/*, size_t hook, size_t hook_time, size_t ret_backup*/) : m_addr(addr)/*, m_hook(hook), m_hook_time(hook_time), m_ret_backup(ret_backup)*/
-{
-}
-
-void CSimpleJmp::naked_main()
-{
-	/*if (m_hook && m_hook_time == P_PRE) {
-		mov(ecx, m_hook);
-		pop(dword_ptr[m_ret_backup]);
-		call(ecx);
-		push(dword_ptr[m_ret_backup]);
-	}*/
-
-	jmp(dword_ptr[m_addr]);
-
-	/*if (m_hook && m_hook_time == P_POST) {
-		mov(ecx, m_hook);
-		pop(dword_ptr[m_ret_backup]);
-		call(ecx);
-		push(dword_ptr[m_ret_backup]);
-	}*/
-}
-
 CJit::CJit() : m_callback_allocator(static_allocator::mp_rwx), m_tramp_allocator(static_allocator::mp_rwx)
 {
 }
@@ -335,16 +307,16 @@ size_t CJit::compile_callback(jitdata_t* jitdata)
 	return (size_t)memcpy(ptr, code, codeSize);
 }
 
-size_t CJit::compile_tramp(size_t ptr_to_func/*, size_t hook, size_t hook_time*/)
+size_t CJit::compile_tramp(size_t ptr_to_func)
 {
-	CSimpleJmp jmp(ptr_to_func/*, hook, hook_time, size_t(m_static_allocator.allocate(sizeof(int)))*/);
-	jmp.Assemble();
+	auto code = (uint8 *)m_tramp_allocator.allocate(2 + sizeof(int));
 
-	auto code = jmp.GetCode();
-	auto codeSize = jmp.GetCodeSize();
-	auto ptr = m_tramp_allocator.allocate(codeSize);
+	// jmp dword [ptr_to_func]
+	code[0] = 0xFFu;
+	code[1] = 0x25u;
+	*(size_t *)&code[2] = ptr_to_func;
 
-	return (size_t)memcpy(ptr, code, codeSize);
+	return (size_t)code;
 }
 
 void CJit::clear_callbacks()
