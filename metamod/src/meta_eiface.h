@@ -12,9 +12,6 @@ struct meta_new_dll_functions_t: public NEW_DLL_FUNCTIONS
 {
 	// Fill this object with pointers copied from a NEW_DLL_FUNCTIONS struct.
 	void set_from(NEW_DLL_FUNCTIONS* pFuncs);
-
-	// Copy the pointers from this object to a NEW_DLL_FUNCTIONS struct.
-	void copy_to(NEW_DLL_FUNCTIONS* pFuncs) const;
 };
 
 // meta_enginefuncs_t
@@ -22,9 +19,6 @@ struct meta_enginefuncs_t : public enginefuncs_t
 {
 	// Fill this object with pointers copied from an enginefuncs_t struct.
 	void set_from(enginefuncs_t* pFuncs);
-
-	// Copy the pointers from this object to an enginefuncs_t struct.
-	void copy_to(enginefuncs_t* pFuncs) const;
 };
 
 // This is a specialisation of the meta_enginefuncs_t struct which is only
@@ -47,10 +41,5 @@ private:
 	void set_from(enginefuncs_t* pFuncs)
 	{
 		meta_enginefuncs_t::set_from(pFuncs);
-	}
-
-	void copy_to(enginefuncs_t* pFuncs)
-	{
-		meta_enginefuncs_t::copy_to(pFuncs);
 	}
 };

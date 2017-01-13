@@ -1,7 +1,5 @@
 #pragma once
 
-#include "eiface.h"             // engfuncs_t, globalvars_t
-
 // Our structure for storing engine references.
 struct engine_t
 {

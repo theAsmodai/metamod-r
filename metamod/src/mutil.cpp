@@ -175,11 +175,11 @@ void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const c
 qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_t *pev)
 {
 	META_DEBUG(8, "Looking up game entity '%s' for plugin '%s'", entStr, plid->name);
-	ENTITY_FN pfnEntity = (ENTITY_FN)GameDLL.sys_module.getsym(entStr);
+	ENTITY_FN pfnEntity = (ENTITY_FN)g_GameDLL.sys_module.getsym(entStr);
 	
 	if (!pfnEntity)
 	{
-		META_ERROR("Couldn't find game entity '%s' in game DLL '%s' for plugin '%s'", entStr, GameDLL.name, plid->name);
+		META_ERROR("Couldn't find game entity '%s' in game DLL '%s' for plugin '%s'", entStr, g_GameDLL.name, plid->name);
 		return false;
 	}
 
@@ -266,22 +266,22 @@ const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 	switch (type)
 	{
 	case GINFO_NAME:
-		cp = GameDLL.name;
+		cp = g_GameDLL.name;
 		break;
 	case GINFO_DESC:
-		cp = GameDLL.desc;
+		cp = g_GameDLL.desc;
 		break;
 	case GINFO_GAMEDIR:
-		cp = GameDLL.gamedir;
+		cp = g_GameDLL.gamedir;
 		break;
 	case GINFO_DLL_FULLPATH:
-		cp = GameDLL.pathname;
+		cp = g_GameDLL.pathname;
 		break;
 	case GINFO_DLL_FILENAME:
-		cp = GameDLL.file;
+		cp = g_GameDLL.file;
 		break;
 	case GINFO_REALDLL_FULLPATH:
-		cp = GameDLL.real_pathname;
+		cp = g_GameDLL.real_pathname;
 		break;
 	default:
 		META_ERROR("GetGameInfo: invalid request '%d' from plugin '%s'", type, plid->name);
@@ -371,13 +371,13 @@ const char* EXT_FUNC mutil_IsQueryingClientCvar(plid_t plid, const edict_t* pEdi
 int EXT_FUNC mutil_MakeRequestId(plid_t plid)
 {
 	//the offset is to distinguish from gamedll requests, if any
-	return abs(0xbeef << 16) + (++requestid_counter);
+	return abs(0xbeef << 16) + (++g_requestid_counter);
 }
 
 void EXT_FUNC mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIONS** pdll, NEW_DLL_FUNCTIONS** pnewdll)
 {
 	if (peng)
-		*peng = &meta_engfuncs;
+		*peng = &g_meta_engfuncs;
 
 	if (pdll)
 		*pdll = pHookedDllFunctions;
@@ -387,7 +387,7 @@ void EXT_FUNC mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIO
 }
 
 // Meta Utility Function table.
-mutil_funcs_t MetaUtilFunctions = {
+mutil_funcs_t g_MetaUtilFunctions = {
 	mutil_LogConsole,		// pfnLogConsole
 	mutil_LogMessage,		// pfnLogMessage
 	mutil_LogError,			// pfnLogError

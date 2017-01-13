@@ -1,6 +1,5 @@
 #pragma once
 
-#include "types_meta.h"		// bool
 #include "mplugin.h"		// class MPlugin
 #include "plinfo.h"		// plid_t, etc
 

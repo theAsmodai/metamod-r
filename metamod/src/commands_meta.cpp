@@ -35,8 +35,8 @@ metacmd_t g_meta_cmds[] =
 // Register commands and cvars.
 void meta_register_cmdcvar()
 {
-	CVAR_REGISTER(&meta_debug);
-	CVAR_REGISTER(&meta_version);
+	CVAR_REGISTER(&g_meta_debug);
+	CVAR_REGISTER(&g_meta_version);
 	REG_SVR_COMMAND("meta", server_meta);
 }
 
@@ -183,11 +183,11 @@ void cmd_meta_game()
 	}
 
 	META_CONS("GameDLL info:");
-	META_CONS("        name: %s", GameDLL.name);
-	META_CONS("        desc: %s", GameDLL.desc);
-	META_CONS("     gamedir: %s", GameDLL.gamedir);
-	META_CONS("    dll file: %s", GameDLL.file);
-	META_CONS("dll pathname: %s", GameDLL.pathname);
+	META_CONS("        name: %s", g_GameDLL.name);
+	META_CONS("        desc: %s", g_GameDLL.desc);
+	META_CONS("     gamedir: %s", g_GameDLL.gamedir);
+	META_CONS("    dll file: %s", g_GameDLL.file);
+	META_CONS("dll pathname: %s", g_GameDLL.pathname);
 	g_regMsgs->show();
 }
 
@@ -267,18 +267,6 @@ void cmd_meta_config()
 	g_config->show();
 }
 
-// gamedir/filename
-// gamedir/dlls/filename
-//
-// dir/mm_file
-// dir/file
-//
-// path
-// path_mm
-// path_MM
-// path.so, path.dll
-// path_i386.so, path_i486.so, etc
-
 // "meta load" console command.
 void cmd_meta_load()
 {
@@ -292,12 +280,11 @@ void cmd_meta_load()
 #ifdef _WIN32
 		META_CONS("      name.dll");
 		META_CONS("      name_mm.dll");
-		META_CONS("      mm_name.dll");
 #else
 		META_CONS("      name.so");
 		META_CONS("      name_mm.so");
-		META_CONS("      name_MM.so");
-		META_CONS("      mm_name.so");
+		META_CONS("      name_mm_i386.so");
+		META_CONS("      ...etc");
 #endif
 
 		META_CONS("   in a number of directories, including:");
@@ -339,8 +326,6 @@ void cmd_doplug(PLUG_CMD pcmd)
 
 		if (*arg && !*endptr)
 			findp = g_plugins->find(pindex);
-
-		// else try to match some string (prefix)
 		else
 			findp = g_plugins->find_match(arg, unique);
 

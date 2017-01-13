@@ -2,7 +2,12 @@
 
 MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin->m_index), m_status(RG_VALID)
 {
-	m_name = _strdup(cmd_name);
+	m_name = Q_strdup(cmd_name);
+}
+
+MRegCmd::~MRegCmd()
+{
+	Q_free(m_name);
 }
 
 bool MRegCmd::call() const
@@ -30,6 +35,13 @@ REG_CMD_FN MRegCmd::gethandler() const
 
 MRegCmdList::MRegCmdList() : m_list()
 {
+}
+
+MRegCmdList::~MRegCmdList()
+{
+	for (auto reg : m_list) {
+		delete reg;
+	}
 }
 
 MRegCmd *MRegCmdList::find(const char *name) const
@@ -139,12 +151,19 @@ void MRegCmdList::show(int plugin_id) const
 
 MRegCvar::MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin) : m_cvar(cv_ptr), m_plugid(cv_plugin->m_index), m_status(RG_VALID)
 {
-	m_cvar = g_static_allocator.allocate<cvar_t>();
-	m_cvar->name = _strdup(cv_ptr->name);
-	m_cvar->string = _strdup(cv_ptr->string);
+	m_cvar = new cvar_t;
+	m_cvar->name = Q_strdup(cv_ptr->name);
+	m_cvar->string = Q_strdup(cv_ptr->string);
 	m_cvar->flags = cv_ptr->flags;
 	m_cvar->value = cv_ptr->value;
 	m_cvar->next = cv_ptr->next;
+}
+
+MRegCvar::~MRegCvar()
+{
+	Q_free((void *)m_cvar->name);
+	Q_free(m_cvar->string);
+	delete m_cvar;
 }
 
 cvar_t* MRegCvar::getcvar() const
@@ -157,9 +176,16 @@ MRegCvarList::MRegCvarList() : m_list()
 {
 }
 
+MRegCvarList::~MRegCvarList()
+{
+	for (auto reg : m_list) {
+		delete reg;
+	}
+}
+
 MRegCvar *MRegCvarList::add(cvar_t* src, MPlugin* plugin)
 {
-	MRegCvar *reg_cvar = new(g_static_allocator.allocate<MRegCvar>()) MRegCvar(src, plugin);
+	MRegCvar *reg_cvar = new MRegCvar(src, plugin);
 	m_list.push_back(reg_cvar);
 	return reg_cvar;
 }
@@ -270,12 +296,19 @@ MRegMsgList::MRegMsgList() : m_list()
 {
 }
 
+MRegMsgList::~MRegMsgList()
+{
+	for (auto reg : m_list) {
+		delete reg;
+	}
+}
+
 MRegMsg *MRegMsgList::add(const char *addname, int addmsgid, int addsize)
 {
 	// Copy msg data into empty slot.
 	// Note: 'addname' assumed to be a constant string allocated in the
 	// gamedll.
-	auto msg = new(g_static_allocator.allocate<MRegMsg>()) MRegMsg(addname, addmsgid, addsize);
+	auto msg = new MRegMsg(addname, addmsgid, addsize);
 	m_list.push_back(msg);
 	return msg;
 }

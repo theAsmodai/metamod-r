@@ -5,7 +5,6 @@
 #include "mreg.h"			// MRegCmdList, etc
 #include "conf_meta.h"			// MConfig
 #include "osdep.h"			// NAME_MAX, etc
-#include "types_meta.h"			// bool
 #include "mplayer.h"                    // MPlayerList
 #include "meta_eiface.h"		// HL_enginefuncs_t, meta_enginefuncs_t
 #include "engine_t.h"          		// engine_t, Engine
@@ -25,7 +24,7 @@
 #define CONFIG_INI			"addons/metamod/config.ini"
 
 // cvar to contain version
-extern cvar_t meta_version;
+extern cvar_t g_meta_version;
 
 // Info about the game dll/mod.
 struct gamedll_t
@@ -40,7 +39,7 @@ struct gamedll_t
 	gamedll_funcs_t funcs;		// dllapi_table, newapi_table
 };
 
-extern gamedll_t GameDLL;
+extern gamedll_t g_GameDLL;
 
 // SDK variables for storing engine funcs and globals.
 extern HL_enginefuncs_t g_engfuncs;
@@ -85,10 +84,10 @@ extern NEW_DLL_FUNCTIONS *pHookedNewDllFunctions;
 //  metamod assumed that g_metaGlobals is free to be used.
 //  With call_count we can fix this by backuping up g_metaGlobals if
 //  it's already being used.
-extern unsigned int CALL_API_count;
+extern unsigned int g_CALL_API_count;
 
 // stores previous requestid counter
-extern int requestid_counter;
+extern int g_requestid_counter;
 
 // (patch by BAILOPAN)
 // Holds cached player info, right now only things for querying cvars

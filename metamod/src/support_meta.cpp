@@ -2,9 +2,8 @@
 
 void __declspec(noreturn) do_exit(int exitval)
 {
-	//TerminateProcess(GetCurrentProcess(), 1);
-	*((int *)NULL) = 0;
-	while (true);
+	//Allahu Akbar!!
+	*((int *)nullptr) = 0;
 }
 
 // Checks for a non-empty file, relative to the gamedir if necessary.
@@ -31,7 +30,7 @@ int valid_gamedir_file(const char* path)
 		buf[sizeof buf - 1] = '\0';
 	}
 	else
-		snprintf(buf, sizeof buf, "%s/%s", GameDLL.gamedir, path);
+		snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
 
 	int ret = stat(buf, &st);
 	if (ret != 0)
@@ -76,7 +75,7 @@ char* full_gamedir_path(const char* path, char* fullpath)
 		Q_strncpy(buf, path, sizeof buf - 1);
 		buf[sizeof buf - 1] = '\0';
 	}
-	else snprintf(buf, sizeof buf, "%s/%s", GameDLL.gamedir, path);
+	else snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
 
 	// Remove relative path components, if possible.
 	if (!realpath(buf, fullpath))

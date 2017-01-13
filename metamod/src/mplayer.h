@@ -1,7 +1,5 @@
 #pragma once
 
-#include "types_meta.h"
-
 // Info on an individual player
 class MPlayer
 {
@@ -13,8 +11,8 @@ public:
 	const char *is_querying_cvar() const;			// check if a player is querying a cvar. returns
 
 private:
-	bool isQueried;					// is this player currently queried for a cvar value
-	char cvarName[64];					// name of the cvar if getting queried
+	bool m_isQueried;					// is this player currently queried for a cvar value
+	char g_cvarName[64];					// name of the cvar if getting queried
 };
 
 // A list of players. The number of max players is fixed and small enough
@@ -28,6 +26,6 @@ public:
 	const char *is_querying_cvar(const edict_t *pEntity) const;
 
 private:
-	int maxplayers = 32;
-	MPlayer players[MAX_CLIENTS + 1];		// array of players
+	int m_maxplayers = 32;
+	MPlayer m_players[MAX_CLIENTS + 1];		// array of players
 };

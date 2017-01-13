@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-MPlayer::MPlayer() : isQueried(false)
+MPlayer::MPlayer() : m_isQueried(false)
 {
 }
 
@@ -17,16 +17,16 @@ void MPlayer::set_cvar_query(const char *cvar)
 		return;
 	}
 
-	isQueried = true;
-	Q_strncpy(cvarName, cvar, sizeof cvarName - 1);
-	cvarName[sizeof cvarName - 1] = '\0';
+	m_isQueried = true;
+	Q_strncpy(g_cvarName, cvar, sizeof g_cvarName - 1);
+	g_cvarName[sizeof g_cvarName - 1] = '\0';
 }
 
 // Unmark player as querying a client cvar
 void MPlayer::clear_cvar_query(const char *cvar)
 {
-	isQueried = false;
-	cvarName[0] = '\0';
+	m_isQueried = false;
+	g_cvarName[0] = '\0';
 }
 
 // Check if a client cvar is queried for this player
@@ -34,9 +34,9 @@ void MPlayer::clear_cvar_query(const char *cvar)
 // or the name of the cvar.
 const char *MPlayer::is_querying_cvar(void) const
 {
-	if (isQueried)
+	if (m_isQueried)
 	{
-		return cvarName;
+		return g_cvarName;
 	}
 
 	return nullptr;
@@ -49,7 +49,7 @@ void MPlayerList::set_player_cvar_query(const edict_t *pEntity, const char *cvar
 {
 	int indx = ENTINDEX(pEntity);
 	if (indx >= 1 && indx <= gpGlobals->maxClients)
-		players[indx].set_cvar_query(cvar);
+		m_players[indx].set_cvar_query(cvar);
 }
 
 // Unmark player as querying a client cvar
@@ -57,14 +57,14 @@ void MPlayerList::clear_player_cvar_query(const edict_t *pEntity, const char *cv
 {
 	int indx = ENTINDEX(pEntity);
 	if (indx >= 1 && indx <= gpGlobals->maxClients)
-		players[indx].clear_cvar_query(cvar);
+		m_players[indx].clear_cvar_query(cvar);
 }
 
 void MPlayerList::clear_all_cvar_queries(void)
 {
 	for (int indx = 1; indx <= gpGlobals->maxClients; indx++)
 	{
-		players[indx].clear_cvar_query();
+		m_players[indx].clear_cvar_query();
 	}
 }
 
@@ -77,7 +77,7 @@ const char *MPlayerList::is_querying_cvar(const edict_t *pEntity) const
 {
 	int indx = ENTINDEX(pEntity);
 	if (indx >= 1 && indx <= gpGlobals->maxClients)
-		return players[indx].is_querying_cvar();
+		return m_players[indx].is_querying_cvar();
 
 	return NULL;
 }

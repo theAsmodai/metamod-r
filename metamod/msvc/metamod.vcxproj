@@ -137,7 +137,8 @@
       <OmitFramePointers>true</OmitFramePointers>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <SDLCheck>false</SDLCheck>
+      <SDLCheck>
+      </SDLCheck>
     </ClCompile>
     <Link>
       <OutputFile>.\release/metamod.dll</OutputFile>
@@ -246,7 +247,6 @@
     <ClInclude Include="..\src\sdk_util.h" />
     <ClInclude Include="..\src\studioapi.h" />
     <ClInclude Include="..\src\support_meta.h" />
-    <ClInclude Include="..\src\types_meta.h" />
     <ClInclude Include="..\src\utils.h" />
   </ItemGroup>
   <ItemGroup>

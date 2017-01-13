@@ -43,8 +43,6 @@ private:
 	memory_protection m_protection;
 };
 
-extern static_allocator g_static_allocator;
-
 bool is_yes(const char* str);
 bool is_no(const char* str);
 

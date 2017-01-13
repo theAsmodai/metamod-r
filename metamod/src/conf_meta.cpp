@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-MConfig::MConfig() : debuglevel(0), plugins_file(nullptr), exec_cfg(nullptr), list(nullptr), filename(nullptr)
+MConfig::MConfig() : m_debuglevel(0), m_plugins_file(nullptr), m_exec_cfg(nullptr), m_list(nullptr), m_filename(nullptr)
 {
 }
 
@@ -8,14 +8,14 @@ MConfig::MConfig() : debuglevel(0), plugins_file(nullptr), exec_cfg(nullptr), li
 // _after_ constructor, so that all the fields are allocated (d'oh).
 void MConfig::init(option_t* global_options)
 {
-	list = global_options;
-	for (auto optp = list; optp->name; optp++)
+	m_list = global_options;
+	for (auto optp = m_list; optp->name; optp++)
 		set(optp, optp->init);
 }
 
 option_t *MConfig::find(const char* lookup) const
 {
-	for (auto optp = list; optp->name; optp++)
+	for (auto optp = m_list; optp->name; optp++)
 	{
 		if (!strcmp(optp->name, lookup)) {
 			return optp;
@@ -145,16 +145,16 @@ bool MConfig::load(const char* fn)
 		}
 	}
 
-	filename = Q_strdup(loadfile);
+	m_filename = Q_strdup(loadfile);
 	fclose(fp);
 	return true;
 }
 
 void MConfig::show() const
 {
-	META_CONS("Config options from localinfo and %s:", filename);
+	META_CONS("Config options from localinfo and %s:", m_filename);
 
-	for (auto optp = list; optp->name; optp++)
+	for (auto optp = m_list; optp->name; optp++)
 	{
 		int *optval = (int *)optp->dest;
 		char **optstr = (char **)optp->dest;

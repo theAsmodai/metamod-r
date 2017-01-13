@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-static_allocator g_static_allocator(static_allocator::mp_readwrite);
-
 bool is_yes(const char* str)
 {
 	return !Q_strcmp(str, "true") || !Q_strcmp(str, "yes") || !Q_strcmp(str, "1");

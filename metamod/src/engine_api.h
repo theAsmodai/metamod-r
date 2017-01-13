@@ -1,9 +1,9 @@
 #pragma once
 
-#include <archtypes.h>
+struct enginefuncs_s;
 
 // Plugin's GetEngineFunctions, called by metamod.
-typedef int (*GET_ENGINE_FUNCTIONS_FN)(enginefuncs_t *pengfuncsFromEngine, int *interfaceVersion);
+typedef int (*GET_ENGINE_FUNCTIONS_FN)(enginefuncs_s *pengfuncsFromEngine, int *interfaceVersion);
 
 // According to SDK engine/eiface.h:
 // ONLY ADD NEW FUNCTIONS TO THE END OF THIS STRUCT. INTERFACE VERSION IS FROZEN AT 138
@@ -13,7 +13,7 @@ typedef int (*GET_ENGINE_FUNCTIONS_FN)(enginefuncs_t *pengfuncsFromEngine, int *
 // normal enginefuncs_t type for their meta_engfuncs.
 #ifdef METAMOD_CORE
 	#include "meta_eiface.h"	// meta_enginefuncs_t
-	extern meta_enginefuncs_t meta_engfuncs;
+	extern meta_enginefuncs_t g_meta_engfuncs;
 #else
 	extern enginefuncs_t meta_engfuncs;
 #endif

@@ -25,6 +25,7 @@ class MRegCmd
 {
 public:
 	MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
+	~MRegCmd();
 	bool call() const;			// try to call the function
 	void disable();
 	char* getname() const;
@@ -44,6 +45,7 @@ class MRegCmdList
 {
 public:
 	MRegCmdList();
+	~MRegCmdList();
 	MRegCmd *find(const char *name) const;
 	MRegCmd *add(char *name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
 	void remove(char* cmd_name);
@@ -60,6 +62,7 @@ class MRegCvar
 {
 public:
 	MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin);
+	~MRegCvar();
 	cvar_t* getcvar() const;
 
 private:
@@ -75,6 +78,7 @@ class MRegCvarList
 {
 public:
 	MRegCvarList();
+	~MRegCvarList();
 	MRegCvar *add(cvar_t* src, MPlugin* plugin);
 	MRegCvar *find(const char *findname);		// find by MRegCvar->data.name
 	void disable(int plugin_id) const;			// change status to Invalid
@@ -107,6 +111,7 @@ class MRegMsgList
 {
 public:
 	MRegMsgList();
+	~MRegMsgList();
 	MRegMsg *add(const char *addname, int addmsgid, int addsize);
 	MRegMsg *find(const char *findname);
 	MRegMsg *find(int findmsgid);

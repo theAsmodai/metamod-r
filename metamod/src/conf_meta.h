@@ -1,7 +1,5 @@
 #pragma once
 
-#include "types_meta.h"
-
 // Max length of line in config file.
 #define MAX_CONF_LEN	1024
 
@@ -23,22 +21,23 @@ struct option_t
 	char *init;		// initial value, as a string, just as config file would
 };
 
-class MConfig {
+class MConfig
+{
 public:
 	MConfig();
-
-	int debuglevel;		// to use for meta_debug
-	char *plugins_file;	// ie metamod.ini, plugins.ini
-	char *exec_cfg;		// ie metaexec.cfg, exec.cfg
 
 	void init(option_t *global_options);
 	bool load(const char *filename);
 	bool set(const char *key, const char *value) const;
 	void show() const;
 
+	int m_debuglevel;		// to use for meta_debug
+	char *m_plugins_file;	// ie metamod.ini, plugins.ini
+	char *m_exec_cfg;		// ie metaexec.cfg, exec.cfg
+
 private:
-	option_t *list;
-	char *filename;
+	option_t *m_list;
+	char *m_filename;
 
 	option_t *find(const char *lookup) const;
 	static bool set(option_t *setp, const char *value);

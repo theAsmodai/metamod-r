@@ -50,7 +50,7 @@ void EXT_FUNC mm_ServerDeactivate(void)
 	g_plugins->unpause_all();
 	// g_plugins->retry_all(PT_CHANGELEVEL);
 	g_players.clear_all_cvar_queries();
-	requestid_counter = 0;
+	g_requestid_counter = 0;
 
 	/* RETURN TO ENGINE */
 }
@@ -221,7 +221,7 @@ void compile_dllfunc_callbacks()
 	jitdata.post_table_offset = offsetof(MPlugin, m_dllapi_post_table);
 
 	for (auto& cd : g_dllfunc_cdata) {
-		jitdata.pfn_original = *(size_t *)(size_t(GameDLL.funcs.dllapi_table) + cd.offset);
+		jitdata.pfn_original = *(size_t *)(size_t(g_GameDLL.funcs.dllapi_table) + cd.offset);
 		jitdata.args_count = cd.args_count;
 		jitdata.has_ret = cd.has_ret;
 		jitdata.has_varargs = cd.has_varargs;
@@ -242,7 +242,7 @@ void compile_newdllfunc_callbacks()
 	jitdata.post_table_offset = offsetof(MPlugin, m_newapi_post_table);
 
 	for (auto& cd : g_newdllfunc_cdata) {
-		jitdata.pfn_original = *(size_t *)(size_t(GameDLL.funcs.newapi_table) + cd.offset);
+		jitdata.pfn_original = *(size_t *)(size_t(g_GameDLL.funcs.newapi_table) + cd.offset);
 		jitdata.args_count = cd.args_count;
 		jitdata.has_ret = cd.has_ret;
 		jitdata.has_varargs = cd.has_varargs;

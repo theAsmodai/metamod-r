@@ -48,7 +48,7 @@ struct mutil_funcs_t
 #endif
 };
 
-extern mutil_funcs_t MetaUtilFunctions;
+extern mutil_funcs_t g_MetaUtilFunctions;
 
 // Meta Utility Functions
 void mutil_LogConsole(plid_t plid, const char *fmt, ...);
@@ -70,16 +70,6 @@ const char *mutil_IsQueryingClientCvar(plid_t plid, const edict_t *pEdict);
 int mutil_MakeRequestId(plid_t plid);
 void mutil_GetHookTables(plid_t plid, enginefuncs_t **peng, DLL_FUNCTIONS **pdll, NEW_DLL_FUNCTIONS **pnewdll);
 
-#ifdef UNFINISHED
-int mutil_HookGameEvent(plid_t plid, game_event_t event, event_func_t pfnHandle);
-int mutil_HookLogTrigger(plid_t plid, const char *trigger, logmatch_func_t pfnHandle);
-int mutil_HookLogString(plid_t plid, const char *string, logmatch_func_t pfnHandle);
-int mutil_HookLogRegex(plid_t plid, const char *pattern, logmatch_func_t pfnHandle);
-
-qboolean mutil_RemoveHookID(plid_t plid, int hookid);
-int mutil_RemoveHookAll(plid_t plid);
-#endif
-
 // Convenience macros for MetaUtil functions
 #define LOG_CONSOLE			(*gpMetaUtilFuncs->pfnLogConsole)
 #define LOG_MESSAGE			(*gpMetaUtilFuncs->pfnLogMessage)
@@ -99,12 +89,3 @@ int mutil_RemoveHookAll(plid_t plid);
 #define IS_QUERYING_CLIENT_CVAR (*gpMetaUtilFuncs->pfnIsQueryingClientCvar)
 #define MAKE_REQUESTID		(*gpMetaUtilFuncs->pfnMakeRequestId)
 #define GET_HOOK_TABLES		(*gpMetaUtilFuncs->pfnGetHookTables)
-
-#ifdef UNFINISHED
-#define HOOK_GAME_EVENT		(*gpMetaUtilFuncs->pfnHookGameEvent)
-#define HOOK_LOG_TRIGGER	(*gpMetaUtilFuncs->pfnHookLogTrigger)
-#define HOOK_LOG_STRING		(*gpMetaUtilFuncs->pfnHookLogString)
-#define HOOK_LOG_REGEX		(*gpMetaUtilFuncs->pfnHookLogRegex)
-#define REMOVE_HOOK_ID		(*gpMetaUtilFuncs->pfnRemoveHookID)
-#define REMOVE_HOOK_ALL		(*gpMetaUtilFuncs->pfnRemoveHookAll)
-#endif

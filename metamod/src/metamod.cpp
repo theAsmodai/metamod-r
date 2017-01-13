@@ -1,20 +1,20 @@
 #include "precompiled.h"
 
-cvar_t meta_version = { "metamod_version", APP_VERSION_STRD, FCVAR_SERVER, 0, nullptr };
+cvar_t g_meta_version = { "metamod_version", APP_VERSION_STRD, FCVAR_SERVER, 0, nullptr };
 
-MConfig static_config;
-MConfig *g_config = &static_config;
-option_t global_options[] =
+MConfig g_static_config;
+MConfig *g_config = &g_static_config;
+option_t g_global_options[] =
 {
-	{ "debuglevel", CF_INT, &g_config->debuglevel, "0" },
-	{ "plugins_file", CF_PATH, &g_config->plugins_file, PLUGINS_INI },
-	{ "exec_cfg", CF_STR, &g_config->exec_cfg, EXEC_CFG },
+	{ "debuglevel", CF_INT, &g_config->m_debuglevel, "0" },
+	{ "plugins_file", CF_PATH, &g_config->m_plugins_file, PLUGINS_INI },
+	{ "exec_cfg", CF_STR, &g_config->m_exec_cfg, EXEC_CFG },
 
 	// list terminator
 	{ NULL, CF_NONE, NULL, NULL }
 };
 
-gamedll_t GameDLL;
+gamedll_t g_GameDLL;
 
 meta_globals_t g_metaGlobals;
 
@@ -27,9 +27,9 @@ MRegMsgList *g_regMsgs;
 
 MPlayerList g_players;
 
-unsigned int CALL_API_count = 0;
+unsigned int g_CALL_API_count = 0;
 
-int requestid_counter = 0;
+int g_requestid_counter = 0;
 
 // Very first metamod function that's run.
 // Do startup operations...
@@ -65,11 +65,11 @@ void metamod_startup()
 
 	// Set a slight debug level for developer mode, if debug level not
 	// already set.
-	if ((int) CVAR_GET_FLOAT("developer") != 0 && meta_debug.value == 0)
+	if ((int) CVAR_GET_FLOAT("developer") != 0 && g_meta_debug.value == 0)
 		CVAR_SET_FLOAT("meta_debug", 3.0);
 
 	// Init default values
-	g_config->init(global_options);
+	g_config->init(g_global_options);
 
 	// Find config file
 	cfile = CONFIG_INI;
@@ -111,8 +111,8 @@ void metamod_startup()
 
 	// Check for an initial debug level, since cfg files don't get exec'd
 	// until later.
-	if (g_config->debuglevel != 0)
-		CVAR_SET_FLOAT("meta_debug", g_config->debuglevel);
+	if (g_config->m_debuglevel != 0)
+		CVAR_SET_FLOAT("meta_debug", g_config->m_debuglevel);
 
 	// Prepare for registered commands from plugins.
 	g_regCmds = new MRegCmdList();
@@ -162,10 +162,10 @@ void metamod_startup()
 
 	if (!valid_gamedir_file(PLUGINS_INI) && valid_gamedir_file(OLD_PLUGINS_INI))
 		mmfile = OLD_PLUGINS_INI;
-	if (valid_gamedir_file(g_config->plugins_file))
-		mmfile = g_config->plugins_file;
+	if (valid_gamedir_file(g_config->m_plugins_file))
+		mmfile = g_config->m_plugins_file;
 	else
-		META_ERROR("g_plugins file is empty/missing: %s; falling back to %s", g_config->plugins_file, mmfile);
+		META_ERROR("g_plugins file is empty/missing: %s; falling back to %s", g_config->m_plugins_file, mmfile);
 
 	g_plugins = new MPluginList(mmfile);
 
@@ -189,8 +189,8 @@ void metamod_startup()
 	// Only attempt load if the file appears to exist and be non-empty, to
 	// avoid confusing users with "couldn't exec exec.cfg" console
 	// messages.
-	if (valid_gamedir_file(g_config->exec_cfg))
-		mmfile = g_config->exec_cfg;
+	if (valid_gamedir_file(g_config->m_exec_cfg))
+		mmfile = g_config->m_exec_cfg;
 
 	else if (valid_gamedir_file(OLD_EXEC_CFG))
 		mmfile = OLD_EXEC_CFG;
@@ -219,7 +219,7 @@ bool meta_init_gamedll(void)
 	char gamedir[PATH_MAX];
 	char *cp;
 
-	Q_memset(&GameDLL, 0, sizeof(GameDLL));
+	Q_memset(&g_GameDLL, 0, sizeof(g_GameDLL));
 
 	GET_GAME_DIR(gamedir);
 	normalize_pathname(gamedir);
@@ -239,13 +239,13 @@ bool meta_init_gamedll(void)
 		// Old style; GET_GAME_DIR returned full pathname.  Copy this into
 		// our gamedir, and truncate to get the game name.
 		// (note check for both linux and win32 full pathname.)
-		Q_strncpy(GameDLL.gamedir, gamedir, sizeof GameDLL.gamedir - 1);
-		GameDLL.gamedir[sizeof GameDLL.gamedir - 1] = '\0';
+		Q_strncpy(g_GameDLL.gamedir, gamedir, sizeof g_GameDLL.gamedir - 1);
+		g_GameDLL.gamedir[sizeof g_GameDLL.gamedir - 1] = '\0';
 
 		cp = Q_strrchr(gamedir, '/') + 1;
 
-		Q_strncpy(GameDLL.name, cp, sizeof GameDLL.name - 1);
-		GameDLL.name[sizeof GameDLL.name - 1] = '\0';
+		Q_strncpy(g_GameDLL.name, cp, sizeof g_GameDLL.name - 1);
+		g_GameDLL.name[sizeof g_GameDLL.name - 1] = '\0';
 	}
 	else
 	{
@@ -258,12 +258,12 @@ bool meta_init_gamedll(void)
 			return false;
 		}
 
-		Q_snprintf(GameDLL.gamedir, sizeof GameDLL.gamedir, "%s/%s", buf, gamedir);
-		Q_strncpy(GameDLL.name, gamedir, sizeof GameDLL.name - 1);
-		GameDLL.name[sizeof(GameDLL.name) - 1] = '\0';
+		Q_snprintf(g_GameDLL.gamedir, sizeof g_GameDLL.gamedir, "%s/%s", buf, gamedir);
+		Q_strncpy(g_GameDLL.name, gamedir, sizeof g_GameDLL.name - 1);
+		g_GameDLL.name[sizeof(g_GameDLL.name) - 1] = '\0';
 	}
 
-	META_DEBUG(3, "Game: %s", GameDLL.name);
+	META_DEBUG(3, "Game: %s", g_GameDLL.name);
 	return true;
 }
 
@@ -272,7 +272,7 @@ bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size
 {
 	typedef int(*getfunc_t)(table_t *pFunctionTable, ifvers_t interfaceVersion);
 
-	auto pfnGetFuncs = (getfunc_t)GameDLL.sys_module.getsym(ifname);
+	auto pfnGetFuncs = (getfunc_t)g_GameDLL.sys_module.getsym(ifname);
 
 	if (pfnGetFuncs) {
 		table = (table_t *)Q_calloc(1, table_size);
@@ -280,11 +280,11 @@ bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size
 		int ifvers_gamedll = ifvers_mm;
 
 		if (pfnGetFuncs(table, ifvers_gamedll)) {
-			META_DEBUG(3, "dll: Game '%s': Found %s", GameDLL.name, ifname);
+			META_DEBUG(3, "dll: Game '%s': Found %s", g_GameDLL.name, ifname);
 			return true;
 		}
 
-		META_ERROR("dll: Failure calling %s in game '%s'", ifname, GameDLL.name);
+		META_ERROR("dll: Failure calling %s in game '%s'", ifname, g_GameDLL.name);
 		Q_free(table);
 		table = nullptr;
 
@@ -296,13 +296,13 @@ bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size
 			if (ifvers_gamedll > ifvers_mm)
 				META_CONS("g_engine appears to be outdated, check for updates");
 			else
-				META_CONS("The game DLL for %s appears to be outdated, check for updates", GameDLL.name);
+				META_CONS("The game DLL for %s appears to be outdated, check for updates", g_GameDLL.name);
 			META_CONS("==================");
 			ALERT(at_error, "Exiting...\n");
 		}
 	}
 	else {
-		META_DEBUG(5, "dll: Game '%s': No %s", GameDLL.name, ifname);
+		META_DEBUG(5, "dll: Game '%s': No %s", g_GameDLL.name, ifname);
 		table = nullptr;
 	}
 
@@ -314,22 +314,22 @@ bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, 
 {
 	typedef int (*getfunc_t)(table_t *pFunctionTable, int interfaceVersion);
 
-	auto pfnGetFuncs = (getfunc_t)GameDLL.sys_module.getsym(ifname);
+	auto pfnGetFuncs = (getfunc_t)g_GameDLL.sys_module.getsym(ifname);
 
 	if (pfnGetFuncs) {
 		table = (table_t *)Q_calloc(1, table_size);
 
 		if (pfnGetFuncs(table, ifvers_mm)) {
-			META_DEBUG(3, "dll: Game '%s': Found %s", GameDLL.name, ifname);
+			META_DEBUG(3, "dll: Game '%s': Found %s", g_GameDLL.name, ifname);
 			return true;
 		}
 
-		META_ERROR("dll: Failure calling %s in game '%s'", ifname, GameDLL.name);
+		META_ERROR("dll: Failure calling %s in game '%s'", ifname, g_GameDLL.name);
 		Q_free(table);
 		table = nullptr;
 	}
 	else {
-		META_DEBUG(5, "dll: Game '%s': No %s", GameDLL.name, ifname);
+		META_DEBUG(5, "dll: Game '%s': No %s", g_GameDLL.name, ifname);
 		table = nullptr;
 	}
 
@@ -343,17 +343,17 @@ bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, 
 //                	(GiveFnptrsToDll, GetEntityAPI, GetEntityAPI2)
 bool meta_load_gamedll(void)
 {
-	if (!setup_gamedll(&GameDLL))
+	if (!setup_gamedll(&g_GameDLL))
 	{
-		META_ERROR("dll: Unrecognized game: %s", GameDLL.name);
+		META_ERROR("dll: Unrecognized game: %s", g_GameDLL.name);
 		// meta_errno should be already set in lookup_game()
 		return false;
 	}
 
 	// open the game DLL
-	if (!GameDLL.sys_module.load(GameDLL.pathname))
+	if (!g_GameDLL.sys_module.load(g_GameDLL.pathname))
 	{
-		META_ERROR("dll: Couldn't load game DLL %s: %s", GameDLL.pathname, CSysModule::getloaderror());
+		META_ERROR("dll: Couldn't load game DLL %s: %s", g_GameDLL.pathname, CSysModule::getloaderror());
 		return false;
 	}
 
@@ -364,41 +364,41 @@ bool meta_load_gamedll(void)
 	// wanted to catch one of the functions, but now that plugins are
 	// dynamically loadable at any time, we have to always pass our table,
 	// so that any plugin loaded later can catch what they need to.
-	auto pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN)GameDLL.sys_module.getsym("GiveFnptrsToDll");
+	auto pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN)g_GameDLL.sys_module.getsym("GiveFnptrsToDll");
 	
 	if (pfn_give_engfuncs)
 	{
-		pfn_give_engfuncs(&meta_engfuncs, gpGlobals);
-		META_DEBUG(3, "dll: Game '%s': Called GiveFnptrsToDll", GameDLL.name);
+		pfn_give_engfuncs(&g_meta_engfuncs, gpGlobals);
+		META_DEBUG(3, "dll: Game '%s': Called GiveFnptrsToDll", g_GameDLL.name);
 	}
 	else
 	{
-		META_ERROR("dll: Couldn't find GiveFnptrsToDll() in game DLL '%s'", GameDLL.name);
+		META_ERROR("dll: Couldn't find GiveFnptrsToDll() in game DLL '%s'", g_GameDLL.name);
 		return false;
 	}
 
 	// Look for API-NEW interface in Game dll.  We do this before API2/API, because
 	// that's what the engine appears to do..
-	get_function_table<int&>("GetNewDLLFunctions", NEW_DLL_FUNCTIONS_VERSION, GameDLL.funcs.newapi_table);
+	get_function_table<int&>("GetNewDLLFunctions", NEW_DLL_FUNCTIONS_VERSION, g_GameDLL.funcs.newapi_table);
 
 	// Look for API2 interface in plugin; preferred over API-1.
-	bool found = get_function_table<int&>("GetEntityAPI2", INTERFACE_VERSION, GameDLL.funcs.dllapi_table);
+	bool found = get_function_table<int&>("GetEntityAPI2", INTERFACE_VERSION, g_GameDLL.funcs.dllapi_table);
 
 	// Look for API-1 in plugin, if API2 interface wasn't found.
 	if (!found) {
-		found = get_function_table_old("GetEntityAPI", INTERFACE_VERSION, GameDLL.funcs.dllapi_table);
+		found = get_function_table_old("GetEntityAPI", INTERFACE_VERSION, g_GameDLL.funcs.dllapi_table);
 	}
 
 	// If didn't find either, return failure.
 	if (!found) {
-		META_ERROR("dll: Couldn't find either GetEntityAPI nor GetEntityAPI2 in game DLL '%s'", GameDLL.name);
+		META_ERROR("dll: Couldn't find either GetEntityAPI nor GetEntityAPI2 in game DLL '%s'", g_GameDLL.name);
 		return false;
 	}
 
 	// prepare gamedll callbacks
 	compile_gamedll_callbacks();
 
-	META_LOG("Game DLL for '%s' loaded successfully", GameDLL.desc);
+	META_LOG("Game DLL for '%s' loaded successfully", g_GameDLL.desc);
 	return true;
 }
 

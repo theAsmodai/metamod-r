@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-cvar_t meta_debug = { "meta_debug", "0", FCVAR_EXTDLL , 0, nullptr };
+cvar_t g_meta_debug = { "meta_debug", "0", FCVAR_EXTDLL , 0, nullptr };
 
 enum MLOG_SERVICE
 {
@@ -108,8 +108,8 @@ struct BufferedMessage
 	BufferedMessage *next;
 };
 
-static BufferedMessage *messageQueueStart = nullptr;
-static BufferedMessage *messageQueueEnd = nullptr;
+static BufferedMessage *g_messageQueueStart = nullptr;
+static BufferedMessage *g_messageQueueEnd = nullptr;
 
 void buffered_ALERT(MLOG_SERVICE service, ALERT_TYPE atype, const char *prefix, const char *fmt, va_list ap)
 {
@@ -136,14 +136,14 @@ void buffered_ALERT(MLOG_SERVICE service, ALERT_TYPE atype, const char *prefix, 
 	Q_vsnprintf(msg->buf, sizeof buf, fmt, ap);
 	msg->next = nullptr;
 
-	if (!messageQueueEnd)
+	if (!g_messageQueueEnd)
 	{
-		messageQueueStart = messageQueueEnd = msg;
+		g_messageQueueStart = g_messageQueueEnd = msg;
 	}
 	else
 	{
-		messageQueueEnd->next = msg;
-		messageQueueEnd = msg;
+		g_messageQueueEnd->next = msg;
+		g_messageQueueEnd = msg;
 	}
 }
 
@@ -153,7 +153,7 @@ void buffered_ALERT(MLOG_SERVICE service, ALERT_TYPE atype, const char *prefix, 
 // jumptable is set. Don't call it if it isn't set.
 void flush_ALERT_buffer(void)
 {
-	BufferedMessage *msg = messageQueueStart;
+	BufferedMessage *msg = g_messageQueueStart;
 	int dev = (int)CVAR_GET_FLOAT("developer");
 
 	while (msg)
@@ -166,10 +166,10 @@ void flush_ALERT_buffer(void)
 			ALERT(msg->atype, "b>%s %s\n", msg->prefix, msg->buf);
 		}
 
-		messageQueueStart = messageQueueStart->next;
+		g_messageQueueStart = g_messageQueueStart->next;
 		delete msg;
-		msg = messageQueueStart;
+		msg = g_messageQueueStart;
 	}
 
-	messageQueueStart = messageQueueEnd = nullptr;
+	g_messageQueueStart = g_messageQueueEnd = nullptr;
 }

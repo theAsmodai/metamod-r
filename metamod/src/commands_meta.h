@@ -1,7 +1,5 @@
 #pragma once
 
-#include "types_meta.h"
-
 // Flags to use for meta_cmd_doplug(), to operate on existing plugins; note
 // "load" operates on a non-existing plugin thus isn't included here.
 enum PLUG_CMD

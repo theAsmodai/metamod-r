@@ -253,6 +253,6 @@ struct engine_info_t
 	api_info_t END;
 };
 
-extern dllapi_info_t dllapi_info;
-extern newapi_info_t newapi_info;
-extern engine_info_t engine_info;
+extern dllapi_info_t g_dllapi_info;
+extern newapi_info_t g_newapi_info;
+extern engine_info_t g_engineapi_info;

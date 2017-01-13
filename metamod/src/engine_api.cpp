@@ -3,8 +3,8 @@
 #define CDATA_ENG_H(x, p, h)		CDATA_ENTRY(enginefuncs_t, x, p, size_t(h))
 #define CDATA_ENG(x)				CDATA_ENTRY(enginefuncs_t, x, P_PRE, 0u)
 
-meta_enginefuncs_t meta_engfuncs; // static trampolines to dynamic callbacks (for gamedll)
-meta_enginefuncs_t meta_engfuncs_jit; // dynamic jit callbacks
+meta_enginefuncs_t g_meta_engfuncs; // static trampolines to dynamic callbacks (for gamedll)
+meta_enginefuncs_t g_meta_engfuncs_jit; // dynamic jit callbacks
 
 void MM_PRE_HOOK mm_QueryClientCvarValue(const edict_t* pEdict, const char* cvarName)
 {
@@ -253,7 +253,7 @@ void compile_engfuncs_callbacks()
 		jitdata.mm_hook_time = cd.mm_hook_time;
 		jitdata.mm_hook = cd.mm_hook;
 
-		*(size_t *)(size_t(&meta_engfuncs_jit) + cd.offset) = g_jit.compile_callback(&jitdata);
+		*(size_t *)(size_t(&g_meta_engfuncs_jit) + cd.offset) = g_jit.compile_callback(&jitdata);
 	}
 }
 
@@ -261,7 +261,7 @@ void compile_engine_tramps()
 {
 	// we compile simple static functions that will call dynamic callbacks
 	for (auto& cd : g_engfuncs_cdata) {
-		*(size_t *)(size_t(&meta_engfuncs) + cd.offset) = g_jit.compile_tramp(size_t(&meta_engfuncs_jit) + cd.offset/*, cd.mm_hook, cd.mm_hook_time*/);
+		*(size_t *)(size_t(&g_meta_engfuncs) + cd.offset) = g_jit.compile_tramp(size_t(&g_meta_engfuncs_jit) + cd.offset/*, cd.mm_hook, cd.mm_hook_time*/);
 	}
 }
 

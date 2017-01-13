@@ -172,9 +172,6 @@
     <ClInclude Include="..\src\support_meta.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\types_meta.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\utils.h">
       <Filter>Source Files</Filter>
     </ClInclude>

@@ -40,7 +40,6 @@
 #include "meta_api.h"
 #include "mutil.h"
 #include "reg_support.h"
-#include "types_meta.h"
 #include "mlist.h"
 #include "mplugin.h"
 #include "plinfo.h"

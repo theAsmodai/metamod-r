@@ -6,7 +6,7 @@
 #define ENGAPI_ENTRY(name, loglevel)		API_ENTRY(enginefuncs_t, name, loglevel)
 
 // trace flag, loglevel, name
-dllapi_info_t dllapi_info = {
+dllapi_info_t g_dllapi_info = {
 	DLLAPI_ENTRY(GameInit, 1),		// pfnGameInit
 	DLLAPI_ENTRY(Spawn, 2),		// pfnSpawn
 	DLLAPI_ENTRY(Think, 2),		// pfnThink
@@ -61,7 +61,7 @@ dllapi_info_t dllapi_info = {
 	{ 0, "", 0 },
 };
 
-newapi_info_t newapi_info = {
+newapi_info_t g_newapi_info = {
 	NEWAPI_ENTRY(OnFreeEntPrivateData, 3),	// pfnOnFreeEntPrivateData
 	NEWAPI_ENTRY(GameShutdown, 3),		// pfnGameShutdown
 	NEWAPI_ENTRY(ShouldCollide, 3),		// pfnShouldCollide
@@ -71,7 +71,7 @@ newapi_info_t newapi_info = {
 	{ 0, "", 0 },
 };
 
-engine_info_t engine_info = {
+engine_info_t g_engineapi_info = {
 	ENGAPI_ENTRY(PrecacheModel, 2),		// pfnPrecacheModel
 	ENGAPI_ENTRY(PrecacheSound, 2),		// pfnPrecacheSound
 	ENGAPI_ENTRY(SetModel, 2),			// pfnSetModel

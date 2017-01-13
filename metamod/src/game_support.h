@@ -1,6 +1,5 @@
 #pragma once
 
-#include "types_meta.h"
 #include "metamod.h"
 
 // Information we have about each game/mod DLL.

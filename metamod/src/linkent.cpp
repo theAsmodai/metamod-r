@@ -14,12 +14,12 @@ void NOINLINE do_link_ent(ENTITY_FN *pfnEntity, int *missing, const char *entStr
 	if (!*pfnEntity)
 	{
 		META_DEBUG(9, "Looking up game entity '%s'", entStr);
-		*pfnEntity = (ENTITY_FN)GameDLL.sys_module.getsym(entStr);
+		*pfnEntity = (ENTITY_FN)g_GameDLL.sys_module.getsym(entStr);
 	}
 
 	if (!*pfnEntity)
 	{
-		META_ERROR("Couldn't find game entity '%s' in game DLL '%s': %s", entStr, GameDLL.name, CSysModule::getloaderror());
+		META_ERROR("Couldn't find game entity '%s' in game DLL '%s': %s", entStr, g_GameDLL.name, CSysModule::getloaderror());
 		*missing = 1;
 		return;
 	}

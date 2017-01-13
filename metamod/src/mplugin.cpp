@@ -281,9 +281,9 @@ bool MPlugin::resolve(void)
 		m_file = m_pathname;
 
 	// store pathname: the gamedir relative path, or an absolute path
-	size_t len = Q_strlen(GameDLL.gamedir);
+	size_t len = Q_strlen(g_GameDLL.gamedir);
 
-	if (!Q_strnicmp(m_pathname, GameDLL.gamedir, len))
+	if (!Q_strnicmp(m_pathname, g_GameDLL.gamedir, len))
 	{
 		Q_strncpy(m_filename, m_pathname + len + 1, sizeof m_filename - 1);
 		m_filename[sizeof m_filename - 1] = '\0';
@@ -306,7 +306,7 @@ char *MPlugin::resolve_dirs(char *path) const
 {
 	static char buf[PATH_MAX ];
 
-	Q_snprintf(buf, sizeof buf, "%s/%s", GameDLL.gamedir, path);
+	Q_snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
 
 	// try this path
 	struct stat st;
@@ -318,7 +318,7 @@ char *MPlugin::resolve_dirs(char *path) const
 	if (found)
 		return found;
 
-	Q_snprintf(buf, sizeof buf, "%s/dlls/%s", GameDLL.gamedir, path);
+	Q_snprintf(buf, sizeof buf, "%s/dlls/%s", g_GameDLL.gamedir, path);
 
 	// try this path
 	if (!stat(buf, &st) && S_ISREG(st.st_mode))
@@ -663,7 +663,7 @@ bool MPlugin::query(void)
 
 	// Make a copy of the meta_util function table for each plugin, for the
 	// same reason.
-	Q_memcpy(&m_mutil_funcs, &MetaUtilFunctions, sizeof m_mutil_funcs);
+	Q_memcpy(&m_mutil_funcs, &g_MetaUtilFunctions, sizeof m_mutil_funcs);
 
 	if (pfn_query(META_INTERFACE_VERSION, &m_info, &m_mutil_funcs) != TRUE)
 	{
@@ -801,7 +801,7 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 {
 	// Make copy of gameDLL's function tables for each plugin, so we don't
 	// risk the plugins screwing with the tables everyone uses.
-	if (GameDLL.funcs.dllapi_table && !m_gamedll_funcs.dllapi_table) // TODO: check it
+	if (g_GameDLL.funcs.dllapi_table && !m_gamedll_funcs.dllapi_table) // TODO: check it
 	{
 		m_gamedll_funcs.dllapi_table = (DLL_FUNCTIONS *)Q_malloc(sizeof(DLL_FUNCTIONS));
 		if (!m_gamedll_funcs.dllapi_table)
@@ -809,9 +809,9 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 			META_ERROR("dll: Failed attach plugin '%s': Failed malloc() for dllapi_table");
 			return false;
 		}
-		Q_memcpy(m_gamedll_funcs.dllapi_table, GameDLL.funcs.dllapi_table, sizeof(DLL_FUNCTIONS));
+		Q_memcpy(m_gamedll_funcs.dllapi_table, g_GameDLL.funcs.dllapi_table, sizeof(DLL_FUNCTIONS));
 	}
-	if (GameDLL.funcs.newapi_table && !m_gamedll_funcs.newapi_table)
+	if (g_GameDLL.funcs.newapi_table && !m_gamedll_funcs.newapi_table)
 	{
 		m_gamedll_funcs.newapi_table = (NEW_DLL_FUNCTIONS *)Q_calloc(1, sizeof(meta_new_dll_functions_t));
 		if (!m_gamedll_funcs.newapi_table)
@@ -819,7 +819,7 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 			META_ERROR("dll: Failed attach plugin '%s': Failed malloc() for newapi_table");
 			return false;
 		}
-		static_cast<meta_new_dll_functions_t *>(m_gamedll_funcs.newapi_table)->set_from(GameDLL.funcs.newapi_table);
+		static_cast<meta_new_dll_functions_t *>(m_gamedll_funcs.newapi_table)->set_from(g_GameDLL.funcs.newapi_table);
 	}
 	auto pfn_attach = (META_ATTACH_FN)m_sys_module.getsym("Meta_Attach");
 	if (!pfn_attach)
@@ -1210,14 +1210,14 @@ void MPlugin::show()
 	META_CONS("%*s: %s", width, "last loaded", tstr);
 	// XXX show file time ?
 
-	show_table("DLLAPI", m_dllapi_table, &dllapi_info.pfnGameInit, false);
-	show_table("DLLAPI Post", m_dllapi_post_table, &dllapi_info.pfnGameInit, true);
+	show_table("DLLAPI", m_dllapi_table, &g_dllapi_info.pfnGameInit, false);
+	show_table("DLLAPI Post", m_dllapi_post_table, &g_dllapi_info.pfnGameInit, true);
 
-	show_table("NEWAPI", m_newapi_table, &newapi_info.pfnOnFreeEntPrivateData, false);
-	show_table("NEWAPI Post", m_newapi_post_table, &newapi_info.pfnOnFreeEntPrivateData, true);
+	show_table("NEWAPI", m_newapi_table, &g_newapi_info.pfnOnFreeEntPrivateData, false);
+	show_table("NEWAPI Post", m_newapi_post_table, &g_newapi_info.pfnOnFreeEntPrivateData, true);
 
-	show_table("Engine", m_engine_table, &engine_info.pfnPrecacheModel, false);
-	show_table("Engine Post", m_engine_post_table, &engine_info.pfnPrecacheModel, true);
+	show_table("Engine", m_engine_table, &g_engineapi_info.pfnPrecacheModel, false);
+	show_table("Engine Post", m_engine_post_table, &g_engineapi_info.pfnPrecacheModel, true);
 
 	g_regCmds->show(m_index);
 	g_regCvars->show(m_index);

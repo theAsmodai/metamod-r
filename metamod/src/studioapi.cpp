@@ -44,11 +44,11 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version,
 	if (!getblend)
 	{
 		META_DEBUG(6, "Looking up Server_GetBlendingInterface");
-		getblend = (GETBLENDAPI_FN)GameDLL.sys_module.getsym("Server_GetBlendingInterface");
+		getblend = (GETBLENDAPI_FN)g_GameDLL.sys_module.getsym("Server_GetBlendingInterface");
 	}
 	if (!getblend)
 	{
-		META_DEBUG(6, "Couldn't find Server_GetBlendingInterface in game DLL '%s': %s", GameDLL.name, "function not found");
+		META_DEBUG(6, "Couldn't find Server_GetBlendingInterface in game DLL '%s': %s", g_GameDLL.name, "function not found");
 		missing = 1;
 		return 0;
 	}
