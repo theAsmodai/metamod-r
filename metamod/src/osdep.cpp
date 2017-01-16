@@ -10,7 +10,7 @@ module_handle_t CSysModule::load(const char* filepath)
 	m_handle = LoadLibrary(filepath);
 
 	MODULEINFO module_info;
-	if (GetModuleInformation(GetCurrentProcess(), m_handle, &module_info, sizeof(module_info))) {
+	if (GetModuleInformation(GetCurrentProcess(), m_handle, &module_info, sizeof module_info)) {
 		m_base = (uintptr_t)module_info.lpBaseOfDll;
 		m_size = module_info.SizeOfImage;
 	}

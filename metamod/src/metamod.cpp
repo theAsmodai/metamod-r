@@ -219,7 +219,7 @@ bool meta_init_gamedll(void)
 	char gamedir[PATH_MAX];
 	char *cp;
 
-	Q_memset(&g_GameDLL, 0, sizeof(g_GameDLL));
+	Q_memset(&g_GameDLL, 0, sizeof g_GameDLL);
 
 	GET_GAME_DIR(gamedir);
 	normalize_pathname(gamedir);
@@ -260,7 +260,7 @@ bool meta_init_gamedll(void)
 
 		Q_snprintf(g_GameDLL.gamedir, sizeof g_GameDLL.gamedir, "%s/%s", buf, gamedir);
 		Q_strncpy(g_GameDLL.name, gamedir, sizeof g_GameDLL.name - 1);
-		g_GameDLL.name[sizeof(g_GameDLL.name) - 1] = '\0';
+		g_GameDLL.name[sizeof g_GameDLL.name - 1] = '\0';
 	}
 
 	META_DEBUG(3, "Game: %s", g_GameDLL.name);

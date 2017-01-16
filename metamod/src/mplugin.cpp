@@ -1,5 +1,12 @@
 #include "precompiled.h"
 
+const char* g_platform_postfixes[] = {
+	"_i386.so",
+	"_i486.so",
+	"_i586.so",
+	"_i686.so",
+};
+
 // Parse a line from plugins.ini into a plugin.
 bool MPlugin::ini_parseline(char *_line)
 {
@@ -15,7 +22,7 @@ bool MPlugin::ini_parseline(char *_line)
 		return false;
 	}
 
-	if (line[0] == '#' || line[0] == ';' || Q_strncmp(line, "//", 2) ) {
+	if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2)) {
 		META_DEBUG(7, "ini: Ignoring commented line: %s", line);
 		return false;
 	}
@@ -57,7 +64,7 @@ bool MPlugin::ini_parseline(char *_line)
 
 	// Grab description.
 	// Just get the the rest of the line, minus line-termination.
-	token = strtok_r(NULL, "\n\r", &ptr_token);
+	token = strtok_r(nullptr, "\n\r", &ptr_token);
 	if (token)
 	{
 		token = token + strspn(token, " \t"); // skip whitespace
@@ -140,7 +147,7 @@ bool MPlugin::plugin_parseline(const char *fname, int loader_index)
 
 	//grab description
 	//temporarily use plugin file until plugin can be queried
-	Q_snprintf(m_desc, sizeof(m_desc), "<%s>", m_file);
+	Q_snprintf(m_desc, sizeof m_desc, "<%s>", m_file);
 
 	//make full pathname
 	full_gamedir_path(m_filename, m_pathname);
@@ -196,7 +203,7 @@ bool MPlugin::cmd_parseline(const char *line)
 	{
 		// if no description is specified, temporarily use plugin file,
 		// until plugin can be queried, and desc replaced with info->name.
-		Q_snprintf(m_desc, sizeof(m_desc), "<%s>", m_file);
+		Q_snprintf(m_desc, sizeof m_desc, "<%s>", m_file);
 	}
 
 	// Make full pathname (from gamedir if relative, remove "..",
@@ -336,8 +343,8 @@ char *MPlugin::resolve_prefix(char *path) const
 {
 	struct stat st;
 	char *cp, *fname;
-	char dname[PATH_MAX ];
-	static char buf[PATH_MAX ];
+	char dname[PATH_MAX];
+	static char buf[PATH_MAX];
 	char *found;
 
 	// try "mm_" prefix FIRST.
@@ -382,62 +389,45 @@ char *MPlugin::resolve_prefix(char *path) const
 //     path_i386.so, path_i486.so, etc (if linux)
 char *MPlugin::resolve_suffix(char *path) const
 {
-	struct stat st;
-	static char buf[PATH_MAX ];
-	char *found;
+	char *found = nullptr;
+
+	auto check = [](const char* path) -> char*
+	{
+		struct stat st;
+
+		if (stat(path, &st) == 0 && S_ISREG(st.st_mode)) {
+			static char buf[PATH_MAX];
+			strncpy(buf, path, sizeof buf - 1);
+			buf[sizeof buf - 1];
+			return buf;
+		}
+
+		return nullptr;
+	};
+
+	if (Q_strstr(path, PLATFORM_DLEXT)) {
+		return check(path);
+	}
+
+	char tmpbuf[PATH_MAX];
+	Q_snprintf(tmpbuf, sizeof tmpbuf, "%s%s", path, PLATFORM_DLEXT);
+	if ((found = check(tmpbuf))) return found;
 
 	// Hmm, recursion.
 	if (!Q_strstr(path, "_mm"))
 	{
-		char *tmpbuf;
-		Q_snprintf(buf, sizeof buf, "%s_mm", path);
-		tmpbuf = Q_strdup(buf);
-		found = resolve_suffix(tmpbuf);
-		Q_free(tmpbuf);
-		if (found) return found;
+		Q_snprintf(tmpbuf, sizeof tmpbuf, "%s_mm", path);
+		if ((found = resolve_suffix(tmpbuf))) return found;
 	}
-	else if (!Q_strstr(path, "_MM"))
-	{
-		char *tmpbuf;
-		Q_snprintf(buf, sizeof buf, "%s_MM", path);
-		tmpbuf = Q_strdup(buf);
-		found = resolve_suffix(tmpbuf);
-		Q_free(tmpbuf);
-		if (found) return found;
-	}
-
-#ifdef _WIN32
-	Q_snprintf(buf, sizeof buf, "%s.dll", path);
-#else
-	Q_snprintf(buf, sizeof buf, "%s.so", path);
-#endif
-
-	if (stat(buf, &st) == 0 && S_ISREG(st.st_mode))
-		return buf;
 
 #ifndef _WIN32
-	Q_snprintf(buf, sizeof buf, "%s_i386.so", path);
-	if (stat(buf, &st) == 0 && S_ISREG(st.st_mode))
-		return buf;
-
-	Q_snprintf(buf, sizeof buf, "%s_i486.so", path);
-	if (stat(buf, &st) == 0 && S_ISREG(st.st_mode))
-		return buf;
-
-	Q_snprintf(buf, sizeof buf, "%s_i586.so", path);
-	if (stat(buf, &st) == 0 && S_ISREG(st.st_mode))
-		return buf;
-
-	Q_snprintf(buf, sizeof buf, "%s_i686.so", path);
-	if (stat(buf, &st) == 0 && S_ISREG(st.st_mode))
-		return buf;
-
-	Q_snprintf(buf, sizeof buf, "%s_amd64.so", path);
-	if (stat(buf, &st) == 0 && S_ISREG(st.st_mode))
-		return buf;
+	for (size_t i = 0; i < arraysize(g_platform_suffixes); i++) {
+		Q_snprintf(tmpbuf, sizeof tmpbuf, "%s%s", path, g_platform_suffixes[i]);
+		if ((found = check(tmpbuf))) return found;
+	}
 #endif
 
-	return NULL;
+	return nullptr;
 }
 
 // Check if a passed string starts with a known platform postfix.
@@ -445,11 +435,11 @@ char *MPlugin::resolve_suffix(char *path) const
 // Linux and Win32.
 static bool is_platform_postfix(char *pf)
 {
-	if (!pf) {
-		if (!Q_strncmp(pf, "_i386.", 6)) return true;
-		if (!Q_strncmp(pf, "_i486.", 6)) return true;
-		if (!Q_strncmp(pf, "_i586.", 6)) return true;
-		if (!Q_strncmp(pf, "_i686.", 6)) return true;
+	if (pf) {
+		for (size_t i = 0; i < arraysize(g_platform_postfixes); i++) {
+			if (!Q_strcmp(pf, g_platform_postfixes[i]))
+				return true;
+		}
 	}
 	return false;
 }
@@ -473,35 +463,34 @@ bool MPlugin::platform_match(MPlugin *other) const
 	if (m_status == PL_EMPTY || other->m_status == PL_EMPTY)
 		return false;
 
-	if (Q_strcmp(m_file, other->m_file) == 0)
+	if (!Q_strcmp(m_file, other->m_file))
 		return true;
 
-	if (m_status >= PL_OPENED && other->m_status >= PL_OPENED && Q_strcmp(m_info->logtag, other->m_info->logtag) == 0)
+	if (m_status >= PL_OPENED && other->m_status >= PL_OPENED && !Q_strcmp(m_info->logtag, other->m_info->logtag))
 		return true;
 
-	if (*m_desc != '\0' && Q_stricmp(m_desc, other->m_desc) == 0)
+	if (*m_desc != '\0' && !Q_stricmp(m_desc, other->m_desc))
 		return true;
 
 	end = Q_strrchr(m_file, '_');
-	if (end == NULL || !is_platform_postfix(end)) end = Q_strrchr(m_file, '.');
+	if (!end || !is_platform_postfix(end)) end = Q_strrchr(m_file, '.');
 		other_end = Q_strrchr(other->m_file, '_');
 
-	if (other_end == NULL || !is_platform_postfix(other_end))
+	if (!other_end || !is_platform_postfix(other_end))
 		other_end = Q_strrchr(other->m_file, '.');
 
-	if (end == NULL || other_end == NULL)
+	if (!end || !other_end)
 		return false;
 
 	prefixlen = end - m_file;
-	if ((other_end - other->m_file) != prefixlen)
+	if (other_end - other->m_file != prefixlen)
 		return false;
 
-	if (Q_strncmp(m_file, other->m_file, prefixlen) == 0)
+	if (!Q_strncmp(m_file, other->m_file, prefixlen))
 		return true;
 
 	return false;
 }
-
 
 // Load a plugin; query, check allowed time, attach.
 bool MPlugin::load(PLUG_LOADTIME now)
@@ -983,7 +972,7 @@ bool MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 	META_DETACH_FN pfn_detach;
 
 	// If we have no handle, i.e. no dll loaded, we return true because the
-	// dll is obviously detached. We shouldn't call DLSYM() with a NULL
+	// dll is obviously detached. We shouldn't call DLSYM() with a nullptr
 	// handle since this will DLSYM() ourself.
 	if (!m_sys_module.gethandle())
 		return true;
@@ -1167,7 +1156,7 @@ void show_table(const char* table_name, table_t* table, info_t* info_begin, bool
 
 		for (auto n = info_begin; n->name[0] != '\0'; n++) {
 			if (*(size_t *)(size_t(table) + n->offset)) {
-				META_CONS("   %s%s", n->name, post ? "_Post" : "");
+				META_CONS("   %s%s", Q_strstr(n->name, "::") + 2, post ? "_Post" : "");
 				count++;
 			}
 		}
@@ -1290,8 +1279,8 @@ const char *MPlugin::str_action(STR_ACTION fmt) const
 	switch (m_action)
 	{
 	case PA_NULL:
-		if (fmt == SA_SHOW) return "NULL";
-		else return "null";
+		if (fmt == SA_SHOW) return "nullptr";
+		else return "nullptr";
 	case PA_NONE:
 		if (fmt == SA_SHOW) return " -  ";
 		else return "none";
@@ -1404,7 +1393,7 @@ const char *MPlugin::str_source(STR_SOURCE fmt) const
 		else
 		{
 			if (fmt == SO_SHOW) return UTIL_VarArgs("pl%d", m_source_plugin_index);
-			else return UTIL_VarArgs("plugin [%d]", m_source_plugin_index);
+			else return UTIL_VarArgs("plugin [%s]", g_plugins.find(m_source_plugin_index)->m_desc);
 		}
 	default:
 		if (fmt == SO_SHOW) return UTIL_VarArgs("UNK%d", m_source);

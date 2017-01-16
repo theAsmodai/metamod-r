@@ -115,7 +115,7 @@ bool MConfig::load(const char* fn)
 	}
 
 	META_DEBUG(2, "Loading from config file: %s", loadfile);
-	for (ln = 1; !feof(fp) && fgets(line, sizeof(line), fp); ln++)
+	for (ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++)
 	{
 		if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2))
 			continue;

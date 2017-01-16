@@ -109,12 +109,12 @@ bool setup_gamedll(gamedll_t *gamedll)
 #endif
 
 		META_DEBUG(4, "Checking for old version game DLL name '%s'.\n", knownfn);
-		Q_snprintf(gamedll->pathname, sizeof(gamedll->pathname), "dlls/%s", knownfn);
+		Q_snprintf(gamedll->pathname, sizeof gamedll->pathname, "dlls/%s", knownfn);
 
 		// Check if the gamedll file exists. If not, try to install it from the cache.
 		if (!valid_gamedir_file(gamedll->pathname))
 		{
-			Q_snprintf(gamedll->real_pathname, sizeof(gamedll->real_pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);
+			Q_snprintf(gamedll->real_pathname, sizeof gamedll->real_pathname, "%s/dlls/%s", gamedll->gamedir, knownfn);
 			install_gamedll(gamedll->pathname, gamedll->real_pathname);
 		}
 	}
@@ -124,7 +124,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 		return false;
 	}
 
-	Q_snprintf(gamedll->pathname, sizeof(gamedll->pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);
+	Q_snprintf(gamedll->pathname, sizeof gamedll->pathname, "%s/dlls/%s", gamedll->gamedir, knownfn);
 
 	// get filename from pathname
 	char *cp = Q_strrchr(gamedll->pathname, '/');
@@ -135,8 +135,8 @@ bool setup_gamedll(gamedll_t *gamedll)
 
 	gamedll->file = cp;
 
-	Q_strncpy(gamedll->real_pathname, gamedll->pathname, sizeof(gamedll->real_pathname) - 1);
-	gamedll->real_pathname[sizeof(gamedll->real_pathname) - 1] = '\0';
+	Q_strncpy(gamedll->real_pathname, gamedll->pathname, sizeof gamedll->real_pathname - 1);
+	gamedll->real_pathname[sizeof gamedll->real_pathname - 1] = '\0';
 
 	gamedll->desc = known->desc;
 	META_LOG("Recognized game '%s'; using dllfile '%s'", gamedll->name, gamedll->file);

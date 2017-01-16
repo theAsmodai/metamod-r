@@ -81,8 +81,8 @@ char* full_gamedir_path(const char* path, char* fullpath)
 	if (!realpath(buf, fullpath))
 	{
 		META_DEBUG(4, "Unable to get realpath for '%s': %s", buf, str_os_error());
-		Q_strncpy(fullpath, path, sizeof(fullpath) - 1);
-		fullpath[sizeof(fullpath) - 1] = '\0';
+		Q_strncpy(fullpath, path, sizeof fullpath - 1);
+		fullpath[sizeof fullpath - 1] = '\0';
 	}
 
 	// Replace backslashes, etc.

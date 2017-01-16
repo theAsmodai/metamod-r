@@ -255,7 +255,7 @@ void MRegCvarList::show(int plugin_id) const
 	int total_count = 0;
 	char bname[30 + 1], bval[15 + 1]; // +1 for term null
 
-	META_CONS("%-*s     %*s  %s", sizeof(bname) - 1, "Registered cvars:", sizeof bval - 1, "float value", "string value");
+	META_CONS("%-*s     %*s  %s", sizeof bname - 1, "Registered cvars:", sizeof bval - 1, "float value", "string value");
 	
 	for (auto reg : m_list)
 	{
@@ -264,8 +264,8 @@ void MRegCvarList::show(int plugin_id) const
 
 		Q_strncpy(bname, reg->m_cvar->name, sizeof bname - 1);
 		bname[sizeof bname - 1] = '\0';
-		Q_snprintf(bval, sizeof(bval), "%f", reg->m_cvar->value);
-		META_CONS("   %-*s  %*s  %s", sizeof(bname) - 1, bname, sizeof(bval) - 1, bval, reg->m_cvar->string);
+		Q_snprintf(bval, sizeof bval, "%f", reg->m_cvar->value);
+		META_CONS("   %-*s  %*s  %s", sizeof bname - 1, bname, sizeof bval - 1, bval, reg->m_cvar->string);
 		total_count++;
 	}
 
@@ -340,12 +340,12 @@ void MRegMsgList::show()
 	int total_count = 0;
 	char bname[25 + 1]; // +1 for term null
 
-	META_CONS("%-*s    %5s  %5s", sizeof(bname) - 1, "Game registered user msgs:", "msgid", "size");
+	META_CONS("%-*s    %5s  %5s", sizeof bname - 1, "Game registered user msgs:", "msgid", "size");
 	
 	for (auto msg : m_list) {
 		Q_strncpy(bname, msg->m_name, sizeof bname - 1);
 		bname[sizeof bname - 1] = '\0';
-		META_CONS("   %-*s   %3d    %3d", sizeof(bname) - 1, bname, msg->m_msgid, msg->m_size);
+		META_CONS("   %-*s   %3d    %3d", sizeof bname - 1, bname, msg->m_msgid, msg->m_size);
 		total_count++;
 	}
 

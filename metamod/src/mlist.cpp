@@ -188,10 +188,10 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 	}
 
 	auto pl_found = find(pl_temp.m_pathname);
-	if (!pl_found)
+	if (pl_found)
 	{
 		META_DEBUG(1, "Plugin '%s' already in current list; file=%s desc='%s'", pl_temp.m_file, pl_found->m_file, pl_found->m_desc);
-		return nullptr;
+		return pl_found;
 	}
 
 	auto pl_added = add(&pl_temp);
@@ -224,7 +224,7 @@ MPlugin* MPluginList::find_empty_slot()
 {
 	for (int i = 0; i < MAX_PLUGINS; i++) {
 		if (m_plist[i].m_status == PL_EMPTY) {
-			if (i > m_max_loaded_count)
+			if (i >= m_max_loaded_count)
 				m_max_loaded_count = i + 1;
 
 			return &m_plist[i];
@@ -295,7 +295,7 @@ bool MPluginList::ini_startup()
 	}
 
 	META_LOG("ini: Begin reading plugins list: %s", m_inifile);
-	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof(line), fp) && n < MAX_PLUGINS; ln++)
+	for (n = 0, ln = 1; !feof(fp) && fgets(line, sizeof line, fp) && n < MAX_PLUGINS; ln++)
 	{
 		// Remove line terminations.
 		char* cp;
@@ -308,9 +308,9 @@ bool MPluginList::ini_startup()
 		// Parse directly into next entry in array
 		if (!m_plist[n].ini_parseline(line))
 		{
-			META_ERROR("ini: Skipping malformed line %d of %s", ln, m_inifile);
 			continue;
 		}
+		
 		// Check for a duplicate - an existing entry with this pathname.
 		if (find(m_plist[n].m_pathname))
 		{
@@ -367,7 +367,7 @@ bool MPluginList::ini_refresh()
 	}
 
 	META_LOG("ini: Begin re-reading plugins list: %s", m_inifile);
-	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof(line), fp) && n < MAX_PLUGINS; ln++)
+	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof line, fp) && n < MAX_PLUGINS; ln++)
 	{
 		// Remove line terminations.
 		char *cp;
@@ -378,7 +378,7 @@ bool MPluginList::ini_refresh()
 			*cp = '\0';
 
 		// Parse into a temp plugin
-		Q_memset(&pl_temp, 0, sizeof(pl_temp));
+		Q_memset(&pl_temp, 0, sizeof pl_temp);
 		if (!pl_temp.ini_parseline(line))
 		{
 			META_ERROR("ini: Skipping malformed line %d of %s",ln, m_inifile);
@@ -676,8 +676,8 @@ void MPluginList::show(int source_index)
 	else
 		META_CONS("Child plugins:");
 
-	META_CONS("  %*s  %-*s  %-4s %-4s  %-*s  v%-*s  %-*s  %-5s %-5s", WIDTH_MAX_PLUGINS, "", sizeof(desc) - 1, "description", "stat", "pend",
-			sizeof(file) - 1, "file", sizeof(vers) - 1, "ers", 2 + WIDTH_MAX_PLUGINS, "src", "load ", "unlod");
+	META_CONS("  %*s  %-*s  %-4s %-4s  %-*s  v%-*s  %-*s  %-5s %-5s", WIDTH_MAX_PLUGINS, "", sizeof desc - 1, "description", "stat", "pend",
+			sizeof file - 1, "file", sizeof vers - 1, "ers", 2 + WIDTH_MAX_PLUGINS, "src", "load ", "unlod");
 
 	for (int i = 0; i < m_max_loaded_count; i++)
 	{
@@ -688,25 +688,25 @@ void MPluginList::show(int source_index)
 		if (source_index > 0 && pl->m_source_plugin_index != source_index)
 			continue;
 
-		Q_strncpy(desc, pl->m_desc, sizeof(desc) - 1);
-		desc[sizeof(desc) - 1] = '\0';
+		Q_strncpy(desc, pl->m_desc, sizeof desc - 1);
+		desc[sizeof desc - 1] = '\0';
 
-		Q_strncpy(file, pl->m_file, sizeof(file) - 1);
-		file[sizeof(file) - 1] = '\0';
+		Q_strncpy(file, pl->m_file, sizeof file - 1);
+		file[sizeof file - 1] = '\0';
 
 		if (pl->m_info && pl->m_info->version)
 		{
-			Q_strncpy(vers, pl->m_info->version, sizeof(vers) - 1);
-			vers[sizeof(vers) - 1] = '\0';
+			Q_strncpy(vers, pl->m_info->version, sizeof vers - 1);
+			vers[sizeof vers - 1] = '\0';
 		}
 		else
 		{
-			Q_strncpy(vers, " -", sizeof(vers) - 1);
-			vers[sizeof(vers) - 1] = '\0';
+			Q_strncpy(vers, " -", sizeof vers - 1);
+			vers[sizeof vers - 1] = '\0';
 		}
 
 		META_CONS(" [%*d] %-*s  %-4s %-4s  %-*s  v%-*s  %-*s  %-5s %-5s", WIDTH_MAX_PLUGINS, pl->m_index,
-			sizeof(desc) - 1, desc, pl->str_status(ST_SHOW), pl->str_action(SA_SHOW), sizeof(file) - 1, file, sizeof(vers) - 1, vers,
+			sizeof desc - 1, desc, pl->str_status(ST_SHOW), pl->str_action(SA_SHOW), sizeof file - 1, file, sizeof vers - 1, vers,
 			2 + WIDTH_MAX_PLUGINS, pl->str_source(SO_SHOW), pl->str_loadable(SL_SHOW), pl->str_unloadable(SL_SHOW));
 
 		if (pl->m_status == PL_RUNNING)
