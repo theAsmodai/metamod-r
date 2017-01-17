@@ -47,6 +47,8 @@ void setupToolchain(NativeBinarySpec b)
 			pchHeader: 'precompiled.h',
 			pchSourceSet: 'rmod_pch'
 		)
+
+		cfg.extraLibs 'psapi.lib'
 		cfg.singleDefines('_CRT_SECURE_NO_WARNINGS')
 	} else if (cfg instanceof GccToolchainConfig) {
 		cfg.compilerOptions.pchConfig = new GccToolchainConfig.PrecompilerHeaderOptions(
@@ -99,7 +101,7 @@ model {
 	components {
 		metamod(NativeLibrarySpec) {
 			targetPlatform 'x86'
-			baseName GradleCppUtils.windows ? 'metamod_mm' : 'metamod_mm_i386'
+			baseName GradleCppUtils.windows ? 'metamod' : 'metamod_i386'
 
 			sources {
 				rmod_pch(CppSourceSet) {

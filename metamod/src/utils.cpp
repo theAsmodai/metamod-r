@@ -141,6 +141,7 @@ bool is_absolute_path(const char *path)
 	return false;
 }
 
+#ifdef _WIN32
 char *realpath(const char *file_name, char *resolved_name)
 {
 	int ret = GetFullPathName(file_name, PATH_MAX, resolved_name, NULL);
@@ -166,3 +167,4 @@ char *realpath(const char *file_name, char *resolved_name)
 
 	return NULL;
 }
+#endif // _WIN32

@@ -421,8 +421,8 @@ char *MPlugin::resolve_suffix(char *path) const
 	}
 
 #ifndef _WIN32
-	for (size_t i = 0; i < arraysize(g_platform_suffixes); i++) {
-		Q_snprintf(tmpbuf, sizeof tmpbuf, "%s%s", path, g_platform_suffixes[i]);
+	for (size_t i = 0; i < arraysize(g_platform_postfixes); i++) {
+		Q_snprintf(tmpbuf, sizeof tmpbuf, "%s%s", path, g_platform_postfixes[i]);
 		if ((found = check(tmpbuf))) return found;
 	}
 #endif
@@ -1393,7 +1393,7 @@ const char *MPlugin::str_source(STR_SOURCE fmt) const
 		else
 		{
 			if (fmt == SO_SHOW) return UTIL_VarArgs("pl%d", m_source_plugin_index);
-			else return UTIL_VarArgs("plugin [%s]", g_plugins.find(m_source_plugin_index)->m_desc);
+			else return UTIL_VarArgs("plugin [%s]", g_plugins->find(m_source_plugin_index)->m_desc);
 		}
 	default:
 		if (fmt == SO_SHOW) return UTIL_VarArgs("UNK%d", m_source);

@@ -120,7 +120,7 @@ const char* CSysModule::getloaderror()
 #ifdef _WIN32
 	return str_GetLastError();
 #else
-	return dlerror;
+	return dlerror();
 #endif
 }
 
