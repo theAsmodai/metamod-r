@@ -120,9 +120,9 @@ void cmd_meta_version()
 		return;
 	}
 
-	META_CONS("ReMetamod v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
-	META_CONS("ReMetamod build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
-	META_CONS("ReMetamod from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
+	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
+	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
+	META_CONS("Metamod-r from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
 }
 
 // "meta version" client command.
@@ -134,30 +134,30 @@ void client_meta_version(edict_t *pEntity)
 		return;
 	}
 
-	META_CONS("ReMetamod v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
-	META_CONS("ReMetamod build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
-	META_CONS("ReMetamod from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
+	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
+	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
+	META_CONS("Metamod-r from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
 }
 
 // "meta gpl" console command.
 void cmd_meta_gpl()
 {
-	META_CONS("ReMetamod version " __TIME__ " " __DATE__);
+	META_CONS("Metamod-r version " __TIME__ " " __DATE__);
 	META_CONS("Copyright (c) 2016-2017 ReHlds Team (rebuild of original Metamod by Will Day)");
 	META_CONS("");
-	META_CONS("   ReMetamod is free software; you can redistribute it and/or");
+	META_CONS("   Metamod-r is free software; you can redistribute it and/or");
 	META_CONS("   modify it under the terms of the GNU General Public License");
 	META_CONS("   as published by the Free Software Foundation; either");
 	META_CONS("   version 2 of the License, or (at your option) any later");
 	META_CONS("   version.");
 	META_CONS("   ");
-	META_CONS("   ReMetamod is distributed in the hope that it will be useful,");
+	META_CONS("   Metamod-r is distributed in the hope that it will be useful,");
 	META_CONS("   but WITHOUT ANY WARRANTY; without even the implied warranty");
 	META_CONS("   of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
 	META_CONS("   See the GNU General Public License for more details.");
 	META_CONS("   ");
 	META_CONS("   You should have received a copy of the GNU General Public");
-	META_CONS("   License along with ReMetamod; if not, write to the Free");
+	META_CONS("   License along with Metamod-r; if not, write to the Free");
 	META_CONS("   Software Foundation, Inc., 59 Temple Place, Suite 330,");
 	META_CONS("   Boston, MA 02111-1307  USA");
 	META_CONS("   ");
