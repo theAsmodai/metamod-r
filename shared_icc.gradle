@@ -27,6 +27,7 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 				stripSymbolTable: true,
 				staticLibGcc: true,
 				staticIntel: true,
+				staticLibStdCpp: true,
 			),
 
 			librarianOptions: new GccToolchainConfig.LibrarianOptions(
@@ -55,6 +56,7 @@ rootProject.ext.createIccConfig = { boolean release, BinaryKind binKind ->
 				stripSymbolTable: false,
 				staticLibGcc: true,
 				staticIntel: true,
+				staticLibStdCpp: true,
 			),
 
 			librarianOptions: new GccToolchainConfig.LibrarianOptions(
