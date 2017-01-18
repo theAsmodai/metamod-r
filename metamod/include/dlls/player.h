@@ -138,6 +138,8 @@ enum RewardType
 	RT_NONE,
 	RT_ROUND_BONUS,
 	RT_PLAYER_RESET,
+	RT_PLAYER_JOIN,
+	RT_PLAYER_SPEC_JOIN,
 	RT_PLAYER_BOUGHT_SOMETHING,
 	RT_HOSTAGE_TOOK,
 	RT_HOSTAGE_RESCUED,
@@ -318,9 +320,9 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) = 0;
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem) = 0;
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) = 0;
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax) = 0;
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1) = 0;
 	virtual void StartSneaking() = 0;
-	virtual void StopSneaking() = 0;
+	virtual void UpdateOnRemove() = 0;
 	virtual BOOL IsSneaking() = 0;
 	virtual BOOL IsAlive() = 0;
 	virtual BOOL IsPlayer() = 0;
@@ -359,6 +361,36 @@ public:
 	void SetObserverAutoDirector(bool val) { m_bObserverAutoDirector = val; }
 	bool CanSwitchObserverModes() const { return m_canSwitchObserverModes; }
 	CCSPlayer *CSPlayer() const;
+
+	// templates
+	template<typename Functor>
+	CBasePlayerItem *ForEachItem(int slot, const Functor &func)
+	{
+		auto item = m_rgpPlayerItems[ slot ];
+		while (item)
+		{
+			if (func(item))
+				return item;
+
+			item = item->m_pNext;
+		}
+		return nullptr;
+	}
+	template<typename Functor>
+	CBasePlayerItem *ForEachItem(const Functor &func)
+	{
+		for (auto item : m_rgpPlayerItems)
+		{
+			while (item)
+			{
+				if (func(item))
+					return item;
+
+				item = item->m_pNext;
+			}
+		}
+		return nullptr;
+	}
 public:
 	enum { MaxLocationLen = 32 };
 
@@ -566,8 +598,7 @@ public:
 inline bool CBasePlayer::IsReloading() const
 {
 	CBasePlayerWeapon *weapon = static_cast<CBasePlayerWeapon *>(m_pActiveItem);
-
-	if (weapon != NULL && weapon->m_fInReload)
+	if (weapon && weapon->m_fInReload)
 		return true;
 
 	return false;
@@ -575,4 +606,20 @@ inline bool CBasePlayer::IsReloading() const
 
 inline CCSPlayer *CBasePlayer::CSPlayer() const {
 	return reinterpret_cast<CCSPlayer *>(this->m_pEntity);
+}
+
+// returns a CBaseEntity pointer to a player by index.  Only returns if the player is spawned and connected otherwise returns NULL
+// Index is 1 based
+inline CBasePlayer *UTIL_PlayerByIndex(int playerIndex)
+{
+	return (CBasePlayer *)GET_PRIVATE(INDEXENT(playerIndex));
+}
+
+inline CBasePlayer *UTIL_PlayerByIndexSafe(int playerIndex)
+{
+	CBasePlayer *player = nullptr;
+	if (likely(playerIndex > 0 && playerIndex <= gpGlobals->maxClients))
+		player = UTIL_PlayerByIndex(playerIndex);
+
+	return player;
 }

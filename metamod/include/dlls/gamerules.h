@@ -35,13 +35,6 @@
 
 #define MAX_BOMB_RADIUS				2048
 
-#define MAP_VIP_SAFETYZONE_UNINITIALIZED	0	// uninitialized
-#define MAP_HAVE_VIP_SAFETYZONE_YES		1	// has VIP safety zone
-#define MAP_HAVE_VIP_SAFETYZONE_NO		2	// does not have VIP safetyzone
-
-#define MAP_HAS_CAMERAS_INIT			2	// initial
-#define MAP_HAS_CAMERAS_YES			1	// on map have of camera's
-
 #define ITEM_RESPAWN_TIME			30
 #define WEAPON_RESPAWN_TIME			20
 #define AMMO_RESPAWN_TIME			20
@@ -88,6 +81,8 @@ enum ScenarioEventEndRound
 	ROUND_TERRORISTS_NOT_ESCAPED,
 	ROUND_VIP_NOT_ESCAPED,
 	ROUND_GAME_COMMENCE,
+	ROUND_GAME_RESTART,
+	ROUND_GAME_OVER
 };
 
 enum RewardRules
@@ -149,8 +144,9 @@ enum RewardAccount
 	REWARD_KILLED_VIP		= 2500,
 	REWARD_VIP_HAVE_SELF_RESCUED	= 2500,
 
-	REWARD_TAKEN_HOSTAGE		= 1000
-
+	REWARD_TAKEN_HOSTAGE		= 1000,
+	REWARD_TOOK_HOSTAGE_ACC		= 100,
+	REWARD_TOOK_HOSTAGE		= 150,
 };
 
 // custom enum
@@ -194,13 +190,13 @@ enum
 // custom enum
 enum
 {
-	SCENARIO_BLOCK_TIME_EXPRIRED		= (1 << 0),
-	SCENARIO_BLOCK_NEED_PLAYERS		= (1 << 1),
-	SCENARIO_BLOCK_VIP_ESCAPRE		= (1 << 2),
-	SCENARIO_BLOCK_PRISON_ESCAPRE		= (1 << 3),
-	SCENARIO_BLOCK_BOMB			= (1 << 4),
-	SCENARIO_BLOCK_TEAM_EXTERMINATION	= (1 << 5),
-	SCENARIO_BLOCK_HOSTAGE_RESCUE		= (1 << 6),
+	SCENARIO_BLOCK_TIME_EXPRIRED		= (1 << 0),	// flag "a"
+	SCENARIO_BLOCK_NEED_PLAYERS		= (1 << 1),	// flag "b"
+	SCENARIO_BLOCK_VIP_ESCAPE		= (1 << 2),	// flag "c"
+	SCENARIO_BLOCK_PRISON_ESCAPE		= (1 << 3),	// flag "d"
+	SCENARIO_BLOCK_BOMB			= (1 << 4),	// flag "e"
+	SCENARIO_BLOCK_TEAM_EXTERMINATION	= (1 << 5),	// flag "f"
+	SCENARIO_BLOCK_HOSTAGE_RESCUE		= (1 << 6),	// flag "g"
 };
 
 // Player relationship return codes
@@ -322,12 +318,18 @@ public:
 	virtual BOOL IsFreezePeriod() = 0;
 	virtual void ServerDeactivate() = 0;
 	virtual void CheckMapConditions() = 0;
+
+	// inline function's
+	inline bool IsGameOver() const { return m_bGameOver; }
+	inline void SetGameOver() { m_bGameOver = true; }
+
 public:
-	BOOL m_bFreezePeriod;
+	BOOL m_bFreezePeriod;				// TRUE at beginning of round, set to FALSE when the period expires
 	BOOL m_bBombDropped;
 
 	// custom
 	char *m_GameDesc;
+	bool m_bGameOver;				// intermission or finale (deprecated name g_fGameOver)
 };
 
 // CHalfLifeRules - rules for the single player Half-Life game.
@@ -549,24 +551,22 @@ public:
 	bool ShouldSkipSpawn() const { return m_bSkipSpawn; }
 	void MarkSpawnSkipped() { m_bSkipSpawn = false; }
 
-	float TimeRemaining() { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundCount; }
-	bool IsMatchStarted() { return (m_fTeamCount != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
+	float GetRoundRemainingTime() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTime; }
+	float GetRoundRemainingTimeReal() const { return m_iRoundTimeSecs - gpGlobals->time + m_fRoundStartTimeReal; }
+	float GetTimeLeft() const { return m_flTimeLimit - gpGlobals->time; }
+	bool IsMatchStarted() { return (m_flRestartRoundTime != 0.0f || m_fCareerRoundMenuTime != 0.0f || m_fCareerMatchMenuTime != 0.0f); }
 
-	inline void TerminateRound(float tmDelay, int iWinStatus)
-	{
-		m_iRoundWinStatus = iWinStatus;
-		m_fTeamCount = gpGlobals->time + tmDelay;
-		m_bRoundTerminating = true;
-	}
+	void TerminateRound(float tmDelay, int iWinStatus);
+
 public:
 	CVoiceGameMgr m_VoiceGameMgr;
-	float m_fTeamCount;				// m_flRestartRoundTime, the global time when the round is supposed to end, if this is not 0
+	float m_flRestartRoundTime;			// The global time when the round is supposed to end, if this is not 0 (deprecated name m_fTeamCount)
 	float m_flCheckWinConditions;
-	float m_fRoundCount;
+	float m_fRoundStartTime;			// Time round has started (deprecated name m_fRoundCount)
 	int m_iRoundTime;				// (From mp_roundtime) - How many seconds long this round is.
 	int m_iRoundTimeSecs;
 	int m_iIntroRoundTime;				// (From mp_freezetime) - How many seconds long the intro round (when players are frozen) is.
-	float m_fIntroRoundCount;			// The global time when the intro round ends and the real one starts
+	float m_fRoundStartTimeReal;			// The global time when the intro round ends and the real one starts
 							// wrote the original "m_flRoundTime" comment for this variable).
 	int m_iAccountTerrorist;
 	int m_iAccountCT;
@@ -592,8 +592,8 @@ public:
 	bool m_bMapHasRescueZone;
 	bool m_bMapHasEscapeZone;
 
-	int m_iMapHasVIPSafetyZone;			// 0 = uninitialized;   1 = has VIP safety zone;   2 = DOES not have VIP safetyzone
-	int m_bMapHasCameras;
+	BOOL m_bMapHasVIPSafetyZone;			// TRUE = has VIP safety zone, FALSE = does not have VIP safetyzone
+	BOOL m_bMapHasCameras;
 	int m_iC4Timer;
 	int m_iC4Guy;					// The current Terrorist who has the C4.
 	int m_iLoserBonus;				// the amount of money the losing team gets. This scales up as they lose more rounds in a row
@@ -634,7 +634,7 @@ public:
 	float m_flIntermissionStartTime;
 	BOOL m_iEndIntermissionButtonHit;
 	float m_tmNextPeriodicThink;
-	bool m_bFirstConnected;
+	bool m_bGameStarted;				// TRUE = the game commencing when there is at least one CT and T, FALSE = scoring will not start until both teams have players (deprecated name m_bFirstConnected)
 	bool m_bInCareerGame;
 	float m_fCareerRoundMenuTime;
 	int m_iCareerMatchWins;
@@ -646,6 +646,8 @@ public:
 	bool m_bSkipShowMenu;
 	bool m_bNeededPlayers;
 	float m_flEscapeRatio;
+	float m_flTimeLimit;
+	float m_flGameStartTime;
 };
 
 typedef struct mapcycle_item_s
@@ -672,7 +674,15 @@ public:
 
 extern CGameRules *g_pGameRules;
 
+// Gets us at the CS game rules
 inline CHalfLifeMultiplay *CSGameRules()
 {
-	return reinterpret_cast<CHalfLifeMultiplay *>(g_pGameRules);
+	return static_cast<CHalfLifeMultiplay *>(g_pGameRules);
+}
+
+inline void CHalfLifeMultiplay::TerminateRound(float tmDelay, int iWinStatus)
+{
+	m_iRoundWinStatus = iWinStatus;
+	m_flRestartRoundTime = gpGlobals->time + tmDelay;
+	m_bRoundTerminating = true;
 }

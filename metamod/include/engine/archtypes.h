@@ -28,6 +28,10 @@
 #ifndef ARCHTYPES_H
 #define ARCHTYPES_H
 
+#ifdef __x86_64__
+#define X64BITS
+#endif
+
 #if defined( _WIN32 ) && (! defined( __MINGW32__ ))
 
 typedef __int8 int8;

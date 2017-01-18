@@ -81,7 +81,7 @@ public:
 	virtual void AddPointsToTeam(int score, BOOL bAllowNegativeScore) = 0;
 	virtual BOOL AddPlayerItem(CBasePlayerItem *pItem) = 0;
 	virtual BOOL RemovePlayerItem(CBasePlayerItem *pItem) = 0;
-	virtual int GiveAmmo(int iAmount, char *szName, int iMax) = 0;
+	virtual int GiveAmmo(int iAmount, char *szName, int iMax = -1) = 0;
 	virtual float GetDelay() = 0;
 	virtual int IsMoving() = 0;
 	virtual void OverrideReset() = 0;
@@ -90,7 +90,7 @@ public:
 	// This is ONLY used by the node graph to test movement through a door
 	virtual void SetToggleState(int state) = 0;
 	virtual void StartSneaking() = 0;
-	virtual void StopSneaking() = 0;
+	virtual void UpdateOnRemove() = 0;
 	virtual BOOL OnControls(entvars_t *onpev) = 0;
 	virtual BOOL IsSneaking() = 0;
 	virtual BOOL IsAlive() = 0;
@@ -135,6 +135,8 @@ public:
 	edict_t *edict() { return ENT(pev); }
 	EOFFSET eoffset() { return OFFSET(pev); }
 	int entindex() { return ENTINDEX(edict()); }
+	int IsDormant() { return (pev->flags & FL_DORMANT) == FL_DORMANT; }
+
 public:
 	CCSEntity *m_pEntity;						// NOTE: it was replaced on member "int *current_ammo" because it is useless.
 
@@ -267,6 +269,7 @@ class CBaseButton: public CBaseToggle {
 public:
 	virtual void Spawn() = 0;
 	virtual void Precache() = 0;
+	virtual void Restart() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual int Save(CSave &save) = 0;
@@ -297,6 +300,7 @@ public:
 class CMultiSource: public CPointEntity {
 public:
 	virtual void Spawn() = 0;
+	virtual void Restart() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 	virtual int Save(CSave &save) = 0;
 	virtual int Restore(CRestore &restore) = 0;

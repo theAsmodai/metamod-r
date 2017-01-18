@@ -101,10 +101,11 @@ class CPushable: public CBreakable {
 public:
 	virtual void Spawn() = 0;
 	virtual void Precache() = 0;
+	virtual void Restart() = 0;
 	virtual void KeyValue(KeyValueData *pkvd) = 0;
 	virtual int Save(CSave &save) = 0;
 	virtual int Restore(CRestore &restore) = 0;
-	virtual int ObjectCaps() = 0
+	virtual int ObjectCaps() = 0;
 	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
 	virtual void Touch(CBaseEntity *pOther) = 0;
 	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;

@@ -92,7 +92,18 @@ enum ArmouryItemPack
 	ARMOURY_HEGRENADE,
 	ARMOURY_KEVLAR,
 	ARMOURY_ASSAULT,
-	ARMOURY_SMOKEGRENADE
+	ARMOURY_SMOKEGRENADE,
+	ARMOURY_GLOCK18,
+	ARMOURY_USP,
+	ARMOURY_ELITE,
+	ARMOURY_FIVESEVEN,
+	ARMOURY_P228,
+	ARMOURY_DEAGLE,
+	ARMOURY_FAMAS,
+	ARMOURY_SG550,
+	ARMOURY_GALIL,
+	ARMOURY_UMP45,
+	ARMOURY_SHIELD
 };
 
 struct ItemInfo
@@ -430,6 +441,10 @@ public:
 private:
 	unsigned short m_usFireAWP;
 };
+
+// for usermsg BombDrop
+#define BOMB_FLAG_DROPPED	0 // if the bomb was dropped due to voluntary dropping or death/disconnect
+#define BOMB_FLAG_PLANTED	1 // if the bomb has been planted will also trigger the round timer to hide will also show where the dropped bomb on the Terrorist team's radar.
 
 class CC4: public CBasePlayerWeapon {
 public:
