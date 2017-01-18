@@ -34,7 +34,7 @@ bool rehlds_api_try_init(CSysModule* engineModule, char* failureReason)
 	}
 
 	if (minorVersion < REHLDS_API_VERSION_MINOR) {
-		sprintf(failureReason, "REHLDS Api minor version mismatch; expected at least %d, real %d\n", REHLDS_API_VERSION_MINOR, majorVersion);
+		sprintf(failureReason, "REHLDS Api minor version mismatch; expected at least %d, real %d\n", REHLDS_API_VERSION_MINOR, minorVersion);
 		return false;
 	}
 
