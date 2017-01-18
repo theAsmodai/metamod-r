@@ -149,7 +149,7 @@ void MRegCmdList::show(int plugin_id) const
 	META_CONS("%d commands", total_count);
 }
 
-MRegCvar::MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin) : m_cvar(cv_ptr), m_plugid(cv_plugin->m_index), m_status(RG_VALID)
+MRegCvar::MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin) : m_cvar(cv_ptr), m_plugid(cv_plugin ? cv_plugin->m_index : 0), m_status(RG_VALID)
 {
 	m_cvar = new cvar_t;
 	m_cvar->name = Q_strdup(cv_ptr->name);
