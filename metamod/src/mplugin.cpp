@@ -311,7 +311,7 @@ bool MPlugin::resolve(void)
 //     GAMEDIR/dlls/filename
 char *MPlugin::resolve_dirs(char *path) const
 {
-	static char buf[PATH_MAX ];
+	static char buf[PATH_MAX];
 
 	Q_snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
 

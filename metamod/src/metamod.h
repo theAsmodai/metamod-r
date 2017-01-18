@@ -9,19 +9,9 @@
 #include "meta_eiface.h"		// HL_enginefuncs_t, meta_enginefuncs_t
 #include "engine_t.h"          		// engine_t, Engine
 
-// file that lists plugins to load at startup
-#define PLUGINS_INI			"addons/metamod/plugins.ini"
-#define OLD_PLUGINS_INI			"metamod.ini"
-
-// file that contains commands to metamod plugins at startup
-#define EXEC_CFG			"addons/metamod/exec.cfg"
-#define OLD_EXEC_CFG			"metaexec.cfg"
-
-// previously, file that contained path for an override-gamedll
-#define OLD_GAMEDLL_TXT			"metagame.ini"
-
-// generic config file
-#define CONFIG_INI			"addons/metamod/config.ini"
+#define PLUGINS_INI			"plugins.ini"		// file that lists plugins to load at startup
+#define EXEC_CFG			"exec.cfg"		// file that contains commands to metamod plugins at startup
+#define CONFIG_INI			"config.ini"		// generic config file
 
 // cvar to contain version
 extern cvar_t g_meta_version;
@@ -30,7 +20,7 @@ extern cvar_t g_meta_version;
 struct gamedll_t
 {
 	char name[NAME_MAX];		// ie "cstrike" (from gamedir)
-	const char *desc;		// ie "Counter-Strike"
+	char desc[NAME_MAX];		// ie "Counter-Strike"
 	char gamedir[PATH_MAX];		// ie "/home/willday/half-life/cstrike"
 	char pathname[PATH_MAX];	// ie "/home/willday/half-life/cstrike/dlls/cs_i386.so"
 	char const *file;		// ie "cs_i386.so"

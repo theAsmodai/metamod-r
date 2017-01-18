@@ -11,7 +11,7 @@ const game_modinfo_t g_known_games[] = {
 	// separate file, generated based on game information stored in a
 	// convenient db.
 	{ "cstrike",	"cs.so",		"mp.dll",		"Counter-Strike" },
-	{ "czero",		"cs.so",		"mp.dll",		"Counter-Strike:Condition Zero" },
+	{ "czero",	"cs.so",		"mp.dll",		"Counter-Strike:Condition Zero" },
 
 	// End of list terminator:
 	{ NULL, NULL, NULL, NULL }
@@ -90,14 +90,9 @@ bool install_gamedll(char *from, const char *to)
 //  - ME_NOTFOUND	couldn't recognize game
 bool setup_gamedll(gamedll_t *gamedll)
 {
+	bool override = false;
 	const game_modinfo_t *known;
 	const char *knownfn = nullptr;
-
-	// Check for old-style "metagame.ini" file and complain.
-	if (valid_gamedir_file(OLD_GAMEDLL_TXT))
-	{
-		META_WARNING("File '%s' is no longer supported; instead, specify override gamedll in %s or with '+localinfo mm_gamedll <dllfile>'", OLD_GAMEDLL_TXT, CONFIG_INI);
-	}
 
 	// First, look for a known game, based on gamedir.
 	if ((known = lookup_game(gamedll->name)))
@@ -107,24 +102,45 @@ bool setup_gamedll(gamedll_t *gamedll)
 #else
 		knownfn = known->linux_so;
 #endif
+	}
 
-		META_DEBUG(4, "Checking for old version game DLL name '%s'.\n", knownfn);
-		Q_snprintf(gamedll->pathname, sizeof gamedll->pathname, "dlls/%s", knownfn);
+	// Neither override nor known-list found a gamedll.
+	if (!known && !g_config->m_gamedll)
+		return false;
 
-		// Check if the gamedll file exists. If not, try to install it from the cache.
-		if (!valid_gamedir_file(gamedll->pathname))
+	// Use override-dll if specified.
+	if (g_config->m_gamedll)
+	{
+		Q_strncpy(gamedll->pathname, g_config->m_gamedll, sizeof gamedll->pathname - 1);
+		gamedll->pathname[sizeof gamedll->pathname - 1] = '\0';
+
+		// If the path is relative, the gamedll file will be missing and
+		// it might be found in the cache file.
+		if (!is_absolute_path(gamedll->pathname))
 		{
-			Q_snprintf(gamedll->real_pathname, sizeof gamedll->real_pathname, "%s/dlls/%s", gamedll->gamedir, knownfn);
-			install_gamedll(gamedll->pathname, gamedll->real_pathname);
+			char szInstallPath[MAX_PATH];
+			Q_snprintf(szInstallPath, sizeof(szInstallPath), "%s/%s", gamedll->gamedir, gamedll->pathname);
+
+			// If we could successfully install the gamedll from the cache we
+			// rectify the pathname to be a full pathname.
+			if (install_gamedll(gamedll->pathname, szInstallPath))
+			{
+				Q_strncpy(gamedll->pathname, szInstallPath, sizeof(gamedll->pathname));
+			}
 		}
+
+		override = true;
+	}
+	// Else use Known-list dll.
+	else if (known)
+	{
+		Q_snprintf(gamedll->pathname, sizeof(gamedll->pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);
 	}
 	else
 	{
-		// Neither known-list found a gamedll.
+		// Neither override nor known-list found a gamedll.
 		return false;
 	}
-
-	Q_snprintf(gamedll->pathname, sizeof gamedll->pathname, "%s/dlls/%s", gamedll->gamedir, knownfn);
 
 	// get filename from pathname
 	char *cp = Q_strrchr(gamedll->pathname, '/');
@@ -135,11 +151,33 @@ bool setup_gamedll(gamedll_t *gamedll)
 
 	gamedll->file = cp;
 
-	Q_strncpy(gamedll->real_pathname, gamedll->pathname, sizeof gamedll->real_pathname - 1);
-	gamedll->real_pathname[sizeof gamedll->real_pathname - 1] = '\0';
+	// If found, store also the supposed "real" dll path based on the
+	// gamedir, in case it differs from the "override" dll path.
+	if (known && override)
+	{
+		Q_snprintf(gamedll->real_pathname, sizeof(gamedll->real_pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);
+	}
+	else
+	{
+		Q_strncpy(gamedll->real_pathname, gamedll->pathname, sizeof gamedll->real_pathname - 1);
+		gamedll->real_pathname[sizeof gamedll->real_pathname - 1] = '\0';
+	}
 
-	gamedll->desc = known->desc;
-	META_LOG("Recognized game '%s'; using dllfile '%s'", gamedll->name, gamedll->file);
+	if (override)
+	{
+		// generate a desc
+		Q_snprintf(gamedll->desc, sizeof(gamedll->desc), "%s (override)", gamedll->file);
+
+		// log result
+		META_LOG("Overriding game '%s' with dllfile '%s'", gamedll->name, gamedll->file);
+	}
+	else if (known)
+	{
+		Q_strncpy(gamedll->desc, known->desc, sizeof gamedll->desc - 1);
+		gamedll->desc[sizeof gamedll->desc - 1] = '\0';
+
+		META_LOG("Recognized game '%s'; using dllfile '%s'", gamedll->name, gamedll->file);
+	}
 
 	return true;
 }

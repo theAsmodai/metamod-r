@@ -1,7 +1,8 @@
 #include "precompiled.h"
 
-MConfig::MConfig() : m_debuglevel(0), m_plugins_file(nullptr), m_exec_cfg(nullptr), m_list(nullptr), m_filename(nullptr)
+MConfig::MConfig() : m_debuglevel(0), m_gamedll(nullptr), m_exec_cfg(nullptr), m_list(nullptr), m_filename(nullptr)
 {
+	set_directory();
 }
 
 // Initialize default values from the stored options struct.  Has to happen
@@ -17,7 +18,7 @@ option_t *MConfig::find(const char* lookup) const
 {
 	for (auto optp = m_list; optp->name; optp++)
 	{
-		if (!strcmp(optp->name, lookup)) {
+		if (!Q_strcmp(optp->name, lookup)) {
 			return optp;
 		}
 	}
@@ -36,7 +37,7 @@ bool MConfig::set(const char* key, const char* value) const
 
 bool MConfig::set(option_t* setp, const char* setstr)
 {
-	char pathbuf[PATH_MAX ];
+	char pathbuf[PATH_MAX];
 	int* optval = (int *) setp->dest;
 	char** optstr = (char **) setp->dest;
 	// cvar_t *optcvar = (cvar_t *) setp->dest;
@@ -97,7 +98,7 @@ bool MConfig::set(option_t* setp, const char* setstr)
 bool MConfig::load(const char* fn)
 {
 	FILE* fp;
-	char loadfile[PATH_MAX ];
+	char loadfile[PATH_MAX];
 	char line[MAX_CONF_LEN];
 	char *optname, *optval;
 	option_t* optp;
@@ -176,5 +177,29 @@ void MConfig::show() const
 		case CF_NONE:
 			break;
 		}
+	}
+}
+
+void MConfig::set_directory()
+{
+#ifdef _WIN32
+	HMODULE hModule = NULL;
+	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)GiveFnptrsToDll, &hModule);
+	GetModuleFileName(hModule, m_directory, sizeof m_directory);
+#else
+	Dl_info addrInfo;
+	if (dladdr((void *)GiveFnptrsToDll, &addrInfo))
+	{
+		Q_strncpy(m_directory, addrInfo.dli_fname, sizeof m_directory - 1);
+		m_directory[sizeof m_directory - 1] = '\0';
+	}
+#endif
+
+	normalize_pathname(m_directory);
+
+	// get directory
+	char *dir = Q_strrchr(m_directory, '/');
+	if (dir) {
+		*dir = '\0';
 	}
 }

@@ -67,7 +67,7 @@ int valid_gamedir_file(const char* path)
 // able to store a string of PATH_MAX length.
 char* full_gamedir_path(const char* path, char* fullpath)
 {
-	char buf[PATH_MAX ];
+	char buf[PATH_MAX];
 
 	// Build pathname from filename, plus gamedir if relative path.
 	if (is_absolute_path(path))

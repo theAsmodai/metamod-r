@@ -30,14 +30,17 @@ public:
 	bool load(const char *filename);
 	bool set(const char *key, const char *value) const;
 	void show() const;
+	void set_directory();
+	const char *directory() const;
 
 	int m_debuglevel;		// to use for meta_debug
-	char *m_plugins_file;	// ie metamod.ini, plugins.ini
-	char *m_exec_cfg;		// ie metaexec.cfg, exec.cfg
+	char *m_gamedll;		// string if specified in config.ini
+	char *m_exec_cfg;		// ie exec.cfg
 
 private:
 	option_t *m_list;
 	char *m_filename;
+	char m_directory[MAX_PATH];
 
 	option_t *find(const char *lookup) const;
 	static bool set(option_t *setp, const char *value);
@@ -46,3 +49,8 @@ private:
 	void operator=(const MConfig &src);
 	MConfig(const MConfig &src);
 };
+
+inline const char *MConfig::directory() const
+{
+	return m_directory;
+}

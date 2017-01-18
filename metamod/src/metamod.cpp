@@ -6,9 +6,9 @@ MConfig g_static_config;
 MConfig *g_config = &g_static_config;
 option_t g_global_options[] =
 {
-	{ "debuglevel", CF_INT, &g_config->m_debuglevel, "0" },
-	{ "plugins_file", CF_PATH, &g_config->m_plugins_file, PLUGINS_INI },
-	{ "exec_cfg", CF_STR, &g_config->m_exec_cfg, EXEC_CFG },
+	{ "debuglevel",		CF_INT,		&g_config->m_debuglevel,	"0" },
+	{ "gamedll",		CF_PATH,	&g_config->m_gamedll,		NULL },
+	{ "exec_cfg",		CF_STR,		&g_config->m_exec_cfg,		NULL },
 
 	// list terminator
 	{ NULL, CF_NONE, NULL, NULL }
@@ -35,9 +35,15 @@ int g_requestid_counter = 0;
 // Do startup operations...
 void metamod_startup()
 {
-	const char *mmfile = nullptr;
-	const char *cfile = nullptr;
 	const char *cp;
+
+	char configFile[MAX_PATH];
+	char pluginFile[MAX_PATH];
+	char execFile[MAX_PATH];
+
+	Q_snprintf(configFile, sizeof configFile, "%s/%s", g_config->directory(), CONFIG_INI);
+	Q_snprintf(pluginFile, sizeof pluginFile, "%s/%s", g_config->directory(), PLUGINS_INI);
+	Q_snprintf(execFile, sizeof execFile, "%s/%s", g_config->directory(), EXEC_CFG);
 
 	META_CONS("   ");
 	META_CONS("   Metamod-r version %s Copyright (c) 2016-2017 ReHlds Team (rebuild of original Metamod by Will Day)", APP_VERSION_STRD);
@@ -65,25 +71,29 @@ void metamod_startup()
 
 	// Set a slight debug level for developer mode, if debug level not
 	// already set.
-	if ((int) CVAR_GET_FLOAT("developer") != 0 && g_meta_debug.value == 0)
+	if ((int)CVAR_GET_FLOAT("developer") != 0 && g_meta_debug.value == 0)
 		CVAR_SET_FLOAT("meta_debug", 3.0);
 
 	// Init default values
 	g_config->init(g_global_options);
 
 	// Find config file
-	cfile = CONFIG_INI;
 	if ((cp = LOCALINFO("mm_configfile")) && *cp != '\0')
 	{
 		META_LOG("Configfile specified via localinfo: %s", cp);
+
 		if (valid_gamedir_file(cp))
-			cfile = cp;
+		{
+			Q_strncpy(configFile, cp, sizeof configFile - 1);
+			configFile[sizeof configFile - 1] = '\0';
+		}
 		else
-			META_ERROR("Empty/missing config.ini file: %s; falling back to %s", cp, cfile);
+			META_ERROR("Empty/missing config.ini file: %s; falling back to %s", cp, configFile);
 	}
+
 	// Load config file
-	if (valid_gamedir_file(cfile))
-		g_config->load(cfile);
+	if (valid_gamedir_file(configFile))
+		g_config->load(configFile);
 	else
 		META_DEBUG(2, "No config.ini file found: %s", CONFIG_INI);
 
@@ -93,16 +103,19 @@ void metamod_startup()
 		META_LOG("Debuglevel specified via localinfo: %s", cp);
 		g_config->set("debuglevel", cp);
 	}
+
 	if ((cp = LOCALINFO("mm_gamedll")) && *cp != '\0')
 	{
 		META_LOG("Gamedll specified via localinfo: %s", cp);
 		g_config->set("gamedll", cp);
 	}
+
 	if ((cp = LOCALINFO("mm_pluginsfile")) && *cp != '\0')
 	{
 		META_LOG("Pluginsfile specified via localinfo: %s", cp);
 		g_config->set("plugins_file", cp);
 	}
+
 	if ((cp = LOCALINFO("mm_execcfg")) && *cp != '\0')
 	{
 		META_LOG("Execcfg specified via localinfo: %s", cp);
@@ -158,16 +171,8 @@ void metamod_startup()
 	// In fact, we need gamedir even earlier, so moved up above.
 
 	// Fall back to old plugins filename, if configured one isn't found.
-	mmfile = PLUGINS_INI;
 
-	if (!valid_gamedir_file(PLUGINS_INI) && valid_gamedir_file(OLD_PLUGINS_INI))
-		mmfile = OLD_PLUGINS_INI;
-	if (valid_gamedir_file(g_config->m_plugins_file))
-		mmfile = g_config->m_plugins_file;
-	else
-		META_ERROR("g_plugins file is empty/missing: %s; falling back to %s", g_config->m_plugins_file, mmfile);
-
-	g_plugins = new MPluginList(mmfile);
+	g_plugins = new MPluginList(pluginFile);
 
 	if (!meta_load_gamedll())
 	{
@@ -189,23 +194,21 @@ void metamod_startup()
 	// Only attempt load if the file appears to exist and be non-empty, to
 	// avoid confusing users with "couldn't exec exec.cfg" console
 	// messages.
-	if (valid_gamedir_file(g_config->m_exec_cfg))
-		mmfile = g_config->m_exec_cfg;
-
-	else if (valid_gamedir_file(OLD_EXEC_CFG))
-		mmfile = OLD_EXEC_CFG;
-	else
-		mmfile = NULL;
-
-	if (mmfile)
+	if (g_config->m_exec_cfg)
 	{
-		if (mmfile[0] == '/')
-			META_ERROR("Cannot exec absolute pathnames: %s", mmfile);
+		Q_strncpy(execFile, g_config->m_exec_cfg, sizeof execFile - 1);
+		execFile[sizeof execFile - 1] = '\0';
+	}
+
+	if (valid_gamedir_file(execFile))
+	{
+		if (execFile[0] == '/')
+			META_ERROR("Cannot exec absolute pathnames: %s", execFile);
 		else
 		{
 			char cmd[NAME_MAX];
-			META_LOG("Exec'ing metamod exec.cfg: %s...", mmfile);
-			Q_snprintf(cmd, sizeof cmd, "exec %s\n", mmfile);
+			META_LOG("Exec'ing metamod exec.cfg: %s...", execFile);
+			Q_snprintf(cmd, sizeof cmd, "exec %s\n", execFile);
 			SERVER_COMMAND(cmd);
 		}
 	}
