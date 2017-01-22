@@ -99,7 +99,7 @@ char *mm_strtok_r(char *s, const char *delim, char **ptrptr)
 }
 #endif // _WIN32
 
-char* trimbuf(char *str)
+char *trimbuf(char *str)
 {
 	char *ibuf;
 
@@ -119,19 +119,22 @@ char* trimbuf(char *str)
 	return str;
 }
 
-void normalize_pathname(char *path)
+void NormalizePath(char *path)
 {
 #ifdef _WIN32
 	char *cp;
+	for (cp = path; *cp; cp++)
+	{
+		if (isupper(*cp))
+			*cp = tolower(*cp);
 
-	for (cp = path; *cp; cp++) {
-		if (isupper(*cp)) *cp = tolower(*cp);
-		if (*cp == '\\') *cp = '/';
+		if (*cp == '\\')
+			*cp = '/';
 	}
 #endif
 }
 
-bool is_absolute_path(const char *path)
+bool IsAbsolutePath(const char *path)
 {
 	if (path[0] == '/') return true;
 #ifdef _WIN32
@@ -161,7 +164,7 @@ char *realpath(const char *file_name, char *resolved_name)
 		}
 
 		FindClose(handle);
-		normalize_pathname(resolved_name);
+		NormalizePath(resolved_name);
 		return resolved_name;
 	}
 

@@ -262,7 +262,7 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	// copy pathname
 	Q_strncpy(iplug->m_pathname, padd->m_pathname, sizeof iplug->m_pathname - 1);
 	iplug->m_pathname[sizeof iplug->m_pathname - 1] = '\0';
-	normalize_pathname(iplug->m_pathname);
+	NormalizePath(iplug->m_pathname);
 
 	iplug->m_source = padd->m_source;
 	iplug->m_status = padd->m_status;
@@ -280,7 +280,7 @@ bool MPluginList::ini_startup()
 	int n, ln;
 	MPlugin *pmatch;
 
-	if (!valid_gamedir_file(m_inifile))
+	if (!FileExistsInGameDir(m_inifile))
 	{
 		META_ERROR("ini: Metamod plugins file empty or missing: %s", m_inifile);
 		return false;

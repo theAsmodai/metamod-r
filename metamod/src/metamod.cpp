@@ -82,7 +82,7 @@ void metamod_startup()
 	{
 		META_LOG("Configfile specified via localinfo: %s", cp);
 
-		if (valid_gamedir_file(cp))
+		if (FileExistsInGameDir(cp))
 		{
 			Q_strncpy(configFile, cp, sizeof configFile - 1);
 			configFile[sizeof configFile - 1] = '\0';
@@ -91,11 +91,27 @@ void metamod_startup()
 			META_ERROR("Empty/missing config.ini file: %s; falling back to %s", cp, configFile);
 	}
 
+	if (!FileExistsInGameDir(configFile))
+	{
+		Q_strncpy(configFile, g_config->directory(), sizeof configFile - 1);
+		configFile[sizeof configFile - 1] = '\0';
+
+		// Get out of sub directory and check
+		char *dir = Q_strrchr(configFile, '/');
+		if (dir) {
+			*dir = '\0';
+		}
+
+		Q_strcat(configFile, "/" CONFIG_INI);
+		if (!FileExistsInGameDir(configFile))
+		{
+			META_DEBUG(2, "No config.ini file found: %s", CONFIG_INI);
+		}
+	}
+
 	// Load config file
-	if (valid_gamedir_file(configFile))
+	if (FileExistsInGameDir(configFile))
 		g_config->load(configFile);
-	else
-		META_DEBUG(2, "No config.ini file found: %s", CONFIG_INI);
 
 	// Now, override config options with localinfo commandline options.
 	if ((cp = LOCALINFO("mm_debug")) && *cp != '\0')
@@ -164,13 +180,30 @@ void metamod_startup()
 	// gamedll calls engine functions during GiveFnptrsToDll (like hpb_bot
 	// does) then it needs to be non-null so META_ENGINE_HANDLE won't crash.
 	//
-	// However, having replaced valid_file with valid_gamedir_file, we need
+	// However, having replaced valid_file with FileExistsInGameDir, we need
 	// to at least initialize the gameDLL to include the gamedir, before
 	// looking for plugins.ini.
 	//
 	// In fact, we need gamedir even earlier, so moved up above.
 
-	// Fall back to old plugins filename, if configured one isn't found.
+	// Load plugins file
+	if (!FileExistsInGameDir(pluginFile))
+	{
+		Q_strncpy(pluginFile, g_config->directory(), sizeof pluginFile - 1);
+		pluginFile[sizeof pluginFile - 1] = '\0';
+
+		// Get out of sub directory and check
+		char *dir = Q_strrchr(pluginFile, '/');
+		if (dir) {
+			*dir = '\0';
+		}
+
+		Q_strcat(pluginFile, "/" PLUGINS_INI);
+		if (!FileExistsInGameDir(pluginFile))
+		{
+			META_DEBUG(2, "No plugins.ini file found: %s", PLUGINS_INI);
+		}
+	}
 
 	g_plugins = new MPluginList(pluginFile);
 
@@ -200,7 +233,7 @@ void metamod_startup()
 		execFile[sizeof execFile - 1] = '\0';
 	}
 
-	if (valid_gamedir_file(execFile))
+	if (FileExistsInGameDir(execFile))
 	{
 		if (execFile[0] == '/')
 			META_ERROR("Cannot exec absolute pathnames: %s", execFile);
@@ -225,8 +258,8 @@ bool meta_init_gamedll(void)
 	Q_memset(&g_GameDLL, 0, sizeof g_GameDLL);
 
 	GET_GAME_DIR(gamedir);
-	normalize_pathname(gamedir);
-	//
+	NormalizePath(gamedir);
+
 	// As of 1.1.1.1, the engine routine GET_GAME_DIR no longer returns a
 	// full-pathname, but rather just the path specified as the argument to
 	// "-game".
@@ -237,7 +270,7 @@ bool meta_init_gamedll(void)
 	// Note: the code has always assumed the server op wouldn't do:
 	//    hlds -game other/firearms
 	//
-	if (is_absolute_path(gamedir))
+	if (IsAbsolutePath(gamedir))
 	{
 		// Old style; GET_GAME_DIR returned full pathname.  Copy this into
 		// our gamedir, and truncate to get the game name.

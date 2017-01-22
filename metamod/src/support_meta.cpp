@@ -13,18 +13,18 @@ void __declspec(noreturn) do_exit(int exitval)
 // Also, formerly named just "valid_file".
 //
 // Special-case-recognize "/dev/null" as a valid file.
-int valid_gamedir_file(const char* path)
+bool FileExistsInGameDir(const char *path)
 {
 	struct stat st;
 	char buf[PATH_MAX];
 	
 	if (!path)
-		return FALSE;
+		return false;
 
 	if (!Q_strcmp(path, "/dev/null"))
-		return TRUE;
+		return true;
 
-	if (is_absolute_path(path))
+	if (IsAbsolutePath(path))
 	{
 		Q_strncpy(buf, path, sizeof buf);
 		buf[sizeof buf - 1] = '\0';
@@ -36,32 +36,32 @@ int valid_gamedir_file(const char* path)
 	if (ret != 0)
 	{
 		META_DEBUG(5, "Unable to stat '%s': %s", buf, strerror(errno));
-		return FALSE;
+		return false;
 	}
 
 	int reg = S_ISREG(st.st_mode);
 	if (!reg)
 	{
 		META_DEBUG(5, "Not a regular file: %s", buf);
-		return FALSE;
+		return false;
 	}
 
 	if (!st.st_size)
 	{
 		META_DEBUG(5, "Empty file: %s", buf);
-		return FALSE;
+		return false;
 	}
 
 	if (ret == 0 && reg)
-		return TRUE;
+		return true;
 
-	return FALSE;
+	return false;
 }
 
 // Turns path into a full path:
 //  - if not absolute, prepends gamedir
 //  - calls realpath() to collapse ".." and such
-//  - calls normalize_pathname() to fix backslashes, etc
+//  - calls NormalizePath() to fix backslashes, etc
 //
 // Much like realpath, buffer pointed to by fullpath is assumed to be
 // able to store a string of PATH_MAX length.
@@ -70,7 +70,7 @@ char* full_gamedir_path(const char* path, char* fullpath)
 	char buf[PATH_MAX];
 
 	// Build pathname from filename, plus gamedir if relative path.
-	if (is_absolute_path(path))
+	if (IsAbsolutePath(path))
 	{
 		Q_strncpy(buf, path, sizeof buf - 1);
 		buf[sizeof buf - 1] = '\0';
@@ -86,6 +86,6 @@ char* full_gamedir_path(const char* path, char* fullpath)
 	}
 
 	// Replace backslashes, etc.
-	normalize_pathname(fullpath);
+	NormalizePath(fullpath);
 	return fullpath;
 }

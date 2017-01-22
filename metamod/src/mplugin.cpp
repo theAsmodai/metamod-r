@@ -53,7 +53,7 @@ bool MPlugin::ini_parseline(char *_line)
 
 	Q_strncpy(m_filename, token, sizeof m_filename - 1);
 	m_filename[sizeof m_filename - 1] = '\0';
-	normalize_pathname(m_filename);
+	NormalizePath(m_filename);
 
 	// Store name of just the actual _file_, without dir components.
 	char* cp = Q_strrchr(m_filename, '/');
@@ -135,8 +135,7 @@ bool MPlugin::plugin_parseline(const char *fname, int loader_index)
 
 	Q_strncpy(m_filename, fname, sizeof m_filename - 1);
 	m_filename[sizeof m_filename - 1] = '\0';
-
-	normalize_pathname(m_filename);
+	NormalizePath(m_filename);
 
 	//store just name of the actual _file, without path
 	cp = Q_strrchr(m_filename, '/');
@@ -181,7 +180,7 @@ bool MPlugin::cmd_parseline(const char *line)
 
 	Q_strncpy(m_filename, token, sizeof m_filename - 1);
 	m_filename[sizeof m_filename - 1] = '\0';
-	normalize_pathname(m_filename);
+	NormalizePath(m_filename);
 
 	// store name of just the actual _file_, without dir components
 	cp = Q_strrchr(m_filename, '/');
@@ -263,7 +262,7 @@ bool MPlugin::resolve(void)
 		return false;
 	}
 
-	if (is_absolute_path(m_filename))
+	if (IsAbsolutePath(m_filename))
 		found = resolve_prefix(m_filename);
 	else
 		found = resolve_dirs(m_filename);

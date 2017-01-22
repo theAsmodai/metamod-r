@@ -45,7 +45,6 @@ bool rehlds_api_try_init(CSysModule* engineModule, char* failureReason)
 	return true;
 }
 
-
 bool meta_init_rehlds_api() {
 	char failReason[2048];
 

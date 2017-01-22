@@ -195,7 +195,7 @@ void MConfig::set_directory()
 	}
 #endif
 
-	normalize_pathname(m_directory);
+	NormalizePath(m_directory);
 
 	// get directory
 	char *dir = Q_strrchr(m_directory, '/');

@@ -7,7 +7,7 @@
 
 void __declspec(noreturn) do_exit(int exitval);
 
-int valid_gamedir_file(const char *path);
+bool FileExistsInGameDir(const char *path);
 char *full_gamedir_path(const char *path, char *fullpath);
 
 // Turn a variable/function name into the corresponding string, optionally

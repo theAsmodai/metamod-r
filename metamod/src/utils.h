@@ -54,5 +54,5 @@ char *realpath(const char *file_name, char *resolved_name);
 #endif // _WIN32
 
 char* trimbuf(char *str);
-void normalize_pathname(char *path);
-bool is_absolute_path(const char *path);
+void NormalizePath(char *path);
+bool IsAbsolutePath(const char *path);
