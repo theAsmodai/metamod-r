@@ -51,6 +51,7 @@ void CForwardCallbackJIT::naked_main()
 	push(ebp);
 	mov(ebp, esp);
 	push(ebx);
+	and_(esp, 0xFFFFFFF0);
 
 	enum // stack map
 	{
@@ -58,22 +59,27 @@ void CForwardCallbackJIT::naked_main()
 		over_ret = 4
 	};
 
+	auto align = [](size_t v, size_t a)
+	{
+		return (v + a - 1) & ~a;
+	};
+
 	auto globals = ebx;
 	auto mg_backup = m_jitdata->has_ret ? 8 /* orig + over */ : 0;
-	auto framesize = mg_backup + sizeof(meta_globals_t);
+	auto framesize = align(mg_backup + sizeof(meta_globals_t) + m_jitdata->args_count * sizeof(int), 16) - m_jitdata->args_count * sizeof(int);
 
 	if (m_jitdata->has_varargs) {
 		size_t buf_offset = framesize;
 
-		sub(esp, framesize += MAX_STRBUF_LEN);
+		sub(esp, framesize += align(MAX_STRBUF_LEN, 16));
 
 		// format varargs
-		lea(edx, dword_ptr[ebp + 8 + m_jitdata->args_count * 4]); // varargs ptr
+		lea(edx, dword_ptr[ebp + 8 + m_jitdata->args_count * sizeof(int)]); // varargs ptr
 		lea(eax, dword_ptr[esp + buf_offset]); // buf ptr
 		mov(ecx, size_t(vsnprintf));
 
 		push(edx);
-		push(dword_ptr[ebp + 8 + (m_jitdata->args_count - 1) * 4]); // last arg of pfn (format string)
+		push(dword_ptr[ebp + 8 + (m_jitdata->args_count - 1) * sizeof(int)]); // last arg of pfn (format string)
 		push(MAX_STRBUF_LEN);
 		push(eax);
 		call(ecx);
@@ -254,12 +260,9 @@ void CForwardCallbackJIT::naked_main()
 		cmovz(eax, dword_ptr[esp + over_ret]);
 	}
 
-	if (framesize) {
-		add(esp, framesize);
-	}
-
 	// epilogue
 	pop(ebx);
+	mov(esp, ebp);
 	pop(ebp);
 	ret();
 }
