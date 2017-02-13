@@ -48,38 +48,44 @@ CForwardCallbackJIT::CForwardCallbackJIT(jitdata_t* jitdata) : m_jitdata(jitdata
 void CForwardCallbackJIT::naked_main()
 {
 	// prologue
+	push(ebx);
 	push(ebp);
 	mov(ebp, esp);
-	push(ebx);
 	and_(esp, 0xFFFFFFF0);
+
+	enum // constants
+	{
+		first_arg_offset = 12,
+		xmmreg_size = 16
+	};
 
 	enum // stack map
 	{
 		orig_ret = 0,
-		over_ret = 4
+		over_ret = sizeof(int)
 	};
 
 	auto align = [](size_t v, size_t a)
 	{
-		return (v + a - 1) & ~a;
+		return (v + a - 1) & ~(a - 1);
 	};
 
 	auto globals = ebx;
-	auto mg_backup = m_jitdata->has_ret ? 8 /* orig + over */ : 0;
-	auto framesize = align(mg_backup + sizeof(meta_globals_t) + m_jitdata->args_count * sizeof(int), 16) - m_jitdata->args_count * sizeof(int);
+	auto mg_backup = m_jitdata->has_ret ? sizeof(int) * 2 /* orig + over */ : 0;
+	auto framesize = align(mg_backup + sizeof(meta_globals_t) + /* for align */m_jitdata->args_count * sizeof(int), xmmreg_size) - m_jitdata->args_count * sizeof(int);
 
 	if (m_jitdata->has_varargs) {
 		size_t buf_offset = framesize;
 
-		sub(esp, framesize += align(MAX_STRBUF_LEN, 16));
+		sub(esp, framesize += align(MAX_STRBUF_LEN, xmmreg_size));
 
 		// format varargs
-		lea(edx, dword_ptr[ebp + 8 + m_jitdata->args_count * sizeof(int)]); // varargs ptr
+		lea(edx, dword_ptr[ebp + first_arg_offset + m_jitdata->args_count * sizeof(int)]); // varargs ptr
 		lea(eax, dword_ptr[esp + buf_offset]); // buf ptr
 		mov(ecx, size_t(vsnprintf));
 
 		push(edx);
-		push(dword_ptr[ebp + 8 + (m_jitdata->args_count - 1) * sizeof(int)]); // last arg of pfn (format string)
+		push(dword_ptr[ebp + first_arg_offset + (m_jitdata->args_count - 1) * sizeof(int)]); // last arg of pfn (format string)
 		push(MAX_STRBUF_LEN);
 		push(eax);
 		call(ecx);
@@ -91,9 +97,9 @@ void CForwardCallbackJIT::naked_main()
 	// setup globals ptr and backup old data
 	mov(globals, size_t(&g_metaGlobals));
 	movups(xmm0, xmmword_ptr[globals]);
-	mov(eax, dword_ptr[globals + 16]);
+	mov(eax, dword_ptr[globals + xmmreg_size]);
 	movups(xmmword_ptr[esp + mg_backup], xmm0);
-	mov(dword_ptr[esp + mg_backup + 16], eax);
+	mov(dword_ptr[esp + mg_backup + xmmreg_size], eax);
 
 	// call metamod's pre hook if present
 	if (m_jitdata->mm_hook && m_jitdata->mm_hook_time == P_PRE) {
@@ -115,7 +121,7 @@ void CForwardCallbackJIT::naked_main()
 	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
 		auto plug = &m_jitdata->plugins[i];
 
-		if (plug->m_status < PL_RUNNING)
+		if (plug->m_status < PL_RUNNING) // TODO
 			continue;
 
 		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->table_offset);
@@ -250,9 +256,9 @@ void CForwardCallbackJIT::naked_main()
 	}
 
 	movups(xmm0, xmmword_ptr[esp + mg_backup]);
-	mov(eax, dword_ptr[esp + mg_backup + 16]);
+	mov(eax, dword_ptr[esp + mg_backup + xmmreg_size]);
 	movups(xmmword_ptr[globals], xmm0);
-	mov(dword_ptr[globals + 16], eax);
+	mov(dword_ptr[globals + xmmreg_size], eax);
 
 	if (m_jitdata->has_ret) {
 		mov(eax, dword_ptr[esp + orig_ret]);
@@ -261,16 +267,21 @@ void CForwardCallbackJIT::naked_main()
 	}
 
 	// epilogue
-	pop(ebx);
 	mov(esp, ebp);
 	pop(ebp);
+	pop(ebx);
 	ret();
 }
 
 void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
 {
+	enum
+	{
+		first_arg_offset = 12
+	};
+
 	const size_t fixed_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u /* excluding format string */ : 0u);
-	const size_t strbuf_offset = (m_jitdata->has_ret ? 8u : 0u) + sizeof(meta_globals_t);
+	const size_t strbuf_offset = (m_jitdata->has_ret ? sizeof(int) * 2 : 0u) + sizeof(meta_globals_t);
 
 	// push formatted buf instead of format string
 	if (m_jitdata->has_varargs) {
@@ -280,7 +291,7 @@ void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
 
 	// push normal args
 	for (size_t j = fixed_args_count; j > 0; j--)
-		push(dword_ptr[ebp + 8 + (j - 1) * sizeof(int)]);
+		push(dword_ptr[ebp + first_arg_offset + (j - 1) * sizeof(int)]);
 
 	// call
 	call(addr);
