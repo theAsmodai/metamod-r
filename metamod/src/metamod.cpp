@@ -16,6 +16,7 @@ option_t g_global_options[] =
 
 gamedll_t g_GameDLL;
 
+ALIGN16
 meta_globals_t g_metaGlobals;
 
 meta_enginefuncs_t g_plugin_engfuncs;

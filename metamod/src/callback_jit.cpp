@@ -66,22 +66,27 @@ void CForwardCallbackJIT::naked_main()
 
 	enum // stack map
 	{
-		orig_ret = 0,
-		over_ret = sizeof(int)
+		/* META GLOBALS BACKUP */
+		/* STRING BUFFER */
+		over_ret = sizeof(int),
+		orig_ret = 0
 	};
 
 	auto globals = ebx;
-	auto mg_backup = m_jitdata->has_ret ? sizeof(int) * 2 /* orig + over */ : 0;
-	auto framesize = align(mg_backup + sizeof(meta_globals_t) + /* for align */m_jitdata->args_count * sizeof(int), xmmreg_size) - m_jitdata->args_count * sizeof(int);
+	auto locals_size = m_jitdata->has_ret ? sizeof(int) * 2 /* orig + over */ : 0;
+	auto framesize = align(locals_size + sizeof(meta_globals_t) + /* for align */m_jitdata->args_count * sizeof(int), xmmreg_size) - m_jitdata->args_count * sizeof(int);
 
 	if (m_jitdata->has_varargs) {
-		size_t buf_offset = framesize;
+		size_t strbuf_offset = locals_size;
 
 		sub(esp, framesize += align(MAX_STRBUF_LEN, xmmreg_size));
 
 		// format varargs
 		lea(edx, dword_ptr[ebp + first_arg_offset + m_jitdata->args_count * sizeof(int)]); // varargs ptr
-		lea(eax, dword_ptr[esp + buf_offset]); // buf ptr
+		if (strbuf_offset)
+			lea(eax, dword_ptr[esp + strbuf_offset]); // buf ptr
+		else
+			mov(eax, esp);
 		mov(ecx, size_t(vsnprintf));
 
 		push(edx);
@@ -94,12 +99,14 @@ void CForwardCallbackJIT::naked_main()
 	else
 		sub(esp, framesize);
 
+	size_t mg_backup = framesize - xmmreg_size - sizeof(int);
+
 	// setup globals ptr and backup old data
 	mov(globals, size_t(&g_metaGlobals));
-	movups(xmm0, xmmword_ptr[globals]);
+	movaps(xmm0, xmmword_ptr[globals]);
 	mov(eax, dword_ptr[globals + xmmreg_size]);
-	movups(xmmword_ptr[esp + mg_backup], xmm0);
-	mov(dword_ptr[esp + mg_backup + xmmreg_size], eax);
+	movaps(xmmword_ptr[esp + mg_backup + sizeof(int)], xmm0);
+	mov(dword_ptr[esp + mg_backup], eax);
 
 	// call metamod's pre hook if present
 	if (m_jitdata->mm_hook && m_jitdata->mm_hook_time == P_PRE) {
@@ -255,9 +262,9 @@ void CForwardCallbackJIT::naked_main()
 		call_func(ecx);
 	}
 
-	movups(xmm0, xmmword_ptr[esp + mg_backup]);
-	mov(eax, dword_ptr[esp + mg_backup + xmmreg_size]);
-	movups(xmmword_ptr[globals], xmm0);
+	movaps(xmm0, xmmword_ptr[esp + mg_backup + sizeof(int)]);
+	mov(eax, dword_ptr[esp + mg_backup]);
+	movaps(xmmword_ptr[globals], xmm0);
 	mov(dword_ptr[globals + xmmreg_size], eax);
 
 	if (m_jitdata->has_ret) {
@@ -276,12 +283,16 @@ void CForwardCallbackJIT::naked_main()
 void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
 {
 	const size_t fixed_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u /* excluding format string */ : 0u);
-	const size_t strbuf_offset = align((m_jitdata->has_ret ? sizeof(int) * 2 : 0) + sizeof(meta_globals_t) + /* for align */m_jitdata->args_count * sizeof(int), xmmreg_size) - m_jitdata->args_count * sizeof(int);
+	const size_t strbuf_offset = m_jitdata->has_ret ? sizeof(int) * 2 /* orig + over */ : 0;
 
 	// push formatted buf instead of format string
 	if (m_jitdata->has_varargs) {
-		lea(eax, dword_ptr[esp + strbuf_offset]);
-		push(eax);
+		if (strbuf_offset) {
+			lea(eax, dword_ptr[esp + strbuf_offset]);
+			push(eax);
+		}
+		else
+			push(esp);
 	}
 
 	// push normal args
