@@ -39,6 +39,17 @@ private:
 		mg_orig_ret = 12,
 		mg_over_ret = 16,
 	};
+
+	enum
+	{
+		first_arg_offset = 12,
+		xmmreg_size = 16
+	};
+
+	static size_t align(size_t v, size_t a)
+	{
+		return (v + a - 1) & ~(a - 1);
+	}
 };
 
 CForwardCallbackJIT::CForwardCallbackJIT(jitdata_t* jitdata) : m_jitdata(jitdata)
@@ -51,23 +62,12 @@ void CForwardCallbackJIT::naked_main()
 	push(ebx);
 	push(ebp);
 	mov(ebp, esp);
-	and_(esp, 0xFFFFFFF0);
-
-	enum // constants
-	{
-		first_arg_offset = 12,
-		xmmreg_size = 16
-	};
+	and_(esp, 0xFFFFFFF0); // stack must be 16-aligned when we calling subroutines
 
 	enum // stack map
 	{
 		orig_ret = 0,
 		over_ret = sizeof(int)
-	};
-
-	auto align = [](size_t v, size_t a)
-	{
-		return (v + a - 1) & ~(a - 1);
 	};
 
 	auto globals = ebx;
@@ -121,7 +121,7 @@ void CForwardCallbackJIT::naked_main()
 	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
 		auto plug = &m_jitdata->plugins[i];
 
-		if (plug->m_status < PL_RUNNING) // TODO
+		if (plug->m_status < PL_RUNNING) // allow only running and paused
 			continue;
 
 		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->table_offset);
@@ -133,10 +133,10 @@ void CForwardCallbackJIT::naked_main()
 		CUniqueLabel go_next_plugin("go_next_plugin");
 
 		// check status and handler set
-		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
 		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
-		jnz(go_next_plugin);
+		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
 		jecxz(go_next_plugin);
+		jnz(go_next_plugin);
 
 		if (hookid++) {
 			mov(eax, dword_ptr[globals + mg_mres]);
@@ -202,7 +202,7 @@ void CForwardCallbackJIT::naked_main()
 	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
 		auto plug = &m_jitdata->plugins[i];
 
-		if (plug->m_status < PL_RUNNING)
+		if (plug->m_status < PL_RUNNING) // allow only running and paused
 			continue;
 
 		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->post_table_offset);
@@ -214,10 +214,10 @@ void CForwardCallbackJIT::naked_main()
 		CUniqueLabel go_next_plugin("go_next_plugin");
 
 		// check status and handler set
-		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
 		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
-		jnz(go_next_plugin);
+		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
 		jecxz(go_next_plugin);
+		jnz(go_next_plugin);
 
 		if (hookid++) {
 			mov(eax, dword_ptr[globals + mg_mres]);
@@ -275,13 +275,8 @@ void CForwardCallbackJIT::naked_main()
 
 void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
 {
-	enum
-	{
-		first_arg_offset = 12
-	};
-
 	const size_t fixed_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u /* excluding format string */ : 0u);
-	const size_t strbuf_offset = (m_jitdata->has_ret ? sizeof(int) * 2 : 0u) + sizeof(meta_globals_t);
+	const size_t strbuf_offset = align((m_jitdata->has_ret ? sizeof(int) * 2 : 0) + sizeof(meta_globals_t) + /* for align */m_jitdata->args_count * sizeof(int), xmmreg_size) - m_jitdata->args_count * sizeof(int);
 
 	// push formatted buf instead of format string
 	if (m_jitdata->has_varargs) {
