@@ -1,8 +1,5 @@
 #pragma once
 
-#include "plinfo.h"	// plugin_info_t, etc
-#include "sdk_util.h"	// hudtextparms_t, etc
-
 // max buffer size for printed messages
 #define MAX_LOGMSG_LEN 1024
 
