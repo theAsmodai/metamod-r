@@ -1,8 +1,5 @@
 #pragma once
 
-#include "sdk_util.h"
-#include "osdep.h"
-
 typedef void (*FN_GAMEINIT)();
 
 // Typedefs for these are provided in SDK engine/eiface.h, but I didn't
@@ -15,4 +12,6 @@ C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion
 C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion);
 C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion);
 
+#ifdef METAMOD_CORE
 void compile_gamedll_callbacks();
+#endif

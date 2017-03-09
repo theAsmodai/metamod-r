@@ -14,8 +14,8 @@ typedef int (*GET_ENGINE_FUNCTIONS_FN)(enginefuncs_s *pengfuncsFromEngine, int *
 #ifdef METAMOD_CORE
 	#include "meta_eiface.h"	// meta_enginefuncs_t
 	extern meta_enginefuncs_t g_meta_engfuncs;
+
+	void compile_engine_callbacks();
 #else
 	extern enginefuncs_t meta_engfuncs;
 #endif
-
-void compile_engine_callbacks();

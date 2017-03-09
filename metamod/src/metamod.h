@@ -53,9 +53,8 @@ extern MRegCvarList *g_regCvars;
 // List of user messages registered by gamedll.
 extern MRegMsgList *g_regMsgs;
 
-#ifdef UNFINISHED
-// List of event/logline hooks requested by plugins.
-extern MHookList *Hooks;
+#ifdef METAMOD_CORE
+ALIGN16
 #endif
 
 // Data provided to plugins.

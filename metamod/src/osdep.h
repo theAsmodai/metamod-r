@@ -21,8 +21,6 @@
 	#define unlikely(x)    __builtin_expect(!!(x), 0)
 #endif
 
-#include "mreg.h"
-
 #ifdef _WIN32
 typedef HINSTANCE module_handle_t;
 #else

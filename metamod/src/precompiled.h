@@ -2,19 +2,20 @@
 
 #include "version/appversion.h"
 
-#define PSAPI_VERSION 1
-
 #if defined(linux) || defined(__APPLE__)
 // enable extra routines in system header files, like dladdr
 #ifndef _GNU_SOURCE
 	#define _GNU_SOURCE
 #endif
 #include <signal.h>			// sigaction, etc
+#else
+#define PSAPI_VERSION 1
 #endif
 
 #include <vector>
 #include <array>
 
+#include "osconfig.h"
 #include "jitasm.h"
 
 #define CreateInterface mm_CreateInterface
@@ -34,7 +35,6 @@
 #include "dllapi.h"
 #include "engine_api.h"
 #include "game_support.h"
-#include "h_export.h"
 #include "meta_eiface.h"
 #include "mreg.h"
 #include "meta_api.h"

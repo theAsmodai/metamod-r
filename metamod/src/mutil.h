@@ -38,14 +38,6 @@ struct mutil_funcs_t
 	const char *	(*pfnIsQueryingClientCvar)	(plid_t plid, const edict_t *pEdict);
 	int		(*pfnMakeRequestId)		(plid_t plid);
 	void		(*pfnGetHookTables)		(plid_t plid, enginefuncs_t **peng, DLL_FUNCTIONS **pdll, NEW_DLL_FUNCTIONS **pnewdll);
-#ifdef UNFINISHED
-	int		(*pfnHookGameEvent)		(plid_t plid, game_event_t event, event_func_t pfnHandle);
-	int		(*pfnHookLogTrigger)		(plid_t plid, const char *trigger, logmatch_func_t pfnHandle);
-	int		(*pfnHookLogString)		(plid_t plid, const char *string, logmatch_func_t pfnHandle);
-	int		(*pfnHookLogRegex)		(plid_t plid, const char *pattern, logmatch_func_t pfnHandle);
-	qboolean	(*pfnRemoveHookID)		(plid_t plid, int hookid);
-	int		(*pfnRemoveHookAll)		(plid_t plid);
-#endif
 };
 
 extern mutil_funcs_t g_MetaUtilFunctions;
