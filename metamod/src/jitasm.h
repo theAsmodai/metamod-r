@@ -321,7 +321,7 @@ namespace detail
 
 		bool operator==(const Opd& rhs) const
 		{
-			if ((opdtype_ & O_TYPE_TYPE_MASK) != (rhs.opdtype_ & O_TYPE_TYPE_MASK) || opdsize_ != opdsize_) {return false;}
+			if ((opdtype_ & O_TYPE_TYPE_MASK) != (rhs.opdtype_ & O_TYPE_TYPE_MASK) || rhs.opdsize_ != opdsize_) {return false;}
 			if (IsReg()) {return reg_ == rhs.reg_ && reg_assignable_ == rhs.reg_assignable_;}
 			if (IsMem()) {return base_ == rhs.base_ && index_ == rhs.index_ && scale_ == rhs.scale_ && disp_ == rhs.disp_ && addrsize_ == rhs.addrsize_;}
 			if (IsImm()) {return imm_ == rhs.imm_;}
@@ -1726,9 +1726,15 @@ struct Frontend
 		return codebuff_.GetCodeSize();
 	}
 
-	void AppendInstr(InstrID id, uint32 opcode, uint32 encoding_flag, const detail::Opd& opd1 = detail::Opd(), const detail::Opd& opd2 = detail::Opd(), const detail::Opd& opd3 = detail::Opd(), const detail::Opd& opd4 = detail::Opd(), const detail::Opd& opd5 = detail::Opd(), const detail::Opd& opd6 = detail::Opd())
+	void _AppendInstr(InstrID id, uint32 opcode, uint32 encoding_flag, const detail::Opd& opd1, const detail::Opd& opd2, const detail::Opd& opd3, const detail::Opd& opd4, const detail::Opd& opd5, const detail::Opd& opd6)
 	{
 		instrs_.push_back(Instr(id, opcode, encoding_flag, opd1, opd2, opd3, opd4, opd5, opd6));
+	}
+
+	void AppendInstr(InstrID id, uint32 opcode, uint32 encoding_flag, const detail::Opd& opd1 = detail::Opd(), const detail::Opd& opd2 = detail::Opd(), const detail::Opd& opd3 = detail::Opd(), const detail::Opd& opd4 = detail::Opd(), const detail::Opd& opd5 = detail::Opd(), const detail::Opd& opd6 = detail::Opd())
+	{
+		#pragma noinline
+		_AppendInstr(id, opcode, encoding_flag, opd1, opd2, opd3, opd4, opd5, opd6);
 	}
 
 	void AppendJmp(size_t label_id)
@@ -1924,6 +1930,7 @@ struct Frontend
 #ifndef JITASM64
 	void call(const Reg16& dst)	{AppendInstr(I_CALL, 0xFF, E_OPERAND_SIZE_PREFIX, Imm8(2), R(dst));}
 	void call(const Reg32& dst)	{AppendInstr(I_CALL, 0xFF, 0, Imm8(2), R(dst));}
+	void call(const Mem32& dst) {AppendInstr(I_CALL, 0xFF, 0, Imm8(2), R(dst));} // Imm8(2) = register/opcode
 #else
 	void call(const Reg64& dst)	{AppendInstr(I_CALL, 0xFF, 0, Imm8(2), R(dst));}
 #endif
@@ -3994,7 +4001,7 @@ struct Frontend
 	void vblendvps(const YmmReg& dst, const YmmReg& src1, const Mem256& src2, const YmmReg& mask)	{AppendInstr(I_BLENDVPS, 0x4A, E_VEX_256 | E_VEX_66_0F3A, W(dst), R(src2), R(src1), R(mask));}
 	void vbroadcastss(const XmmReg& dst, const Mem32& src)	{AppendInstr(I_VBROADCASTSS, 0x18, E_VEX_128_66_0F38_W0, W(dst), R(src));}
 	void vbroadcastss(const YmmReg& dst, const Mem32& src)	{AppendInstr(I_VBROADCASTSS, 0x18, E_VEX_256_66_0F38_W0, W(dst), R(src));}
-	void vbroadcastsd(const YmmReg& dst, const Mem64 src)	{AppendInstr(I_VBROADCASTSD, 0x19, E_VEX_256_66_0F38_W0, W(dst), R(src));}
+	void vbroadcastsd(const YmmReg& dst, const Mem64& src)	{AppendInstr(I_VBROADCASTSD, 0x19, E_VEX_256_66_0F38_W0, W(dst), R(src));}
 	void vbroadcastf128(const YmmReg& dst, const Mem128& src)	{AppendInstr(I_VBROADCASTF128, 0x1A, E_VEX_256_66_0F38_W0, W(dst), R(src));}
 	void vcmppd(const XmmReg& dst, const XmmReg& src1, const XmmReg& src2, const Imm8& imm)	{AppendInstr(I_CMPPD, 0xC2, E_VEX_128_66_0F_WIG, W(dst), R(src2), R(src1), imm);}
 	void vcmppd(const XmmReg& dst, const XmmReg& src1, const Mem128& src2, const Imm8& imm)	{AppendInstr(I_CMPPD, 0xC2, E_VEX_128_66_0F_WIG, W(dst), R(src2), R(src1), imm);}
@@ -4036,11 +4043,11 @@ struct Frontend
 	void vcvtps2pd(const XmmReg& dst, const Mem64& src)		{AppendInstr(I_CVTPS2PD, 0x5A, E_VEX_128_0F_WIG, W(dst), R(src));}
 	void vcvtps2pd(const YmmReg& dst, const XmmReg& src)	{AppendInstr(I_CVTPS2PD, 0x5A, E_VEX_256_0F_WIG, W(dst), R(src));}
 	void vcvtps2pd(const YmmReg& dst, const Mem128& src)	{AppendInstr(I_CVTPS2PD, 0x5A, E_VEX_256_0F_WIG, W(dst), R(src));}
-	void vcvtsd2si(const Reg32 dst, const XmmReg& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W0, W(dst), R(src));}
-	void vcvtsd2si(const Reg32 dst, const Mem64& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W0, W(dst), R(src));}
+	void vcvtsd2si(const Reg32& dst, const XmmReg& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W0, W(dst), R(src));}
+	void vcvtsd2si(const Reg32& dst, const Mem64& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W0, W(dst), R(src));}
 #ifdef JITASM64
-	void vcvtsd2si(const Reg64 dst, const XmmReg& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W1, W(dst), R(src));}
-	void vcvtsd2si(const Reg64 dst, const Mem64& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W1, W(dst), R(src));}
+	void vcvtsd2si(const Reg64& dst, const XmmReg& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W1, W(dst), R(src));}
+	void vcvtsd2si(const Reg64& dst, const Mem64& src)	{AppendInstr(I_CVTSD2SI, 0x2D, E_VEX_128 | E_VEX_F2_0F | E_VEX_W1, W(dst), R(src));}
 #endif
 	void vcvtsd2ss(const XmmReg& dst, const XmmReg& src1, const XmmReg& src2)	{AppendInstr(I_CVTSD2SS, 0x5A, E_VEX_128 | E_VEX_F2_0F, W(dst), R(src2), R(src1));}
 	void vcvtsd2ss(const XmmReg& dst, const XmmReg& src1, const Mem64& src2)	{AppendInstr(I_CVTSD2SS, 0x5A, E_VEX_128 | E_VEX_F2_0F, W(dst), R(src2), R(src1));}
@@ -6243,7 +6250,6 @@ namespace compiler
 				InstrID instr_id = f.instrs_[instr_idx].GetID();
 				if (Frontend::IsJump(instr_id) || instr_id == I_RET || instr_id == I_IRET) {
 					// Jump instruction always terminate basic block
-					BlockList::iterator next_block;
 					if (instr_idx + 1 < cur_block->instr_end) {
 						// Split basic block
 						split(blocks_.begin() + block_idx, instr_idx + 1);
