@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "metamod", "..\metamod\msvc\metamod.vcxproj", "{02832A39-E902-46B7-8D47-911C37CF41B0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "example_plugin", "..\metamod\extra\example\msvc\example_plugin.vcxproj", "{1B03767B-CB83-4A1B-8480-EF08D557838B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{02832A39-E902-46B7-8D47-911C37CF41B0}.Debug|Win32.Build.0 = Debug|Win32
 		{02832A39-E902-46B7-8D47-911C37CF41B0}.Release|Win32.ActiveCfg = Release|Win32
 		{02832A39-E902-46B7-8D47-911C37CF41B0}.Release|Win32.Build.0 = Release|Win32
+		{1B03767B-CB83-4A1B-8480-EF08D557838B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1B03767B-CB83-4A1B-8480-EF08D557838B}.Debug|Win32.Build.0 = Debug|Win32
+		{1B03767B-CB83-4A1B-8480-EF08D557838B}.Release|Win32.ActiveCfg = Release|Win32
+		{1B03767B-CB83-4A1B-8480-EF08D557838B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

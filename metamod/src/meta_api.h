@@ -1,9 +1,9 @@
 #pragma once
 
+#include "h_export.h"
 #include "dllapi.h"				// GETENTITYAPI_FN, etc
 #include "engine_api.h"				// GET_ENGINE_FUNCTIONS_FN, etc
 #include "enginecallbacks.h"
-#include "h_export.h"
 #include "plinfo.h"				// plugin_info_t, etc
 #include "mutil.h"
 

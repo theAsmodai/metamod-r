@@ -68,6 +68,14 @@ task publishPrepareFiles << {
 		from 'metamod/src/plinfo.h'
 		into 'publish/publishRoot/metamod/sdk'
 	}
+	copy {
+		from 'metamod/extra'
+		into 'publish/publishRoot/metamod'
+	}
+	copy {
+		from 'publish/publishRoot/metamod/sdk'
+		into 'publish/publishRoot/metamod/example/include/metamod'
+	}
 }
 
 task publishPackage(type: Zip, dependsOn: 'publishPrepareFiles') {

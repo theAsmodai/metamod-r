@@ -130,25 +130,6 @@ void EXT_FUNC mutil_LogDeveloper(plid_t plid, const char* fmt, ...)
 	ALERT(at_logged, "[%s] dev: %s\n", plid->logtag, buf);
 }
 
-// Print message on center of all player's screens.  Uses default text
-// parameters (color green, 10 second fade-in).
-void EXT_FUNC mutil_CenterSay(plid_t plid, const char* fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	mutil_CenterSayVarargs(plid, g_default_csay_tparms, fmt, ap);
-	va_end(ap);
-}
-
-// Print a center-message, with given text parameters.
-void EXT_FUNC mutil_CenterSayParms(plid_t plid, hudtextparms_t tparms, const char* fmt, ...)
-{
-	va_list ap;
-	va_start(ap, fmt);
-	mutil_CenterSayVarargs(plid, tparms, fmt, ap);
-	va_end(ap);
-}
-
 // Print a center-message, with text parameters and varargs.  Provides
 // functionality to the above center_say interfaces.
 void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const char* fmt, va_list ap)
@@ -166,6 +147,25 @@ void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const c
 
 		UTIL_HudMessage(pEntity, tparms, buf);
 	}
+}
+
+// Print message on center of all player's screens.  Uses default text
+// parameters (color green, 10 second fade-in).
+void EXT_FUNC mutil_CenterSay(plid_t plid, const char* fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	mutil_CenterSayVarargs(plid, g_default_csay_tparms, fmt, ap);
+	va_end(ap);
+}
+
+// Print a center-message, with given text parameters.
+void EXT_FUNC mutil_CenterSayParms(plid_t plid, hudtextparms_t tparms, const char* fmt, ...)
+{
+	va_list ap;
+	va_start(ap, fmt);
+	mutil_CenterSayVarargs(plid, tparms, fmt, ap);
+	va_end(ap);
 }
 
 // Allow plugins to call the entity functions in the GameDLL.  In
@@ -379,7 +379,8 @@ void EXT_FUNC mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIO
 }
 
 // Meta Utility Function table.
-mutil_funcs_t g_MetaUtilFunctions = {
+mutil_funcs_t g_MetaUtilFunctions =
+{
 	mutil_LogConsole,				// pfnLogConsole
 	mutil_LogMessage,				// pfnLogMessage
 	mutil_LogError,					// pfnLogError
