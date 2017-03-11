@@ -344,7 +344,7 @@ namespace detail
 		JITASM_ASSERT(opd.IsReg() && (opd.opdtype_ & O_TYPE_TYPE_MASK) == (constraint.opdtype_ & O_TYPE_TYPE_MASK) && !constraint.GetReg().IsSymbolic());
 		Opd o(opd);
 		o.opdtype_ = static_cast<OpdType>(static_cast<int>(o.opdtype_) | O_TYPE_DUMMY);
-		o.reg_assignable_ = (1 << constraint.reg_.id);
+		o.reg_assignable_ = uint32(1 << constraint.reg_.id);
 		return o;
 	}
 
@@ -910,9 +910,9 @@ struct Backend
 	void dd(uint64 d) {put_bytes(&d, 4);}
 	void dq(uint64 q) {put_bytes(&q, 8);}
 
-	uint8 GetWRXB(int w, const detail::Opd& reg, const detail::Opd& r_m)
+	uint8 GetWRXB(unsigned int w, const detail::Opd& reg, const detail::Opd& r_m)
 	{
-		uint8 wrxb = w ? 8 : 0;
+		uint8 wrxb = uint8(w ? 8 : 0);
 		if (reg.IsReg()) {
 			if (!reg.GetReg().IsInvalid() && reg.GetReg().id >= R8) wrxb |= 4;
 		}
@@ -933,7 +933,7 @@ struct Backend
 #ifdef JITASM64
 			if (r_m.IsMem() && r_m.GetAddressSize() != O_SIZE_64) db(0x67);
 #endif
-			uint8 vvvv = vex.IsReg() ? 0xF - (uint8) vex.GetReg().id : 0xF;
+			uint8 vvvv = uint8(vex.IsReg() ? 0xF - (uint8) vex.GetReg().id : 0xF);
 			uint8 mmmmm = (flag & E_VEX_MMMMM_MASK) >> E_VEX_MMMMM_SHIFT;
 			uint8 pp = static_cast<uint8>((flag & E_VEX_PP_MASK) >> E_VEX_PP_SHIFT);
 			uint8 wrxb = GetWRXB(flag & E_VEX_W, reg, r_m);

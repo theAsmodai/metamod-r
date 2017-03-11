@@ -3,7 +3,7 @@
 #define MM_PRE_HOOK
 #define MM_POST_HOOK
 
-enum
+enum : uint8
 {
 	P_PRE,		// plugin function called before gamedll
 	P_POST,		// plugin function called after gamedll

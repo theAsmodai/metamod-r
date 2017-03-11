@@ -7,7 +7,7 @@ class CUniqueLabel
 public:
 	CUniqueLabel(const char* name) : m_name(name)
 	{
-		m_name += m_unique_index++;
+		m_name += std::to_string(m_unique_index++);
 	}
 
 	operator std::string&()
@@ -357,7 +357,7 @@ bool CJit::is_hook_needed(jitdata_t* jitdata)
 	if (!jitdata->plugins)
 		return false;
 
-	for (int i = 0, hookid = 0; i < jitdata->plugins_count; i++) {
+	for (int i = 0; i < jitdata->plugins_count; i++) {
 		auto plug = &jitdata->plugins[i];
 
 		const size_t fn_table			= *(size_t *)(size_t(plug) + jitdata->table_offset);

@@ -2,7 +2,7 @@
 
 #define CDATA_DLL_H(x, p, h)		CDATA_ENTRY(DLL_FUNCTIONS, x, p, size_t(h))
 #define CDATA_DLL(x)				CDATA_ENTRY(DLL_FUNCTIONS, x, P_PRE, 0u)
-#define CDATA_NEWDLL_H(x, p, h)		CDATA_ENTRY(NEW_DLL_FUNCTIONS, x, p, size_t(h))
+#define CDATA_NEWDLL_H(x, p, h)		CDATA_ENTRY(NEW_DLL_FUNCTIONS, x, p, uint8(h))
 #define CDATA_NEWDLL(x)				CDATA_ENTRY(NEW_DLL_FUNCTIONS, x, P_PRE, 0u)
 
 DLL_FUNCTIONS sFunctionTable;

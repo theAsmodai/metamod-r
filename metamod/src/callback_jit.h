@@ -1,6 +1,6 @@
 #pragma once
 
-#define CDATA_ENTRY(s, x, p, h)	{#x, offsetof(s, x), getArgsCount(decltype(s##::##x)()), !is_void(decltype(s##::##x)()), is_varargs(decltype(s##::##x)()), p, h}
+#define CDATA_ENTRY(s, x, p, h)	{#x, offsetof(s, x), (uint8)getArgsCount(decltype(s##::##x)()), !is_void(decltype(s##::##x)()), is_varargs(decltype(s##::##x)()), p, h}
 
 struct jitdata_t
 {
