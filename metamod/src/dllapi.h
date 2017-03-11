@@ -14,4 +14,5 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 
 #ifdef METAMOD_CORE
 void compile_gamedll_callbacks();
+void disable_clientcommand_fwd();
 #endif

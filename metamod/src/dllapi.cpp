@@ -22,6 +22,7 @@ void MM_PRE_HOOK EXT_FUNC mm_ClientDisconnect(edict_t *pEntity)
 	g_players.clear_player_cvar_query(pEntity);
 }
 
+// this forward can be disabled from metamod.cpp
 void MM_PRE_HOOK mm_ClientCommand(edict_t *pEntity)
 {
 	if (!strcmp(CMD_ARGV(0), "meta")) {
@@ -280,4 +281,9 @@ void compile_gamedll_callbacks()
 
 	compile_dllfunc_callbacks();
 	compile_newdllfunc_callbacks();
+}
+
+void disable_clientcommand_fwd()
+{
+	g_dllfunc_cdata[offsetof(DLL_FUNCTIONS, pfnClientCommand) / sizeof(int)].mm_hook = 0;
 }

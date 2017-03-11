@@ -7,11 +7,12 @@ MConfig *g_config = &g_static_config;
 option_t g_global_options[] =
 {
 	{ "debuglevel",		CF_INT,		&g_config->m_debuglevel,	"0" },
-	{ "gamedll",		CF_PATH,	&g_config->m_gamedll,		NULL },
-	{ "exec_cfg",		CF_STR,		&g_config->m_exec_cfg,		NULL },
+	{ "gamedll",		CF_PATH,	&g_config->m_gamedll,		nullptr },
+	{ "exec_cfg",		CF_STR,		&g_config->m_exec_cfg,		nullptr },
+	{ "clientmeta",		CF_BOOL,	&g_config->m_clientmeta,	false },
 
 	// list terminator
-	{ NULL, CF_NONE, NULL, NULL }
+	{ nullptr, CF_NONE, nullptr, nullptr }
 };
 
 gamedll_t g_GameDLL;
@@ -139,10 +140,19 @@ void metamod_startup()
 		g_config->set("exec_cfg", cp);
 	}
 
+	if ((cp = LOCALINFO("mm_clientmeta")) && *cp != '\0')
+	{
+		META_LOG("Clientmeta specified via localinfo: %s", cp);
+		g_config->set("clientmeta", cp);
+	}
+
 	// Check for an initial debug level, since cfg files don't get exec'd
 	// until later.
 	if (g_config->m_debuglevel != 0)
 		CVAR_SET_FLOAT("meta_debug", g_config->m_debuglevel);
+
+	if (!g_config->m_clientmeta)
+		disable_clientcommand_fwd();
 
 	// Prepare for registered commands from plugins.
 	g_regCmds = new MRegCmdList();

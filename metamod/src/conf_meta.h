@@ -36,6 +36,7 @@ public:
 	int m_debuglevel;		// to use for meta_debug
 	char *m_gamedll;		// string if specified in config.ini
 	char *m_exec_cfg;		// ie exec.cfg
+	int m_clientmeta;
 
 private:
 	option_t *m_list;
