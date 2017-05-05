@@ -23,7 +23,7 @@ option_t *MConfig::find(const char* lookup) const
 		}
 	}
 	
-	return NULL;
+	return nullptr;
 }
 
 bool MConfig::set(const char* key, const char* value) const
@@ -97,18 +97,16 @@ bool MConfig::set(option_t* setp, const char* setstr)
 
 bool MConfig::load(const char* fn)
 {
-	FILE* fp;
 	char loadfile[PATH_MAX];
 	char line[MAX_CONF_LEN];
 	char *optname, *optval;
 	option_t* optp;
-	int ln;
 
 	// Make full pathname (from gamedir if relative, collapse "..",
 	// backslashes, etc).
 	full_gamedir_path(fn, loadfile);
 
-	fp = fopen(loadfile, "r");
+	FILE* fp = fopen(loadfile, "r");
 	if (!fp)
 	{
 		META_ERROR("unable to open config file '%s': %s", loadfile, strerror(errno));
@@ -116,7 +114,7 @@ bool MConfig::load(const char* fn)
 	}
 
 	META_DEBUG(2, "Loading from config file: %s", loadfile);
-	for (ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++)
+	for (int ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++)
 	{
 		if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2))
 			continue;
@@ -127,7 +125,7 @@ bool MConfig::load(const char* fn)
 			continue;
 		}
 		
-		if (!(optval = strtok(NULL, "\r\n")))
+		if (!(optval = strtok(nullptr, "\r\n")))
 		{
 			META_ERROR("'%s' line %d: bad config format: missing value", loadfile, ln);
 			continue;
@@ -183,7 +181,7 @@ void MConfig::show() const
 void MConfig::set_directory()
 {
 #ifdef _WIN32
-	HMODULE hModule = NULL;
+	HMODULE hModule = nullptr;
 	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR)GiveFnptrsToDll, &hModule);
 	GetModuleFileName(hModule, m_directory, sizeof m_directory);
 #else

@@ -243,7 +243,7 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	if (!iplug)
 	{
 		META_ERROR("Couldn't add plugin '%s' to list; reached max plugins (%d)", padd->m_file, MAX_PLUGINS);
-		return NULL;
+		return nullptr;
 	}
 
 	// copy filename into this free slot
@@ -321,7 +321,7 @@ bool MPluginList::ini_startup()
 
 		// Check for a matching platform with different platform specifics
 		// level.
-		if (NULL != (pmatch = find_match(&m_plist[n])))
+		if (nullptr != (pmatch = find_match(&m_plist[n])))
 		{
 			if (pmatch->m_pfspecific >= m_plist[n].m_pfspecific)
 			{
@@ -390,7 +390,7 @@ bool MPluginList::ini_refresh()
 		{
 			// Check for a matching platform with higher platform specifics
 			// level.
-			if (NULL != (pl_found = find_match(&pl_temp)))
+			if (nullptr != (pl_found = find_match(&pl_temp)))
 			{
 				if (pl_found->m_pfspecific >= pl_temp.m_pfspecific)
 				{

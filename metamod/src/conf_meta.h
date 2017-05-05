@@ -45,10 +45,6 @@ private:
 
 	option_t *find(const char *lookup) const;
 	static bool set(option_t *setp, const char *value);
-	// Private; to satisfy -Weffc++ "has pointer data members but does
-	// not override" copy/assignment constructor.
-	void operator=(const MConfig &src);
-	MConfig(const MConfig &src);
 };
 
 inline const char *MConfig::directory() const

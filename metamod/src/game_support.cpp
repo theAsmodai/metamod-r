@@ -14,7 +14,7 @@ const game_modinfo_t g_known_games[] = {
 	{ "czero",	"cs.so",		"mp.dll",		"Counter-Strike:Condition Zero" },
 
 	// End of list terminator:
-	{ NULL, NULL, NULL, NULL }
+	{ nullptr, nullptr, nullptr, nullptr }
 };
 
 // Find a modinfo corresponding to the given game name.

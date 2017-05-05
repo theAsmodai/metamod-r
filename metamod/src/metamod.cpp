@@ -150,7 +150,6 @@ void metamod_startup()
 	// until later.
 	if (g_config->m_debuglevel != 0)
 		CVAR_SET_FLOAT("meta_debug", g_config->m_debuglevel);
-
 	if (!g_config->m_clientmeta)
 		disable_clientcommand_fwd();
 

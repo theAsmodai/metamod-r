@@ -884,7 +884,7 @@ struct Backend
 	size_t	buffsize_;
 	size_t	size_;
 
-	Backend(void* pbuff = NULL, size_t buffsize = 0) : pbuff_((uint8*) pbuff), buffsize_(buffsize), size_(0)
+	Backend(void* pbuff = nullptr, size_t buffsize = 0) : pbuff_((uint8*) pbuff), buffsize_(buffsize), size_(0)
 	{
 		memset(pbuff, 0xCC, buffsize);	// INT3
 	}
@@ -1323,7 +1323,7 @@ namespace detail
 		size_t	buffsize_;
 
 	public:
-		CodeBuffer() : pbuff_(NULL), codesize_(0), buffsize_(0) {}
+		CodeBuffer() : pbuff_(nullptr), codesize_(0), buffsize_(0) {}
 		~CodeBuffer() {Reset(0);}
 
 		void* GetPointer() const {return pbuff_;}
@@ -1338,13 +1338,13 @@ namespace detail
 #else
 				munmap(pbuff_, buffsize_);
 #endif
-				pbuff_ = NULL;
+				pbuff_ = nullptr;
 				codesize_ = 0;
 				buffsize_ = 0;
 			}
 			if (codesize) {
 #if defined(JITASM_WIN)
-				void* pbuff = ::VirtualAlloc(NULL, codesize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+				void* pbuff = ::VirtualAlloc(nullptr, codesize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 				if (!pbuff) {
 					JITASM_ASSERT(0);
 					return false;
@@ -1355,7 +1355,7 @@ namespace detail
 #else
 				int pagesize = getpagesize();
 				size_t buffsize = (codesize + pagesize - 1) / pagesize * pagesize;
-				void* pbuff = mmap(NULL, buffsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, -1, 0);
+				void* pbuff = mmap(nullptr, buffsize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANON, -1, 0);
 				if (!pbuff) {
 					JITASM_ASSERT(0);
 					return false;
@@ -5584,7 +5584,7 @@ namespace compiler
 			}
 
 			// build interval
-			BitVector *last_liveness = NULL;
+			BitVector *last_liveness = nullptr;
 			std::vector<uint32> reg_assignables;
 			bool last_reg_constraints = false;
 			bool last_stack_vars = false;
@@ -5648,7 +5648,7 @@ namespace compiler
 			for (size_t v = 0; v < use_points.size(); ++v) {
 				RegUsePointRange range(use_points[v]);
 				for (size_t i = 0; i < intervals.size(); ++i) {
-					const Interval *next_interval  = i + 1 < intervals.size() ? &intervals[i + 1] : NULL;
+					const Interval *next_interval  = i + 1 < intervals.size() ? &intervals[i + 1] : nullptr;
 					intervals[i].UpdateUse(v, range, next_interval);
 				}
 			}
@@ -5664,7 +5664,7 @@ namespace compiler
 			for (size_t v = 0; v < use_points.size(); ++v) {
 				RegUsePointRange range(use_points[v]);
 				for (size_t i = interval_idx; i < interval_idx + 2; ++i) {
-					const Interval *next_interval  = i + 1 < intervals.size() ? &intervals[i + 1] : NULL;
+					const Interval *next_interval  = i + 1 < intervals.size() ? &intervals[i + 1] : nullptr;
 					intervals[i].UpdateUse(v, range, next_interval);
 				}
 			}
@@ -5921,7 +5921,7 @@ namespace compiler
 		size_t loop_depth;					///< Loop nesting depth
 		Lifetime lifetime[3];				///< Variable lifetime (0: GP, 1: MMX, 2: XMM/YMM)
 
-		BasicBlock(size_t instr_begin_, size_t instr_end_, BasicBlock *successor0 = NULL, BasicBlock *successor1 = NULL) : instr_begin(instr_begin_), instr_end(instr_end_), depth((size_t)-1), dfs_parent(NULL), immediate_dominator(NULL), loop_depth(0) {
+		BasicBlock(size_t instr_begin_, size_t instr_end_, BasicBlock *successor0 = nullptr, BasicBlock *successor1 = nullptr) : instr_begin(instr_begin_), instr_end(instr_end_), depth((size_t)-1), dfs_parent(nullptr), immediate_dominator(nullptr), loop_depth(0) {
 			successor[0] = successor0;
 			successor[1] = successor1;
 		}
@@ -6054,7 +6054,7 @@ namespace compiler
 					dom[w] = dom[dom[w]];
 				depth_first_blocks[w]->immediate_dominator = depth_first_blocks[dom[w]];
 			}
-			depth_first_blocks[0]->immediate_dominator = NULL;
+			depth_first_blocks[0]->immediate_dominator = nullptr;
 		}
 	};
 
@@ -6156,7 +6156,7 @@ namespace compiler
 			new_block->successor[1] = target_block->successor[1];
 			new_block->predecessor.push_back(target_block);
 			target_block->successor[0] = new_block;
-			target_block->successor[1] = NULL;
+			target_block->successor[1] = nullptr;
 			target_block->instr_end = instr_idx;
 
 			// replace predecessor of successors
@@ -6584,14 +6584,14 @@ namespace compiler
 		}
 
 		uint32 used_reg = 0;
-		const Lifetime::Interval *last_interval = NULL;
+		const Lifetime::Interval *last_interval = nullptr;
 		size_t last_loop_depth = 0;
 		for (ControlFlowGraph::BlockList::iterator block = cfg.dfs_begin(); block != cfg.dfs_end(); ++block) {
 			Lifetime& lifetime = (*block)->lifetime[reg_family];
 			const size_t loop_depth = (*block)->loop_depth;
 
 			// Spill identification
-			lifetime.SpillIdentification(available_reg_count, total_spill_cost, (*block)->GetFrequency(), last_loop_depth == loop_depth ? last_interval : NULL, var_attrs);
+			lifetime.SpillIdentification(available_reg_count, total_spill_cost, (*block)->GetFrequency(), last_loop_depth == loop_depth ? last_interval : nullptr, var_attrs);
 
 			// Register assignment
 			used_reg |= lifetime.AssignRegister(available_reg, last_interval);

@@ -17,7 +17,7 @@ char* ENTITY_KEYVALUE(edict_t* entity, char* key)
 
 const char* LOCALINFO(char* key)
 {
-	return ENTITY_KEYVALUE(NULL, key);
+	return ENTITY_KEYVALUE(nullptr, key);
 }
 
 static_allocator::static_allocator(memory_protection protection) : m_protection(protection)
@@ -61,9 +61,9 @@ size_t static_allocator::memory_used() const
 void static_allocator::allocate_page()
 {
 #ifdef WIN32
-	auto page = VirtualAlloc(NULL, Pagesize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+	auto page = VirtualAlloc(nullptr, Pagesize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
 #else
-	auto page = mmap(NULL, Pagesize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
+	auto page = mmap(nullptr, Pagesize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
 #endif
 
 	m_used = 0;
@@ -103,7 +103,7 @@ char *trimbuf(char *str)
 {
 	char *ibuf;
 
-	if (str == NULL) return NULL;
+	if (str == nullptr) return nullptr;
 	for (ibuf = str; *ibuf && (byte)(*ibuf) < (byte)0x80 && isspace(*ibuf); ++ibuf)
 		;
 
@@ -147,20 +147,19 @@ bool IsAbsolutePath(const char *path)
 #ifdef _WIN32
 char *realpath(const char *file_name, char *resolved_name)
 {
-	int ret = GetFullPathName(file_name, PATH_MAX, resolved_name, NULL);
+	int ret = GetFullPathName(file_name, PATH_MAX, resolved_name, nullptr);
 	
 	if (ret > PATH_MAX) {
 		errno = ENAMETOOLONG;
-		return NULL;
+		return nullptr;
 	}
 	
 	if (ret > 0) {
-		HANDLE handle;
 		WIN32_FIND_DATA find_data;
-		handle = FindFirstFile(resolved_name, &find_data);
+		HANDLE handle = FindFirstFile(resolved_name, &find_data);
 		if (INVALID_HANDLE_VALUE == handle) {
 			errno = ENOENT;
-			return NULL;
+			return nullptr;
 		}
 
 		FindClose(handle);
@@ -168,6 +167,6 @@ char *realpath(const char *file_name, char *resolved_name)
 		return resolved_name;
 	}
 
-	return NULL;
+	return nullptr;
 }
 #endif // _WIN32
