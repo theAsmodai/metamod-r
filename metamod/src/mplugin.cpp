@@ -391,7 +391,7 @@ char *MPlugin::resolve_suffix(char *path) const
 		if (stat(path, &st) == 0 && S_ISREG(st.st_mode)) {
 			static char buf[PATH_MAX];
 			strncpy(buf, path, sizeof buf - 1);
-			buf[sizeof buf - 1];
+			buf[sizeof buf - 1] = '\0';
 			return buf;
 		}
 
