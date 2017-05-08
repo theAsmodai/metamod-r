@@ -30,7 +30,7 @@ void MM_PRE_HOOK mm_ClientCommand(edict_t *pEntity)
 	}
 }
 
-void EXT_FUNC mm_ServerDeactivate(void)
+void EXT_FUNC mm_ServerDeactivate()
 {
 	sFunctionTable_jit.pfnServerDeactivate();
 

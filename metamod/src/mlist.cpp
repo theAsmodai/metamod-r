@@ -642,7 +642,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 }
 
 // Re-enable any plugins currently paused.
-void MPluginList::unpause_all(void)
+void MPluginList::unpause_all()
 {
 	for (int i = 0; i < m_max_loaded_count; i++)
 	{

@@ -151,7 +151,7 @@ void buffered_ALERT(MLOG_SERVICE service, ALERT_TYPE atype, const char *prefix, 
 // Flushes the message queue, printing messages to the respective
 // service. This function doesn't check anymore if the g_engfuncs
 // jumptable is set. Don't call it if it isn't set.
-void flush_ALERT_buffer(void)
+void flush_ALERT_buffer()
 {
 	BufferedMessage *msg = g_messageQueueStart;
 	int dev = (int)CVAR_GET_FLOAT("developer");

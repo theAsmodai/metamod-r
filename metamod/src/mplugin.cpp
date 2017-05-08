@@ -129,8 +129,6 @@ bool MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON rea
 // Parse a filename string from PEXT_LOAD_PLUGIN_BY_ *function into a plugin.
 bool MPlugin::plugin_parseline(const char *fname, int loader_index)
 {
-	char *cp;
-
 	m_source_plugin_index = loader_index;
 
 	Q_strncpy(m_filename, fname, sizeof m_filename - 1);
@@ -138,7 +136,7 @@ bool MPlugin::plugin_parseline(const char *fname, int loader_index)
 	NormalizePath(m_filename);
 
 	//store just name of the actual _file, without path
-	cp = Q_strrchr(m_filename, '/');
+	char* cp = Q_strrchr(m_filename, '/');
 	if (cp)
 		m_file = cp + 1;
 	else
@@ -161,15 +159,13 @@ bool MPlugin::plugin_parseline(const char *fname, int loader_index)
 bool MPlugin::cmd_parseline(const char *line)
 {
 	char buf[NAME_MAX + PATH_MAX + MAX_DESC_LEN];
-	char *token;
 	char *ptr_token;
-	char *cp;
 
 	Q_strncpy(buf, line, sizeof buf - 1);
 	buf[sizeof buf - 1] = '\0';
 
 	// remove "load"
-	token = strtok_r(buf, " \t", &ptr_token);
+	char* token = strtok_r(buf, " \t", &ptr_token);
 	if (!token)
 		return false;
 
@@ -183,7 +179,7 @@ bool MPlugin::cmd_parseline(const char *line)
 	NormalizePath(m_filename);
 
 	// store name of just the actual _file_, without dir components
-	cp = Q_strrchr(m_filename, '/');
+	char* cp = Q_strrchr(m_filename, '/');
 	if (cp)
 		m_file = cp + 1;
 	else
@@ -215,7 +211,7 @@ bool MPlugin::cmd_parseline(const char *line)
 }
 
 // Make sure this plugin has the necessary minimal information.
-bool MPlugin::check_input(void)
+bool MPlugin::check_input()
 {
 	// doublecheck our input/state
 	if (m_status < PL_VALID) {
@@ -254,7 +250,7 @@ bool MPlugin::check_input(void)
 //    Gamedir/dlls/mm_filename_i386.so
 //    Gamedir/dlls/filename_mm_i386.so
 //    Gamedir/dlls/filename_MM_i386.so
-bool MPlugin::resolve(void)
+bool MPlugin::resolve()
 {
 	char *found;
 
@@ -341,7 +337,6 @@ char *MPlugin::resolve_dirs(char *path) const
 char *MPlugin::resolve_prefix(char *path) const
 {
 	struct stat st;
-	char *cp, *fname;
 	char dname[PATH_MAX];
 	static char buf[PATH_MAX];
 	char *found;
@@ -351,12 +346,11 @@ char *MPlugin::resolve_prefix(char *path) const
 	Q_strncpy(dname, path, sizeof dname - 1);
 	dname[sizeof dname - 1] = '\0';
 
-	cp = Q_strrchr(dname, '/');
+	char* cp = Q_strrchr(dname, '/');
 	if (cp)
 	{
 		*cp = '\0';
-		fname = cp + 1;
-		Q_snprintf(buf, sizeof buf, "%s/mm_%s", dname, fname);
+		Q_snprintf(buf, sizeof buf, "%s/mm_%s", dname, cp + 1);
 	}
 	else
 	{
@@ -456,9 +450,6 @@ static bool is_platform_postfix(char *pf)
 //  the part up to the last dot, if one exists.
 bool MPlugin::platform_match(MPlugin *other) const
 {
-	char *end, *other_end;
-	int prefixlen;
-
 	if (m_status == PL_EMPTY || other->m_status == PL_EMPTY)
 		return false;
 
@@ -471,17 +462,18 @@ bool MPlugin::platform_match(MPlugin *other) const
 	if (*m_desc != '\0' && !Q_stricmp(m_desc, other->m_desc))
 		return true;
 
-	end = Q_strrchr(m_file, '_');
-	if (!end || !is_platform_postfix(end)) end = Q_strrchr(m_file, '.');
-		other_end = Q_strrchr(other->m_file, '_');
-
+	char* end = Q_strrchr(m_file, '_');
+	if (!end || !is_platform_postfix(end))
+		end = Q_strrchr(m_file, '.');
+	
+	char* other_end = Q_strrchr(other->m_file, '_');
 	if (!other_end || !is_platform_postfix(other_end))
 		other_end = Q_strrchr(other->m_file, '.');
 
 	if (!end || !other_end)
 		return false;
 
-	prefixlen = end - m_file;
+	int prefixlen = end - m_file;
 	if (other_end - other->m_file != prefixlen)
 		return false;
 
@@ -581,7 +573,7 @@ bool MPlugin::load(PLUG_LOADTIME now)
 //	    Meta_Init (if present) - tell dll it'll be used as a metamod plugin
 //	    GiveFnptrsToDll - give engine function ptrs
 //	    Meta_Query - say "hi" and get info about plugin
-bool MPlugin::query(void)
+bool MPlugin::query()
 {
 	// open the plugin DLL
 	if (!m_sys_module.load(m_pathname)) {
@@ -967,7 +959,6 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, PL_UNLOAD_REASO
 // Inform plugin we're going to unload it.
 bool MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
-	int ret;
 	META_DETACH_FN pfn_detach;
 
 	// If we have no handle, i.e. no dll loaded, we return true because the
@@ -983,7 +974,7 @@ bool MPlugin::detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 		return false;
 	}
 
-	ret = pfn_detach(now, reason);
+	int ret = pfn_detach(now, reason);
 	if (ret != TRUE)
 	{
 		META_ERROR("dll: Failed detach plugin '%s': Error from Meta_Detach(): %d", m_desc, ret);
@@ -1101,7 +1092,7 @@ bool MPlugin::retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 
 // Clear a plugin (it failed a previous action and should be
 // removed from the list, or it's being unloaded).
-bool MPlugin::clear(void)
+bool MPlugin::clear()
 {
 	if (m_status != PL_FAILED && m_status != PL_BADFILE && m_status != PL_EMPTY && m_status != PL_OPENED)
 	{
@@ -1169,7 +1160,7 @@ void show_table(const char* table_name, table_t* table, info_t* info_begin, bool
 // List information about plugin to console.
 void MPlugin::show()
 {
-	char *cp, *tstr;
+	char *cp;
 	const int width = 13;
 
 	META_CONS("%*s: %s", width, "name", m_info ? m_info->name : "(nil)");
@@ -1191,7 +1182,7 @@ void MPlugin::show()
 	META_CONS("%*s: %s", width, "ifvers", m_info ? m_info->ifvers : "(nil)");
 
 	// ctime() includes newline at EOL
-	tstr = ctime(&m_time_loaded);
+	char* tstr = ctime(&m_time_loaded);
 	if ((cp = Q_strchr(tstr, '\n')))
 		*cp = '\0';
 
@@ -1221,14 +1212,13 @@ void MPlugin::show()
 bool MPlugin::newer_file() const
 {
 	struct stat st;
-	time_t file_time;
 
 	if (stat(m_pathname, &st) != 0) {
 		META_ERROR("ini: Skipping plugin, couldn't stat file '%s': %s", m_pathname, strerror(errno));
 		return false;
 	}
 
-	file_time = st.st_ctime > st.st_mtime ? st.st_ctime : st.st_mtime;
+	time_t file_time = st.st_ctime > st.st_mtime ? st.st_ctime : st.st_mtime;
 	META_DEBUG(5, "newer_file? file=%s; load=%d, file=%d; ctime=%d, mtime=%d", m_file, m_time_loaded, file_time, st.st_ctime, st.st_mtime);
 	if (file_time > m_time_loaded)
 		return true;
@@ -1247,7 +1237,7 @@ const char *MPlugin::str_status(STR_STATUS fmt) const
 		if (fmt == ST_SHOW) return "empt";
 		else return "empty";
 	case PL_VALID:
-		if (fmt == ST_SHOW) return"info";
+		if (fmt == ST_SHOW) return "info";
 		else return "valid";
 	case PL_BADFILE:
 		if (fmt == ST_SHOW) return "badf";

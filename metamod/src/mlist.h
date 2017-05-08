@@ -31,14 +31,14 @@ public:
 
 	bool found_child_plugins(int source_index) const;
 
-	bool ini_startup(void);								// read inifile at startup
-	bool ini_refresh(void);								// re-read inifile
+	bool ini_startup();								// read inifile at startup
+	bool ini_refresh();								// re-read inifile
 	bool cmd_addload(const char *args);							// load from console command
 	MPlugin *plugin_addload(plid_t plid, const char *fname, PLUG_LOADTIME now);		//load from plugin
 
-	bool load(void);				// load the list, at startup
+	bool load();				// load the list, at startup
 	bool refresh(PLUG_LOADTIME now);		// update from re-read inifile
-	void unpause_all(void);				// unpause any paused plugins
+	void unpause_all();				// unpause any paused plugins
 	void retry_all(PLUG_LOADTIME now);		// retry any pending plugin actions
 	void show(int source_index = 0);		// list plugins to console
 	void show_client(edict_t *pEntity);		// list plugins to player client

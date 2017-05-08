@@ -87,7 +87,7 @@ void CForwardCallbackJIT::naked_main()
 			lea(eax, dword_ptr[esp + strbuf_offset]); // buf ptr
 		else
 			mov(eax, esp);
-		mov(ecx, size_t(vsnprintf));
+		mov(ecx, size_t(Q_vsnprintf));
 
 		push(edx);
 		push(dword_ptr[ebp + first_arg_offset + (m_jitdata->args_count - 1) * sizeof(int)]); // last arg of pfn (format string)

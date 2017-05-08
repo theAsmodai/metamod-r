@@ -32,7 +32,7 @@ void MPlayer::clear_cvar_query(const char *cvar)
 // Check if a client cvar is queried for this player
 // Returns NULL if not
 // or the name of the cvar.
-const char *MPlayer::is_querying_cvar(void) const
+const char *MPlayer::is_querying_cvar() const
 {
 	if (m_isQueried)
 	{
@@ -60,7 +60,7 @@ void MPlayerList::clear_player_cvar_query(const edict_t *pEntity, const char *cv
 		m_players[indx].clear_cvar_query(cvar);
 }
 
-void MPlayerList::clear_all_cvar_queries(void)
+void MPlayerList::clear_all_cvar_queries()
 {
 	for (int indx = 1; indx <= gpGlobals->maxClients; indx++)
 	{

@@ -24,4 +24,4 @@ void META_LOG(const char *fmt, ...);
 void META_DEBUG_(int level, const char* fmt, ...);
 void META_CLIENT(edict_t *pEntity, const char *fmt, ...);
 
-void flush_ALERT_buffer(void);
+void flush_ALERT_buffer();

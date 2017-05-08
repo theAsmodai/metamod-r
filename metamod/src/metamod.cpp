@@ -260,7 +260,7 @@ void metamod_startup()
 // Set initial GameDLL fields (name, gamedir).
 // meta_errno values:
 //  - ME_NULLRESULT	_getcwd failed
-bool meta_init_gamedll(void)
+bool meta_init_gamedll()
 {
 	char gamedir[PATH_MAX];
 	char *cp;
@@ -387,7 +387,7 @@ bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, 
 //  - ME_DLOPEN		couldn't dlopen game dll file
 //  - ME_DLMISSING	couldn't find required routine in game dll
 //                	(GiveFnptrsToDll, GetEntityAPI, GetEntityAPI2)
-bool meta_load_gamedll(void)
+bool meta_load_gamedll()
 {
 	if (!setup_gamedll(&g_GameDLL))
 	{
