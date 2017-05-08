@@ -677,7 +677,7 @@ bool MPlugin::query(void)
 		return false;
 	}
 
-	if (!Q_strcmp(m_info->ifvers, META_INTERFACE_VERSION))
+	if (Q_strcmp(m_info->ifvers, META_INTERFACE_VERSION))
 	{
 		int mmajor = 0, mminor = 0, pmajor = 0, pminor = 0;
 		META_DEBUG(3, "dll: Note: Plugin '%s' interface version didn't match; expected %s, found %s", m_desc, META_INTERFACE_VERSION, m_info->ifvers);
