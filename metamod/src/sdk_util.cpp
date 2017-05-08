@@ -14,30 +14,12 @@ char *UTIL_VarArgs(char *format, ...)
 
 short FixedSigned16(float value, float scale)
 {
-	int output;
-
-	output = (int)(value * scale);
-
-	if (output > 32767)
-		output = 32767;
-
-	if (output < -32768)
-		output = -32768;
-
-	return (short)output;
+	return (short)clamp(int(value * scale), SHRT_MIN, SHRT_MAX);
 }
 
 unsigned short FixedUnsigned16(float value, float scale)
 {
-	int output;
-
-	output = (int)(value * scale);
-	if (output < 0)
-		output = 0;
-	if (output > 0xFFFF)
-		output = 0xFFFF;
-
-	return (unsigned short)output;
+	return (unsigned short)clamp(int(value * scale), 0, USHRT_MAX);
 }
 
 void UTIL_HudMessage(edict_t *pEntity, const hudtextparms_t &textparms, const char *pMessage)
@@ -76,7 +58,7 @@ void UTIL_HudMessage(edict_t *pEntity, const hudtextparms_t &textparms, const ch
 	else {
 		char tmp[512];
 		strncpy(tmp, pMessage, sizeof tmp - 1);
-		tmp[sizeof tmp - 1] = 0;
+		tmp[sizeof tmp - 1] = '\0';
 		WRITE_STRING(tmp);
 	}
 	MESSAGE_END();

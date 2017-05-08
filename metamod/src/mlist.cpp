@@ -275,7 +275,6 @@ MPlugin* MPluginList::add(MPlugin* padd)
 // Read plugins.ini at server startup.
 bool MPluginList::ini_startup()
 {
-	FILE *fp;
 	char line[MAX_STRBUF_LEN];
 	int n, ln;
 	MPlugin *pmatch;
@@ -287,7 +286,7 @@ bool MPluginList::ini_startup()
 	}
 
 	full_gamedir_path(m_inifile, m_inifile);
-	fp = fopen(m_inifile, "r");
+	FILE* fp = fopen(m_inifile, "r");
 	if (!fp)
 	{
 		META_ERROR("ini: Unable to open plugins file '%s': %s", m_inifile, strerror(errno));
@@ -353,13 +352,12 @@ bool MPluginList::ini_startup()
 // Re-read plugins.ini looking for added/deleted/changed plugins.
 bool MPluginList::ini_refresh()
 {
-	FILE *fp;
 	char line[MAX_STRBUF_LEN];
 	int n, ln;
 	MPlugin pl_temp;
 	MPlugin *pl_found, *pl_added;
 
-	fp = fopen(m_inifile, "r");
+	FILE* fp = fopen(m_inifile, "r");
 	if (!fp)
 	{
 		META_ERROR("ini: Unable to open plugins file '%s': %s", m_inifile, strerror(errno));
@@ -559,8 +557,7 @@ bool MPluginList::load()
 // Update list of loaded plugins from ini file, and load any new/changed plugins.
 bool MPluginList::refresh(PLUG_LOADTIME now)
 {
-	int i, ndone = 0, nkept = 0, nloaded = 0, nunloaded = 0, nreloaded = 0, ndelayed = 0;
-	MPlugin* iplug;
+	int ndone = 0, nkept = 0, nloaded = 0, nunloaded = 0, nreloaded = 0, ndelayed = 0;
 
 	if (!ini_refresh())
 	{
@@ -569,9 +566,9 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 	}
 
 	META_LOG("dll: Updating plugins...");
-	for (i = 0; i < m_max_loaded_count; i++)
+	for (int i = 0; i < m_max_loaded_count; i++)
 	{
-		iplug = &m_plist[i];
+		auto iplug = &m_plist[i];
 		if (iplug->m_status < PL_VALID)
 			continue;
 
@@ -668,7 +665,6 @@ void MPluginList::retry_all(PLUG_LOADTIME now)
 void MPluginList::show(int source_index)
 {
 	int n = 0, r = 0;
-	MPlugin *pl;
 	char desc[15 + 1], file[16 + 1], vers[7 + 1];		// plus 1 for term null
 
 	if (source_index <= 0)
@@ -681,7 +677,7 @@ void MPluginList::show(int source_index)
 
 	for (int i = 0; i < m_max_loaded_count; i++)
 	{
-		pl = &m_plist[i];
+		auto pl = &m_plist[i];
 		if (pl->m_status < PL_VALID)
 			continue;
 
@@ -725,12 +721,11 @@ void MPluginList::show(int source_index)
 void MPluginList::show_client(edict_t *pEntity)
 {
 	int n = 0;
-	MPlugin *pl;
 	META_CLIENT(pEntity, "Currently running plugins:");
 
 	for (int i = 0; i < m_max_loaded_count; i++)
 	{
-		pl = &m_plist[i];
+		auto pl = &m_plist[i];
 		if (pl->m_status != PL_RUNNING || !pl->m_info)
 			continue;
 

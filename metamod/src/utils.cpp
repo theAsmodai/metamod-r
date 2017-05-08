@@ -122,8 +122,7 @@ char *trimbuf(char *str)
 void NormalizePath(char *path)
 {
 #ifdef _WIN32
-	char *cp;
-	for (cp = path; *cp; cp++)
+	for (char* cp = path; *cp; cp++)
 	{
 		if (isupper(*cp))
 			*cp = tolower(*cp);
