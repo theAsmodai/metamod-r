@@ -215,6 +215,7 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 		return nullptr;
 	}
 
+	meta_rebuild_callbacks();
 	META_DEBUG(1, "Loaded plugin '%s' successfully", pl_added->m_desc);
 
 	return pl_added;
@@ -517,7 +518,6 @@ bool MPluginList::cmd_addload(const char* args)
 	}
 
 	META_CONS("Loaded plugin '%s' successfully", pl_added->m_desc);
-	META_CONS("Rebuilding callbacks...");
 	meta_rebuild_callbacks();
 	show(0);
 
@@ -547,7 +547,6 @@ bool MPluginList::load()
 			META_ERROR("dll: Failed to load plugin '%s'", m_plist[i].m_file);
 	}
 
-	META_LOG("dll: Rebuilding callbacks...");
 	meta_rebuild_callbacks();
 
 	META_LOG("dll: Finished loading %d plugins", n);
@@ -631,7 +630,6 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 		ndone++;
 	}
 
-	META_LOG("dll: Rebuilding callbacks...");
 	meta_rebuild_callbacks();
 
 	META_LOG("dll: Finished updating %d plugins; kept %d, loaded %d, unloaded %d, reloaded %d, delayed %d", ndone, nkept, nloaded, nunloaded, nreloaded, ndelayed);
