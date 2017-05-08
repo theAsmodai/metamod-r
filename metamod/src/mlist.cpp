@@ -81,7 +81,7 @@ MPlugin *MPluginList::find(const char* findpath)
 	if (!findpath)
 		return nullptr;
 
-	META_DEBUG(8, "Looking for loaded plugin with dlfnamepath: %s", findpath);
+	META_DEBUG(8, "Looking for loaded plugin with path: %s", findpath);
 
 	for (int i = 0; i < m_max_loaded_count; i++)
 	{
