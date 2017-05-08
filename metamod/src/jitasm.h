@@ -117,7 +117,7 @@
 	#define JITASM_TRACE	jitasm::detail::Trace
 	#endif
 #elif defined(JITASM_GCC)
-	#define JITASM_TRACE(...)	(()0)
+	#define JITASM_TRACE(...)	((void)0)
 #else
 	#define JITASM_TRACE	__noop
 #endif

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <util.h>
+#include <dllapi.h>
+#include <plinfo.h>
+
 // max buffer size for printed messages
 #define MAX_LOGMSG_LEN 1024
 
