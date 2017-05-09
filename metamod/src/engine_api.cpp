@@ -3,8 +3,8 @@
 #define CDATA_ENG_H(x, p, h)		CDATA_ENTRY(enginefuncs_t, x, p, size_t(h))
 #define CDATA_ENG(x)				CDATA_ENTRY(enginefuncs_t, x, P_PRE, 0u)
 
-meta_enginefuncs_t g_meta_engfuncs; // static trampolines to dynamic callbacks (for gamedll)
-meta_enginefuncs_t g_meta_engfuncs_jit; // dynamic jit callbacks
+enginefuncs_t g_meta_engfuncs; // static trampolines to dynamic callbacks (for gamedll)
+enginefuncs_t g_meta_engfuncs_jit; // dynamic jit callbacks
 
 void MM_PRE_HOOK mm_QueryClientCvarValue(const edict_t* pEdict, const char* cvarName)
 {

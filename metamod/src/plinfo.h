@@ -4,7 +4,7 @@
 // NOTE: order is crucial, as greater/less comparisons are made.
 enum PLUG_LOADTIME
 {
-	PT_NEVER = 0,
+	PT_NEVER,
 	PT_STARTUP,		// should only be loaded/unloaded at initial hlds execution
 	PT_CHANGELEVEL,		// can be loaded/unloaded between maps
 	PT_ANYTIME,		// can be loaded/unloaded at any time
@@ -14,7 +14,7 @@ enum PLUG_LOADTIME
 // Flags to indicate why the plugin is being unloaded.
 enum PL_UNLOAD_REASON
 {
-	PNL_NULL = 0,
+	PNL_NULL,
 	PNL_INI_DELETED,		// was deleted from plugins.ini
 	PNL_FILE_NEWER,			// file on disk is newer than last load
 	PNL_COMMAND,			// requested by server/console command

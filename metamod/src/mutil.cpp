@@ -252,7 +252,7 @@ const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 		return nullptr;
 	}
 
-	Q_strncpy(buf, plug->m_pathname, sizeof buf - 1);
+	Q_strncpy(buf, plug->pathname(), sizeof buf - 1);
 	buf[sizeof buf - 1] = '\0';
 	return buf;
 }
@@ -301,7 +301,6 @@ int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME 
 	}
 
 	auto pl_loaded = g_plugins->plugin_addload(plid, fname, now);
-
 	if (!pl_loaded)
 	{
 		if (plugin_handle)
@@ -309,13 +308,13 @@ int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME 
 
 		return 1; // TODO: WTF
 	}
-	else
-	{
-		if (plugin_handle)
-			*plugin_handle = (void *)pl_loaded->m_sys_module.gethandle();
 
-		return 0;
-	}
+	meta_rebuild_callbacks();
+
+	if (plugin_handle)
+		*plugin_handle = (void *)pl_loaded->sys_module().gethandle();
+
+	return 0;
 }
 
 int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
@@ -339,8 +338,10 @@ int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIM
 	if (!findp || !unique)
 		return 1;
 
-	if (findp->plugin_unload(plid, now, reason))
+	if (findp->plugin_unload(plid, now, reason)) {
+		meta_rebuild_callbacks();
 		return 0;
+	}
 
 	return 1;
 }
@@ -357,8 +358,10 @@ int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PL
 	if (!findp)
 		return 1;
 
-	if (findp->plugin_unload(plid, now, reason))
+	if (findp->plugin_unload(plid, now, reason)) {
+		meta_rebuild_callbacks();
 		return 0;
+	}
 
 	return 1;
 }

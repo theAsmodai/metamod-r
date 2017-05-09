@@ -128,7 +128,7 @@ void CForwardCallbackJIT::naked_main()
 	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
 		auto plug = &m_jitdata->plugins[i];
 
-		if (plug->m_status < PL_RUNNING) // allow only running and paused
+		if (plug->status() < PL_RUNNING) // allow only running and paused
 			continue;
 
 		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->table_offset);
@@ -141,7 +141,7 @@ void CForwardCallbackJIT::naked_main()
 
 		// check status and handler set
 		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
-		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
+		cmp(byte_ptr[plug->status_ptr()], PL_RUNNING);
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
@@ -209,7 +209,7 @@ void CForwardCallbackJIT::naked_main()
 	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
 		auto plug = &m_jitdata->plugins[i];
 
-		if (plug->m_status < PL_RUNNING) // allow only running and paused
+		if (plug->status() < PL_RUNNING) // allow only running and paused
 			continue;
 
 		size_t fn_table = *(size_t *)(size_t(plug) + m_jitdata->post_table_offset);
@@ -222,7 +222,7 @@ void CForwardCallbackJIT::naked_main()
 
 		// check status and handler set
 		mov(ecx, dword_ptr[fn_table + m_jitdata->pfn_offset]);
-		cmp(byte_ptr[size_t(&plug->m_status)], PL_RUNNING);
+		cmp(byte_ptr[plug->status_ptr()], PL_RUNNING);
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 

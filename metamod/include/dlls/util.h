@@ -186,5 +186,4 @@ inline void UTIL_TraceLine(const Vector &vecStart, const Vector &vecEnd, IGNORE_
 	TRACE_LINE(vecStart, vecEnd, (igmon == ignore_monsters), pentIgnore, ptr);
 }
 
-extern char *UTIL_VarArgs(char *format, ...);
 extern void UTIL_LogPrintf(const char *fmt, ...);

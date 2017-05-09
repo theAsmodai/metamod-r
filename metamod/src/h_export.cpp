@@ -34,7 +34,7 @@ void _fini()
 #endif
 
 //! Holds engine functionality callbacks
-HL_enginefuncs_t g_engfuncs;
+enginefuncs_t g_engfuncs;
 globalvars_t* gpGlobals;
 engine_t g_engine;
 
@@ -49,7 +49,8 @@ void WINAPI GiveFnptrsToDll(enginefuncs_t *pengfuncsFromEngine, globalvars_t *pG
 	g_engine.funcs = &g_engfuncs;
 	g_engine.globals = pGlobals;
 
-	g_engfuncs.initialise_interface(pengfuncsFromEngine);
+	g_engfuncs = *pengfuncsFromEngine;
+	flush_ALERT_buffer();
 	// NOTE!  Have to call logging function _after_ initialising g_engfuncs, so
 	// that g_engfuncs.pfnAlertMessage() can be resolved properly, heh. :)
 	META_DEV("called: GiveFnptrsToDll");

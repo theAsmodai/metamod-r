@@ -13,4 +13,5 @@
 #include "enginecallbacks.h"
 #include <util.h>
 
+char *UTIL_VarArgs(const char *format, ...);
 void UTIL_HudMessage(edict_t *pEntity, const hudtextparms_t &textparms, const char *pMessage);

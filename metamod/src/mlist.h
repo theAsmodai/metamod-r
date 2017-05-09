@@ -12,7 +12,8 @@
 #define WIDTH_MAX_PLUGINS	2
 
 // A list of plugins.
-class MPluginList {
+class MPluginList
+{
 public:
 	MPluginList(const char *ifile);
 

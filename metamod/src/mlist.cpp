@@ -11,7 +11,7 @@ MPluginList::MPluginList(const char* ifile) : m_max_loaded_count(0)
 	Q_memset(m_plist, 0, sizeof m_plist);
 	for (int i = 0; i < MAX_PLUGINS; i++)
 	{
-		m_plist[i].m_index = i + 1; // 1-based
+		new(m_plist + i) MPlugin(i + 1); // 1-based
 	}
 
 	m_max_loaded_count = 0;
@@ -67,7 +67,6 @@ MPlugin *MPluginList::find(plid_t id)
 	{
 		if (m_plist[i].m_status < PL_VALID)
 			continue;
-
 		if (m_plist[i].m_info == id)
 			return &m_plist[i];
 	}
@@ -131,10 +130,10 @@ MPlugin *MPluginList::find_match(const char *prefix, bool& unique)
 		if (plug->m_status < PL_VALID)
 			continue;
 
-		if (plug->m_info && !Q_strnicmp(plug->m_info->name, prefix, len)
+		if (plug->info() && !Q_strnicmp(plug->info()->name, prefix, len)
 			|| !Q_strnicmp(plug->m_desc, prefix, len)
 			|| !Q_strnicmp(plug->m_file, prefix, len)
-			|| plug->m_info && !Q_strnicmp(plug->m_info->logtag, prefix, len))
+			|| plug->info() && !Q_strnicmp(plug->info()->logtag, prefix, len))
 		{
 			if (pfound) {
 				unique = false;
@@ -182,7 +181,7 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 		return nullptr;
 	}
 
-	if (pl_temp.resolve() != true) {
+	if (!pl_temp.resolve()) {
 		META_DEBUG(1, "Couldn't resolve given path into a file: %s", pl_temp.m_file);
 		return nullptr;
 	}
@@ -215,7 +214,6 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 		return nullptr;
 	}
 
-	meta_rebuild_callbacks();
 	META_DEBUG(1, "Loaded plugin '%s' successfully", pl_added->m_desc);
 
 	return pl_added;
@@ -263,7 +261,7 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	// copy pathname
 	Q_strncpy(iplug->m_pathname, padd->m_pathname, sizeof iplug->m_pathname - 1);
 	iplug->m_pathname[sizeof iplug->m_pathname - 1] = '\0';
-	NormalizePath(iplug->m_pathname);
+	normalize_path(iplug->m_pathname);
 
 	iplug->m_source = padd->m_source;
 	iplug->m_status = padd->m_status;
@@ -272,15 +270,13 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	return iplug;
 }
 
-
 // Read plugins.ini at server startup.
 bool MPluginList::ini_startup()
 {
 	char line[MAX_STRBUF_LEN];
 	int n, ln;
-	MPlugin *pmatch;
 
-	if (!FileExistsInGameDir(m_inifile))
+	if (!is_file_exists_in_gamedir(m_inifile))
 	{
 		META_ERROR("ini: Metamod plugins file empty or missing: %s", m_inifile);
 		return false;
@@ -307,9 +303,7 @@ bool MPluginList::ini_startup()
 
 		// Parse directly into next entry in array
 		if (!m_plist[n].ini_parseline(line))
-		{
 			continue;
-		}
 		
 		// Check for a duplicate - an existing entry with this pathname.
 		if (find(m_plist[n].m_pathname))
@@ -321,18 +315,13 @@ bool MPluginList::ini_startup()
 
 		// Check for a matching platform with different platform specifics
 		// level.
-		if (nullptr != (pmatch = find_match(&m_plist[n])))
+		auto pmatch = find_match(&m_plist[n]);
+		if (pmatch)
 		{
-			if (pmatch->m_pfspecific >= m_plist[n].m_pfspecific)
-			{
-				META_DEBUG(1, "ini: Skipping plugin, line %d of %s: plugin with higher platform specific level already exists. (%d >= %d)", ln, m_inifile, pmatch->m_pfspecific, m_plist[n].m_pfspecific);
-				continue;
-			}
-
-			META_DEBUG(1, "ini: Plugin in line %d overrides existing plugin with lower platform specific level %d, ours %d", ln, pmatch->m_pfspecific, m_plist[n].m_pfspecific);
-			int _index = pmatch->m_index;
+			META_DEBUG(1, "ini: Plugin in line %d overrides existing plugin", ln);
+			int index = pmatch->m_index;
 			Q_memset(pmatch, 0, sizeof(MPlugin));
-			pmatch->m_index = _index;
+			pmatch->m_index = index;
 		}
 		m_plist[n].m_action = PA_LOAD;
 		META_LOG("ini: Read plugin config for: %s", m_plist[n].m_desc);
@@ -340,12 +329,10 @@ bool MPluginList::ini_startup()
 		m_max_loaded_count = n; // mark end of list
 	}
 	META_LOG("ini: Finished reading plugins list: %s; Found %d plugins to load", m_inifile, n);
-
 	fclose(fp);
+
 	if (!n)
-	{
-		META_ERROR("ini: Warning; no plugins found to load?");
-	}
+		META_LOG("ini: Warning; no plugins found to load?");
 
 	return true;
 }
@@ -355,8 +342,6 @@ bool MPluginList::ini_refresh()
 {
 	char line[MAX_STRBUF_LEN];
 	int n, ln;
-	MPlugin pl_temp;
-	MPlugin *pl_found, *pl_added;
 
 	FILE* fp = fopen(m_inifile, "r");
 	if (!fp)
@@ -377,7 +362,7 @@ bool MPluginList::ini_refresh()
 			*cp = '\0';
 
 		// Parse into a temp plugin
-		Q_memset(&pl_temp, 0, sizeof pl_temp);
+		MPlugin pl_temp = {};
 		if (!pl_temp.ini_parseline(line))
 		{
 			META_ERROR("ini: Skipping malformed line %d of %s",ln, m_inifile);
@@ -385,32 +370,30 @@ bool MPluginList::ini_refresh()
 		}
 		// Try to find plugin with this pathname in the current list of
 		// plugins.
-		if (!(pl_found = find(pl_temp.m_pathname)))
+		auto pl_found = find(pl_temp.m_pathname);
+		if (!pl_found)
 		{
 			// Check for a matching platform with higher platform specifics
 			// level.
-			if (nullptr != (pl_found = find_match(&pl_temp)))
+			pl_found = find_match(&pl_temp);
+			if (pl_found)
 			{
-				if (pl_found->m_pfspecific >= pl_temp.m_pfspecific)
+				if (pl_found->m_action == PA_LOAD)
 				{
-					META_DEBUG(1, "ini: Skipping plugin, line %d of %s: plugin with higher platform specific level already exists. (%d >= %d)", ln, m_inifile, pl_found->m_pfspecific, pl_temp.m_pfspecific);
-					continue;
-				}
-				if (PA_LOAD == pl_found->m_action)
-				{
-					META_DEBUG(1, "ini: Plugin in line %d overrides loading of plugin with lower platform specific level %d, ours %d", ln, pl_found->m_pfspecific, pl_temp.m_pfspecific);
+					META_DEBUG(1, "ini: Plugin in line %d overrides loading of plugin", ln);
 					int _index = pl_found->m_index;
 					Q_memset(pl_found, 0, sizeof(MPlugin));
 					pl_found->m_index = _index;
 				}
 				else
 				{
-					META_DEBUG(1, "ini: Plugin in line %d should override existing plugin with lower platform specific level %d, ours %d. Unable to comply.", ln, pl_found->m_pfspecific, pl_temp.m_pfspecific);
+					META_DEBUG(1, "ini: Plugin in line %d should override existing plugin. Unable to comply.", ln);
 					continue;
 				}
 			}
 			// new plugin; add to list
-			if ((pl_added = add(&pl_temp)))
+			auto pl_added = add(&pl_temp);
+			if (pl_added)
 			{
 				// try to load this plugin at the next opportunity
 				pl_added->m_action = PA_LOAD;
@@ -447,22 +430,17 @@ bool MPluginList::ini_refresh()
 		}
 
 		if (pl_found)
-		{
 			META_LOG("ini: Read plugin config for: %s", pl_found->m_desc);
-		}
 		else
-		{
 			META_LOG("ini: Read plugin config for: %s", pl_temp.m_desc);
-		}
+
 		n++;
 	}
 	META_LOG("ini: Finished reading plugins list: %s; Found %d plugins", m_inifile, n);
-
 	fclose(fp);
+
 	if (!n)
-	{
 		META_ERROR("ini: Warning; no plugins found to load?");
-	}
 
 	return true;
 }
@@ -471,9 +449,7 @@ bool MPluginList::ini_refresh()
 bool MPluginList::cmd_addload(const char* args)
 {
 	MPlugin pl_temp = {};
-	MPlugin *pl_found, *pl_added;
-
-	if (pl_temp.cmd_parseline(args) != true)
+	if (!pl_temp.cmd_parseline(args))
 	{
 		META_CONS("Couldn't parse 'meta load' arguments: %s", args);
 		return false;
@@ -481,7 +457,7 @@ bool MPluginList::cmd_addload(const char* args)
 
 	// resolve given path into a file; accepts various "shortcut"
 	// pathnames.
-	if (pl_temp.resolve() != true)
+	if (!pl_temp.resolve())
 	{
 		// Couldn't find a matching file on disk
 		META_CONS("Couldn't resolve given path into a file: %s", pl_temp.m_file);
@@ -490,14 +466,16 @@ bool MPluginList::cmd_addload(const char* args)
 
 	// Try to find plugin with this pathname in the current list of
 	// plugins.
-	if ((pl_found = find(pl_temp.m_pathname)))
+	auto pl_found = find(pl_temp.m_pathname);
+	if (pl_found)
 	{
 		// Already in list
 		META_CONS("Plugin '%s' already in current list; file=%s desc='%s'", pl_temp.m_file, pl_found->m_file, pl_found->m_desc);
 		return false;
 	}
 	// new plugin; add to list
-	if (!(pl_added = add(&pl_temp)))
+	auto pl_added = add(&pl_temp);
+	if (!pl_added)
 	{
 		META_CONS("Couldn't add plugin '%s' to list; see log", pl_temp.m_desc);
 		return false;
@@ -513,14 +491,13 @@ bool MPluginList::cmd_addload(const char* args)
 		else
 			META_CONS("Couldn't load plugin '%s'; see log", pl_added->m_desc);
 
-		show(0);
+		show();
 		return false;
 	}
 
 	META_CONS("Loaded plugin '%s' successfully", pl_added->m_desc);
+	show();
 	meta_rebuild_callbacks();
-	show(0);
-
 	return true;
 }
 
@@ -540,16 +517,15 @@ bool MPluginList::load()
 		if (m_plist[i].m_status < PL_VALID)
 			continue;
 
-		if (m_plist[i].load(PT_STARTUP) == true)
+		if (m_plist[i].load(PT_STARTUP))
 			n++;
 		else
 			// all plugins should be loadable at startup...
 			META_ERROR("dll: Failed to load plugin '%s'", m_plist[i].m_file);
 	}
 
-	meta_rebuild_callbacks();
-
 	META_LOG("dll: Finished loading %d plugins", n);
+	meta_rebuild_callbacks();
 	return true;
 }
 
@@ -598,7 +574,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 			{
 				META_DEBUG(1, "Unloading plugin '%s'", iplug->m_desc);
 				iplug->m_action = PA_UNLOAD;
-				if (iplug->unload(now, PNL_INI_DELETED, PNL_INI_DELETED))
+				if (iplug->unload(now, PNL_INI_DELETED))
 					nunloaded++;
 				/*else if (meta_errno == ME_DELAYED) TODO
 					ndelayed++;*/
@@ -630,9 +606,8 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 		ndone++;
 	}
 
-	meta_rebuild_callbacks();
-
 	META_LOG("dll: Finished updating %d plugins; kept %d, loaded %d, unloaded %d, reloaded %d, delayed %d", ndone, nkept, nloaded, nunloaded, nreloaded, ndelayed);
+	meta_rebuild_callbacks();
 	return true;
 }
 
@@ -688,9 +663,9 @@ void MPluginList::show(int source_index)
 		Q_strncpy(file, pl->m_file, sizeof file - 1);
 		file[sizeof file - 1] = '\0';
 
-		if (pl->m_info && pl->m_info->version)
+		if (pl->info() && pl->info()->version)
 		{
-			Q_strncpy(vers, pl->m_info->version, sizeof vers - 1);
+			Q_strncpy(vers, pl->info()->version, sizeof vers - 1);
 			vers[sizeof vers - 1] = '\0';
 		}
 		else
@@ -724,16 +699,16 @@ void MPluginList::show_client(edict_t *pEntity)
 	for (int i = 0; i < m_max_loaded_count; i++)
 	{
 		auto pl = &m_plist[i];
-		if (pl->m_status != PL_RUNNING || !pl->m_info)
+		if (pl->m_status != PL_RUNNING || !pl->info())
 			continue;
 
 		n++;
 		META_CLIENT(pEntity, " [%3d] %s, v%s, %s, by %s, see %s", n,
-			pl->m_info->name ? pl->m_info->name : "<unknown>",
-			pl->m_info->version ? pl->m_info->version : "<?>",
-			pl->m_info->date ? pl->m_info->date : "<../../..>",
-			pl->m_info->author ? pl->m_info->author : "<unknown>",
-			pl->m_info->url ? pl->m_info->url : "<unknown>");
+			pl->info()->name ? pl->info()->name : "<unknown>",
+			pl->info()->version ? pl->info()->version : "<?>",
+			pl->info()->date ? pl->info()->date : "<../../..>",
+			pl->info()->author ? pl->info()->author : "<unknown>",
+			pl->info()->url ? pl->info()->url : "<unknown>");
 	}
 
 	META_CLIENT(pEntity, "%d plugins", n);

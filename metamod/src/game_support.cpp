@@ -116,7 +116,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 
 		// If the path is relative, the gamedll file will be missing and
 		// it might be found in the cache file.
-		if (!IsAbsolutePath(gamedll->pathname))
+		if (!is_abs_path(gamedll->pathname))
 		{
 			char szInstallPath[MAX_PATH];
 			Q_snprintf(szInstallPath, sizeof(szInstallPath), "%s/%s", gamedll->gamedir, gamedll->pathname);

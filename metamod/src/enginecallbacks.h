@@ -10,14 +10,6 @@
 // "hack" our way around that by using a flag METAMOD_CORE which is set
 // when compiling Metamod proper.
 
-#ifdef METAMOD_CORE
-	#include "meta_eiface.h" // HL_enginefuncs_t
-
-	// Use a #define to bend the enginefuncs_t type to our HL_enginefuncs_t
-	// type instead as we now use that for the global object g_engfuncs.
-	#define enginefuncs_t HL_enginefuncs_t
-#endif
-
 #include <enginecallback.h>		// ALERT, etc
 
 #ifdef METAMOD_CORE

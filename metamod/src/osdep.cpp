@@ -7,12 +7,14 @@ CSysModule::CSysModule() : m_handle(0), m_base(0), m_size(0)
 #ifdef _WIN32
 module_handle_t CSysModule::load(const char* filepath)
 {
-	m_handle = LoadLibrary(filepath);
+	if (!m_handle) {
+		m_handle = LoadLibrary(filepath);
 
-	MODULEINFO module_info;
-	if (GetModuleInformation(GetCurrentProcess(), m_handle, &module_info, sizeof module_info)) {
-		m_base = (uintptr_t)module_info.lpBaseOfDll;
-		m_size = module_info.SizeOfImage;
+		MODULEINFO module_info;
+		if (GetModuleInformation(GetCurrentProcess(), m_handle, &module_info, sizeof module_info)) {
+			m_base = (uintptr_t)module_info.lpBaseOfDll;
+			m_size = module_info.SizeOfImage;
+		}
 	}
 
 	return m_handle;
@@ -20,7 +22,7 @@ module_handle_t CSysModule::load(const char* filepath)
 
 bool CSysModule::unload()
 {
-	bool ret = false;
+	bool ret = true;
 
 	if (m_handle) {
 		ret = FreeLibrary(m_handle) != ERROR;
@@ -34,7 +36,7 @@ bool CSysModule::unload()
 
 void* CSysModule::getsym(const char* name) const
 {
-	return GetProcAddress(m_handle, name);
+	return m_handle ? GetProcAddress(m_handle, name) : nullptr;
 }
 #else
 static ElfW(Addr) dlsize(void* base)
@@ -59,35 +61,38 @@ static ElfW(Addr) dlsize(void* base)
 
 module_handle_t CSysModule::load(const char* filepath)
 {
-	m_handle = dlopen(filepath, RTLD_NOW);
+	if (!m_handle) {
+		m_handle = dlopen(filepath, RTLD_NOW);
 
-	char buf[1024], dummy[1024], path[260];
-	sprintf(buf, "/proc/%i/maps", getpid());
+		char buf[1024], dummy[1024], path[260];
+		sprintf(buf, "/proc/%i/maps", getpid());
 
-	FILE* fp = fopen(buf, "r");
+		FILE* fp = fopen(buf, "r");
 
-	while (fgets(buf, sizeof buf, fp)) {
-		uintptr_t start, end;
+		while (fgets(buf, sizeof buf, fp)) {
+			uintptr_t start, end;
 
-		int args = sscanf(buf, "%x-%x %128s %128s %128s %128s %255s", &start, &end, dummy, dummy, dummy, dummy, path);
-		if (args != 7) {
-			continue;
+			int args = sscanf(buf, "%x-%x %128s %128s %128s %128s %255s", &start, &end, dummy, dummy, dummy, dummy, path);
+			if (args != 7) {
+				continue;
+			}
+
+			if (!Q_stricmp(path, filepath)) {
+				m_base = start;
+				m_size = end - start;
+				break;
+			}
 		}
 
-		if (!Q_stricmp(path, filepath)) {
-			m_base = start;
-			m_size = end - start;
-			break;
-		}
+		fclose(fp);
 	}
 
-	fclose(fp);
 	return m_handle;
 }
 
 bool CSysModule::unload()
 {
-	bool ret = false;
+	bool ret = true;
 
 	if (m_handle) {
 		ret = dlclose(m_handle) != 0;
@@ -101,7 +106,7 @@ bool CSysModule::unload()
 
 void* CSysModule::getsym(const char* name) const
 {
-	return dlsym(m_handle, name);
+	return m_handle ? dlsym(m_handle, name) : nullptr;
 }
 #endif
 
@@ -130,7 +135,7 @@ const char* CSysModule::getloaderror()
 // http://msdn.microsoft.com/library/en-us/debug/errors_0sdh.asp
 // except without FORMAT_MESSAGE_ALLOCATE_BUFFER, since we use a local
 // static buffer.
-const char *str_GetLastError()
+static const char *str_GetLastError()
 {
 	static char buf[MAX_STRBUF_LEN];
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&buf, MAX_STRBUF_LEN - 1, nullptr);

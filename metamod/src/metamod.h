@@ -6,7 +6,6 @@
 #include "conf_meta.h"			// MConfig
 #include "osdep.h"			// NAME_MAX, etc
 #include "mplayer.h"                    // MPlayerList
-#include "meta_eiface.h"		// HL_enginefuncs_t, meta_enginefuncs_t
 #include "engine_t.h"          		// engine_t, Engine
 
 #define PLUGINS_INI			"plugins.ini"		// file that lists plugins to load at startup
@@ -32,11 +31,11 @@ struct gamedll_t
 extern gamedll_t g_GameDLL;
 
 // SDK variables for storing engine funcs and globals.
-extern HL_enginefuncs_t g_engfuncs;
+extern enginefuncs_t g_engfuncs;
 extern globalvars_t *gpGlobals;
 
 // Our modified version of the engine funcs, to give to plugins.
-extern meta_enginefuncs_t g_plugin_engfuncs;
+extern enginefuncs_t g_plugin_engfuncs;
 
 // g_config structure.
 extern MConfig *g_config;

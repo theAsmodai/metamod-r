@@ -41,9 +41,6 @@
     <ClCompile Include="..\src\log_meta.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\meta_eiface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\metamod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -75,9 +72,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\studioapi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\support_meta.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\utils.cpp">
@@ -130,9 +124,6 @@
     <ClInclude Include="..\src\meta_api.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\meta_eiface.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\metamod.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -167,9 +158,6 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\studioapi.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\support_meta.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\utils.h">
