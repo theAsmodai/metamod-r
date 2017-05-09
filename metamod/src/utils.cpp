@@ -30,7 +30,6 @@ const char* LOCALINFO(char* key)
 
 static_allocator::static_allocator(memory_protection protection) : m_protection(protection)
 {
-
 }
 
 char* static_allocator::allocate(const size_t n)
@@ -82,11 +81,11 @@ void static_allocator::allocate_page()
 // Since windows doesn't provide a verison of strtok_r(), we include one
 // here.  This may or may not operate exactly like strtok_r(), but does
 // what we need it it do.
-char *mm_strtok_r(char *s, const char *delim, char **ptrptr)
+char* mm_strtok_r(char* s, const char* delim, char** ptrptr)
 {
-	char *begin = nullptr;
-	char *end = nullptr;
-	char *rest = nullptr;
+	char* begin = nullptr;
+	char* end = nullptr;
+	char* rest = nullptr;
 	if (s)
 		begin = s;
 	else
@@ -107,9 +106,9 @@ char *mm_strtok_r(char *s, const char *delim, char **ptrptr)
 }
 #endif // _WIN32
 
-char *trimbuf(char *str)
+char* trimbuf(char* str)
 {
-	char *ibuf;
+	char* ibuf;
 
 	if (str == nullptr) return nullptr;
 	for (ibuf = str; *ibuf && (byte)(*ibuf) < (byte)0x80 && isspace(*ibuf); ++ibuf)
@@ -127,11 +126,10 @@ char *trimbuf(char *str)
 	return str;
 }
 
-void normalize_path(char *path)
+void normalize_path(char* path)
 {
 #ifdef _WIN32
-	for (char* cp = path; *cp; cp++)
-	{
+	for (char* cp = path; *cp; cp++) {
 		if (isupper(*cp))
 			*cp = tolower(*cp);
 
@@ -141,7 +139,7 @@ void normalize_path(char *path)
 #endif
 }
 
-bool is_abs_path(const char *path)
+bool is_abs_path(const char* path)
 {
 	if (path[0] == '/') return true;
 #ifdef _WIN32
@@ -151,7 +149,7 @@ bool is_abs_path(const char *path)
 	return false;
 }
 
-bool is_valid_path(const char *path)
+bool is_valid_path(const char* path)
 {
 	struct stat st;
 	return !stat(path, &st) && S_ISREG(st.st_mode);
@@ -169,15 +167,14 @@ bool is_platform_postfix(const char* pf)
 }
 
 #ifdef _WIN32
-char *realpath(const char *file_name, char *resolved_name)
+char* realpath(const char* file_name, char* resolved_name)
 {
 	int ret = GetFullPathName(file_name, PATH_MAX, resolved_name, nullptr);
-	
 	if (ret > PATH_MAX) {
 		errno = ENAMETOOLONG;
 		return nullptr;
 	}
-	
+
 	if (ret > 0) {
 		WIN32_FIND_DATA find_data;
 		HANDLE handle = FindFirstFile(resolved_name, &find_data);
@@ -208,7 +205,7 @@ void __declspec(noreturn) do_exit(int exitval)
 // Also, formerly named just "valid_file".
 //
 // Special-case-recognize "/dev/null" as a valid file.
-bool is_file_exists_in_gamedir(const char *path)
+bool is_file_exists_in_gamedir(const char* path)
 {
 	char buf[PATH_MAX];
 

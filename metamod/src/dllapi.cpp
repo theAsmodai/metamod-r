@@ -12,7 +12,7 @@ NEW_DLL_FUNCTIONS sNewFunctionTable;
 NEW_DLL_FUNCTIONS sNewFunctionTable_jit;
 NEW_DLL_FUNCTIONS *pHookedNewDllFunctions = &sNewFunctionTable;
 
-void MM_PRE_HOOK EXT_FUNC mm_ClientConnect(edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[128] )
+void MM_PRE_HOOK EXT_FUNC mm_ClientConnect(edict_t *pEntity, const char *, const char *, char [128])
 {
 	g_players.clear_player_cvar_query(pEntity);
 }
@@ -149,13 +149,11 @@ compile_data_t g_newdllfunc_cdata[] =
 C_DLLEXPORT int GetEntityAPI(DLL_FUNCTIONS *pFunctionTable, int interfaceVersion)
 {
 	META_DEBUG(3, "called: GetEntityAPI; version=%d", interfaceVersion);
-	if (!pFunctionTable)
-	{
+	if (!pFunctionTable) {
 		META_ERROR("GetEntityAPI called with null pFunctionTable");
 		return FALSE;
 	}
-	if (interfaceVersion != INTERFACE_VERSION)
-	{
+	if (interfaceVersion != INTERFACE_VERSION) {
 		META_ERROR("GetEntityAPI version mismatch; requested=%d ours=%d", interfaceVersion, INTERFACE_VERSION);
 		return FALSE;
 	}
@@ -168,13 +166,11 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 {
 	META_DEBUG(3, "called: GetEntityAPI2; version=%d", *interfaceVersion);
 
-	if (!pFunctionTable)
-	{
+	if (!pFunctionTable) {
 		META_ERROR("GetEntityAPI2 called with null pFunctionTable");
 		return FALSE;
 	}
-	if (*interfaceVersion != INTERFACE_VERSION)
-	{
+	if (*interfaceVersion != INTERFACE_VERSION) {
 		META_ERROR("GetEntityAPI2 version mismatch; requested=%d ours=%d", *interfaceVersion, INTERFACE_VERSION);
 		//! Tell engine what version we had, so it can figure out who is out of date.
 		*interfaceVersion = INTERFACE_VERSION;
@@ -196,13 +192,11 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 		return FALSE;
 #endif
 
-	if (!pNewFunctionTable)
-	{
+	if (!pNewFunctionTable) {
 		META_ERROR("GetNewDLLFunctions called with null pNewFunctionTable");
 		return FALSE;
 	}
-	if (*interfaceVersion != NEW_DLL_FUNCTIONS_VERSION)
-	{
+	if (*interfaceVersion != NEW_DLL_FUNCTIONS_VERSION) {
 		META_ERROR("GetNewDLLFunctions version mismatch; requested=%d ours=%d", *interfaceVersion, NEW_DLL_FUNCTIONS_VERSION);
 		//! Tell engine what version we had, so it can figure out who is out of date.
 		*interfaceVersion = NEW_DLL_FUNCTIONS_VERSION;

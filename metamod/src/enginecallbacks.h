@@ -12,17 +12,13 @@
 
 #include <enginecallback.h>		// ALERT, etc
 
-#ifdef METAMOD_CORE
-#undef enginefuncs_t
-#endif
-
 // Also, create some additional macros for engine callback functions, which
 // weren't in SDK dlls/enginecallbacks.h but probably should have been.
-#define GET_INFOKEYBUFFER		(*g_engfuncs.pfnGetInfoKeyBuffer)
-#define INFOKEY_VALUE			(*g_engfuncs.pfnInfoKeyValue)
-#define SET_CLIENT_KEYVALUE		(*g_engfuncs.pfnSetClientKeyValue)
-#define REG_SVR_COMMAND			(*g_engfuncs.pfnAddServerCommand)
-#define SERVER_PRINT			(*g_engfuncs.pfnServerPrint)
-#define SET_SERVER_KEYVALUE		(*g_engfuncs.pfnSetKeyValue)
+#define GET_INFOKEYBUFFER			(*g_engfuncs.pfnGetInfoKeyBuffer)
+#define INFOKEY_VALUE				(*g_engfuncs.pfnInfoKeyValue)
+#define SET_CLIENT_KEYVALUE			(*g_engfuncs.pfnSetClientKeyValue)
+#define REG_SVR_COMMAND				(*g_engfuncs.pfnAddServerCommand)
+#define SERVER_PRINT				(*g_engfuncs.pfnServerPrint)
+#define SET_SERVER_KEYVALUE			(*g_engfuncs.pfnSetKeyValue)
 #define QUERY_CLIENT_CVAR_VALUE		(*g_engfuncs.pfnQueryClientCvarValue)
 #define QUERY_CLIENT_CVAR_VALUE2	(*g_engfuncs.pfnQueryClientCvarValue2)

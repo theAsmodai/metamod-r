@@ -47,15 +47,15 @@ static ElfW(Addr) dlsize(void* base)
 
 	ehdr = (ElfW(Ehdr) *)base;
 
-	/* Find the first program header */
+/* Find the first program header */
 	phdr = (ElfW(Phdr)*)((ElfW(Addr))ehdr + ehdr->e_phoff);
 
-	/* Find the final PT_LOAD segment's extent */
+/* Find the final PT_LOAD segment's extent */
 	for (int i = 0; i < ehdr->e_phnum; ++i)
 		if (phdr[i].p_type == PT_LOAD)
 			end = phdr[i].p_vaddr + phdr[i].p_memsz;
 
-	/* The start (virtual) address is always zero, so just return end.*/
+/* The start (virtual) address is always zero, so just return end.*/
 	return end;
 }
 
@@ -135,7 +135,7 @@ const char* CSysModule::getloaderror()
 // http://msdn.microsoft.com/library/en-us/debug/errors_0sdh.asp
 // except without FORMAT_MESSAGE_ALLOCATE_BUFFER, since we use a local
 // static buffer.
-static const char *str_GetLastError()
+static const char* str_GetLastError()
 {
 	static char buf[MAX_STRBUF_LEN];
 	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&buf, MAX_STRBUF_LEN - 1, nullptr);

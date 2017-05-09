@@ -9,7 +9,7 @@
 typedef void (*ENTITY_FN)(entvars_t *);
 
 // Function to perform common code of LINK_ENTITY_TO_GAME.
-void do_link_ent(ENTITY_FN *pfnEntity, int *missing, const char *entStr, entvars_t *pev);
+void do_link_ent(ENTITY_FN* pfnEntity, int* missing, const char* entStr, entvars_t* pev);
 
 #define LINK_ENTITY_TO_GAME(entityName) \
 	C_DLLEXPORT void entityName(entvars_t *pev) { \

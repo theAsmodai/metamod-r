@@ -15,10 +15,10 @@
 // http://www.mail-archive.com/hlcoders@list.valvesoftware.com/msg02724.html
 
 C_DLLEXPORT int Server_GetBlendingInterface(int version,
-		struct sv_blending_interface_s **ppinterface,
-		struct engine_studio_api_s *pstudio,
-		float (*rotationmatrix)[3][4],
-		float (*bonetransform)[MAXSTUDIOBONES][3][4]) 
+                                            struct sv_blending_interface_s** ppinterface,
+                                            struct engine_studio_api_s* pstudio,
+                                            float (*rotationmatrix)[3][4],
+                                            float (*bonetransform)[MAXSTUDIOBONES][3][4])
 {
 	static GETBLENDAPI_FN getblend = NULL;
 	static int missing = 0;
@@ -36,18 +36,15 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version,
 	// mismatch?", but this will only show in "developer" (-dev) mode.
 
 	META_DEBUG(6, "called: Server_GetBlendingInterface; version=%d", version);
-	if (missing)
-	{
+	if (missing) {
 		META_DEBUG(6, "Skipping Server_GetBlendingInterface; was previously found missing");
 		return 0;
 	}
-	if (!getblend)
-	{
+	if (!getblend) {
 		META_DEBUG(6, "Looking up Server_GetBlendingInterface");
 		getblend = (GETBLENDAPI_FN)g_GameDLL.sys_module.getsym("Server_GetBlendingInterface");
 	}
-	if (!getblend)
-	{
+	if (!getblend) {
 		META_DEBUG(6, "Couldn't find Server_GetBlendingInterface in game DLL '%s': %s", g_GameDLL.name, "function not found");
 		missing = 1;
 		return 0;

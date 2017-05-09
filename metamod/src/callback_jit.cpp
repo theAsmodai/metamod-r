@@ -2,31 +2,25 @@
 
 CJit g_jit;
 
-class CUniqueLabel
+class CUniqueLabel : public std::string
 {
 public:
-	CUniqueLabel(const char* name) : m_name(name)
+	CUniqueLabel(const char* name) : std::string(std::string(name) + std::to_string(m_unique_index++))
 	{
-		m_name += std::to_string(m_unique_index++);
-	}
-
-	operator std::string&()
-	{
-		return m_name;
 	}
 
 private:
-	std::string m_name;
 	static size_t m_unique_index;
 };
+
 size_t CUniqueLabel::m_unique_index;
 
 class CForwardCallbackJIT : public jitasm::function<int, CForwardCallbackJIT, int>
 {
 public:
-	CForwardCallbackJIT(jitdata_t *jitdata);
+	CForwardCallbackJIT(jitdata_t* jitdata);
 	void naked_main();
-	void call_func(jitasm::Frontend::Reg32 addr);
+	void call_func(Reg32 addr);
 
 private:
 	jitdata_t* m_jitdata;
@@ -280,10 +274,10 @@ void CForwardCallbackJIT::naked_main()
 	ret();
 }
 
-void CForwardCallbackJIT::call_func(jitasm::Frontend::Reg32 addr)
+void CForwardCallbackJIT::call_func(Reg32 addr)
 {
 	const size_t fixed_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u /* excluding format string */ : 0u);
-	const size_t strbuf_offset = m_jitdata->has_ret ? sizeof(int) * 2 /* orig + over */ : 0;
+	const size_t strbuf_offset = m_jitdata->has_ret ? sizeof(int) * 2u /* orig + over */ : 0u;
 
 	// push formatted buf instead of format string
 	if (m_jitdata->has_varargs) {
@@ -360,8 +354,8 @@ bool CJit::is_hook_needed(jitdata_t* jitdata)
 	for (int i = 0; i < jitdata->plugins_count; i++) {
 		auto plug = &jitdata->plugins[i];
 
-		const size_t fn_table			= *(size_t *)(size_t(plug) + jitdata->table_offset);
-		const size_t fn_table_post		= *(size_t *)(size_t(plug) + jitdata->post_table_offset);
+		const size_t fn_table		= *(size_t *)(size_t(plug) + jitdata->table_offset);
+		const size_t fn_table_post	= *(size_t *)(size_t(plug) + jitdata->post_table_offset);
 
 		if (fn_table || fn_table_post) {
 			return true;

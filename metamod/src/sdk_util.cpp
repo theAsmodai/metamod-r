@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-char *UTIL_VarArgs(const char *format, ...)
+char* UTIL_VarArgs(const char* format, ...)
 {
 	va_list argptr;
 	static char string[1024];
@@ -22,7 +22,7 @@ unsigned short FixedUnsigned16(float value, float scale)
 	return (unsigned short)clamp(int(value * scale), 0, USHRT_MAX);
 }
 
-void UTIL_HudMessage(edict_t *pEntity, const hudtextparms_t &textparms, const char *pMessage)
+void UTIL_HudMessage(edict_t* pEntity, const hudtextparms_t& textparms, const char* pMessage)
 {
 	if (FNullEnt(pEntity) || pEntity->free)
 		return;
@@ -50,7 +50,7 @@ void UTIL_HudMessage(edict_t *pEntity, const hudtextparms_t &textparms, const ch
 	WRITE_SHORT(FixedUnsigned16(textparms.holdTime, 1 << 8));
 
 	if (textparms.effect == 2)
-		WRITE_SHORT(FixedUnsigned16(textparms.fxTime, 1 << 8));
+	WRITE_SHORT(FixedUnsigned16(textparms.fxTime, 1 << 8));
 
 	if (strlen(pMessage) < 512) {
 		WRITE_STRING(pMessage);

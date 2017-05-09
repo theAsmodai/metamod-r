@@ -4,29 +4,29 @@
 
 struct jitdata_t
 {
-	size_t pfn_original;
-	size_t pfn_offset; // from fn table
-	uint8 args_count;
-	bool has_ret;
-	bool has_varargs;
-	uint8 mm_hook_time;
-	size_t mm_hook;
+	size_t		pfn_original;
+	size_t		pfn_offset; // from fn table
+	uint8		args_count;
+	bool		has_ret;
+	bool		has_varargs;
+	uint8		mm_hook_time;
+	size_t		mm_hook;
 
-	MPlugin* plugins;
-	int plugins_count;
-	size_t table_offset; // from MPlugin
-	size_t post_table_offset; // from MPlugin
+	MPlugin*	plugins;
+	int			plugins_count;
+	size_t		table_offset; // from MPlugin
+	size_t		post_table_offset; // from MPlugin
 };
 
 struct compile_data_t
 {
-	const char* name;
-	size_t offset;
-	uint8 args_count;
-	bool has_ret;
-	bool has_varargs;
-	uint8 mm_hook_time;
-	size_t mm_hook;
+	const char*	name;
+	size_t		offset;
+	uint8		args_count;
+	bool		has_ret;
+	bool		has_varargs;
+	uint8		mm_hook_time;
+	size_t		mm_hook;
 };
 
 template<typename ret_t, typename ...t_args>
@@ -89,7 +89,6 @@ public:
 private:
 	static bool is_hook_needed(jitdata_t* jitdata);
 
-private:
 	static_allocator m_callback_allocator;
 	static_allocator m_tramp_allocator;
 };

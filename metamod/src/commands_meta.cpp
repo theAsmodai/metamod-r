@@ -45,10 +45,8 @@ void EXT_FUNC server_meta()
 {
 	const char *cmd = CMD_ARGV(1);
 
-	for (auto& meta_cmd : g_meta_cmds)
-	{
-		if (!Q_strcmp(cmd, meta_cmd.name))
-		{
+	for (auto& meta_cmd : g_meta_cmds) {
+		if (!Q_strcmp(cmd, meta_cmd.name)) {
 			meta_cmd.handler();
 			return;
 		}
@@ -67,14 +65,11 @@ void EXT_FUNC client_meta(edict_t* pEntity)
 	// arguments: none
 	if (!Q_strcmp(cmd, "version"))
 		client_meta_version(pEntity);
-
 	else if (!Q_strcmp(cmd, "list"))
 		client_meta_pluginlist(pEntity);
-	else
-	{
+	else {
 		META_CLIENT(pEntity, "Unrecognized meta command: %s", cmd);
 		client_meta_usage(pEntity);
-		return;
 	}
 }
 
@@ -114,8 +109,7 @@ void client_meta_usage(edict_t *pEntity)
 // "meta version" console command.
 void cmd_meta_version()
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CONS("usage: meta version");
 		return;
 	}
@@ -128,8 +122,7 @@ void cmd_meta_version()
 // "meta version" client command.
 void client_meta_version(edict_t *pEntity)
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CLIENT(pEntity, "usage: meta version");
 		return;
 	}
@@ -176,8 +169,7 @@ void cmd_meta_gpl()
 // "meta game" console command.
 void cmd_meta_game()
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CONS("usage: meta game");
 		return;
 	}
@@ -194,15 +186,13 @@ void cmd_meta_game()
 // "meta refresh" console command.
 void cmd_meta_refresh()
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CONS("usage: meta refresh");
 		return;
 	}
 
 	META_LOG("Refreshing the plugins on demand...");
-	if (g_plugins->refresh(PT_ANYTIME) != true)
-	{
+	if (!g_plugins->refresh(PT_ANYTIME)) {
 		META_LOG("Refresh failed.");
 	}
 }
@@ -210,20 +200,18 @@ void cmd_meta_refresh()
 // "meta list" console command.
 void cmd_meta_pluginlist()
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CONS("usage: meta list");
 		return;
 	}
 
-	g_plugins->show(0);
+	g_plugins->show();
 }
 
 // "meta list" client command.
 void client_meta_pluginlist(edict_t* pEntity)
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CLIENT(pEntity, "usage: meta list");
 		return;
 	}
@@ -234,8 +222,7 @@ void client_meta_pluginlist(edict_t* pEntity)
 // "meta cmds" console command.
 void cmd_meta_cmdlist()
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CONS("usage: meta cmds");
 		return;
 	}
@@ -246,8 +233,7 @@ void cmd_meta_cmdlist()
 // "meta cvars" console command.
 void cmd_meta_cvarlist()
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CONS("usage: meta cvars");
 		return;
 	}
@@ -258,8 +244,7 @@ void cmd_meta_cvarlist()
 // "meta config" console command.
 void cmd_meta_config()
 {
-	if (CMD_ARGC() != 2)
-	{
+	if (CMD_ARGC() != 2) {
 		META_CONS("usage: meta cvars");
 		return;
 	}
@@ -271,8 +256,7 @@ void cmd_meta_config()
 void cmd_meta_load()
 {
 	int argc = CMD_ARGC();
-	if (argc < 3)
-	{
+	if (argc < 3) {
 		META_CONS("usage: meta load <name> [<description>]");
 		META_CONS("   where <name> is an identifier used to locate the plugin file.");
 		META_CONS("   The system will look for a number of files based on this name, including:");
@@ -305,8 +289,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 	int argc = CMD_ARGC();
 	const char *cmd = CMD_ARGV(1);
 
-	if (argc < 3)
-	{
+	if (argc < 3) {
 		META_CONS("usage: meta %s <plugin> [<plugin> ...]", cmd);
 		META_CONS("   where <plugin> can be either the plugin index #");
 		META_CONS("   or a non-ambiguous prefix string matching name, desc, file, or logtag");
@@ -314,8 +297,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 	}
 
 	// i = 2 to skip first arg, as that's the "cmd"
-	for (int i = 2; i < argc; i++)
-	{
+	for (int i = 2; i < argc; i++) {
 		const char *arg = CMD_ARGV(i);
 		MPlugin *findp;
 		char *endptr;
@@ -333,27 +315,22 @@ void cmd_doplug(PLUG_CMD pcmd)
 		//  - specified plugin was found in the list of current plugins
 		//  - plugin successfully loaded and began running
 		// Otherwise, print error and exit.
-		if (pcmd == PC_REQUIRE)
-		{
-			if (findp && findp->status() >= PL_RUNNING && unique)
-			{
+		if (pcmd == PC_REQUIRE) {
+			if (findp && findp->status() >= PL_RUNNING && unique) {
 				META_DEBUG(3, "Required plugin '%s' found loaded and running.", arg);
 				return;
 			}
 			// Output to both places, because we don't want the admin
 			// to miss this..
-			if (findp && !unique)
-			{
+			if (findp && !unique) {
 				META_ERROR("Unique match for required plugin '%s' was not found!  Exiting.", arg);
 				META_CONS("\nERROR: Unique match for required plugin '%s' was not found!  Exiting.\n", arg);
 			}
-			else if (!findp)
-			{
+			else if (!findp) {
 				META_ERROR("Required plugin '%s' was not found!  Exiting.", arg);
 				META_CONS("\nERROR: Required plugin '%s' was not found!  Exiting.\n", arg);
 			}
-			else
-			{
+			else {
 				META_ERROR("Required plugin '%s' did not load successfully!  (status=%s)  Exiting.", arg, findp->str_status(ST_SIMPLE));
 				META_CONS("\nERROR: Required plugin '%s' did not load successfully!  (status=%s)  Exiting.\n", arg, findp->str_status(ST_SIMPLE));
 			}
@@ -371,8 +348,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 			return;
 		}
 
-		switch (pcmd)
-		{
+		switch (pcmd) {
 		case PC_PAUSE:
 			if (findp->pause())
 				META_CONS("Paused plugin '%s'", findp->description());
@@ -388,8 +364,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 		case PC_UNLOAD:
 		{
 			findp->set_action(PA_UNLOAD);
-			if (findp->unload(PT_ANYTIME, PNL_COMMAND))
-			{
+			if (findp->unload(PT_ANYTIME, PNL_COMMAND)) {
 				META_CONS("Unloaded plugin '%s'", findp->description());
 				g_plugins->show();
 			}
@@ -402,8 +377,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 		case PC_FORCE_UNLOAD:
 		{
 			findp->set_action(PA_UNLOAD);
-			if (findp->unload(PT_ANYTIME, PNL_CMD_FORCED))
-			{
+			if (findp->unload(PT_ANYTIME, PNL_CMD_FORCED)) {
 				META_CONS("Forced unload plugin '%s'", findp->description());
 				g_plugins->show();
 			}
@@ -430,9 +404,8 @@ void cmd_doplug(PLUG_CMD pcmd)
 			else
 				META_CONS("Retry failed for plugin '%s'", findp->description());
 			break;
-		case PC_CLEAR:
-			if (!findp->clear())
-			{
+			case PC_CLEAR:
+			if (!findp->clear()) {
 				META_CONS("Clear failed for plugin '%s'", findp->description());
 				return;
 			}
@@ -443,7 +416,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 		case PC_INFO:
 			findp->show();
 			break;
-		default:
+			default:
 			META_WARNING("Unexpected plug_cmd: %d", pcmd);
 			META_CONS("Command failed; see log");
 			break;

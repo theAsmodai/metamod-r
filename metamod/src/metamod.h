@@ -18,39 +18,39 @@ extern cvar_t g_meta_version;
 // Info about the game dll/mod.
 struct gamedll_t
 {
-	char name[NAME_MAX];		// ie "cstrike" (from gamedir)
-	char desc[NAME_MAX];		// ie "Counter-Strike"
-	char gamedir[PATH_MAX];		// ie "/home/willday/half-life/cstrike"
-	char pathname[PATH_MAX];	// ie "/home/willday/half-life/cstrike/dlls/cs_i386.so"
-	char const *file;		// ie "cs_i386.so"
-	char real_pathname[PATH_MAX];	// in case pathname overridden by bot, etc
+	char name[NAME_MAX]; // ie "cstrike" (from gamedir)
+	char desc[NAME_MAX]; // ie "Counter-Strike"
+	char gamedir[PATH_MAX]; // ie "/home/willday/half-life/cstrike"
+	char pathname[PATH_MAX]; // ie "/home/willday/half-life/cstrike/dlls/cs_i386.so"
+	char const* file; // ie "cs_i386.so"
+	char real_pathname[PATH_MAX]; // in case pathname overridden by bot, etc
 	CSysModule sys_module;
-	gamedll_funcs_t funcs;		// dllapi_table, newapi_table
+	gamedll_funcs_t funcs; // dllapi_table, newapi_table
 };
 
 extern gamedll_t g_GameDLL;
 
 // SDK variables for storing engine funcs and globals.
 extern enginefuncs_t g_engfuncs;
-extern globalvars_t *gpGlobals;
+extern globalvars_t* gpGlobals;
 
 // Our modified version of the engine funcs, to give to plugins.
 extern enginefuncs_t g_plugin_engfuncs;
 
 // g_config structure.
-extern MConfig *g_config;
+extern MConfig* g_config;
 
 // List of plugins loaded/opened/running.
-extern MPluginList *g_plugins;
+extern MPluginList* g_plugins;
 
 // List of command functions registered by plugins.
-extern MRegCmdList *g_regCmds;
+extern MRegCmdList* g_regCmds;
 
 // List of cvar structures registered by plugins.
-extern MRegCvarList *g_regCvars;
+extern MRegCvarList* g_regCvars;
 
 // List of user messages registered by gamedll.
-extern MRegMsgList *g_regMsgs;
+extern MRegMsgList* g_regMsgs;
 
 #ifdef METAMOD_CORE
 ALIGN16
@@ -62,8 +62,8 @@ ALIGN16
 extern meta_globals_t g_metaGlobals;
 
 // hook function tables
-extern DLL_FUNCTIONS *pHookedDllFunctions;
-extern NEW_DLL_FUNCTIONS *pHookedNewDllFunctions;
+extern DLL_FUNCTIONS* pHookedDllFunctions;
+extern NEW_DLL_FUNCTIONS* pHookedNewDllFunctions;
 
 // (patch by hullu)
 // Safety check for metamod-bot-plugin bugfix.

@@ -7,13 +7,23 @@
 // the moment, it reflects what one might normally expect to be the max
 // width needed to print an index number; 4 allows 9999 (which is a damn
 // lot, if you ask me).
-#define WIDTH_MAX_REG	4
+enum
+{
+	WIDTH_MAX_REG = 4
+};
 
 // Max number of registered user msgs we can manage.
-#define MAX_REG_MSGS	256
+enum
+{
+	MAX_REG_MSGS = 256
+};
 
 // Flags to indicate if given cvar or func is part of a loaded plugin.
-enum REG_STATUS { RG_INVALID, RG_VALID };
+enum REG_STATUS
+{
+	RG_INVALID,
+	RG_VALID
+};
 
 // Pointer to function registered by AddServerCommand.
 typedef void (*REG_CMD_FN)();

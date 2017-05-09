@@ -11,9 +11,9 @@ enum : uint8
 
 struct api_info_t
 {
-	size_t offset;
-	const char *name;
-	size_t loglevel;
+	size_t		offset;
+	const char*	name;
+	size_t		loglevel;
 };
 
 // DLL api functions

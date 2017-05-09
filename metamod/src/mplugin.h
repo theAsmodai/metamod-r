@@ -6,7 +6,7 @@
 // NOTE: order is important, as greater/less comparisons are made.
 enum PLUG_STATUS : uint8
 {
-	PL_EMPTY,		// empty slot
+	PL_EMPTY,			// empty slot
 	PL_VALID,			// has valid info in it
 	PL_BADFILE,			// nonexistent file (open failed), or not a valid plugin file (query failed)
 	PL_OPENED,			// dlopened and queried
@@ -30,7 +30,7 @@ enum PLUG_ACTION : uint8
 // Flags to indicate from where the plugin was loaded.
 enum PLOAD_SOURCE : uint8
 {
-	PS_INI,			// was loaded from the plugins.ini
+	PS_INI,				// was loaded from the plugins.ini
 	PS_CMD,				// was loaded via a server command
 	PS_PLUGIN,			// was loaded by other plugin
 };
@@ -38,7 +38,7 @@ enum PLOAD_SOURCE : uint8
 // Flags for how to word description of plugin loadtime.
 enum STR_LOADTIME : uint8
 {
-	SL_SIMPLE = 0,			// single word
+	SL_SIMPLE,			// single word
 	SL_SHOW,			// for "show" output, 5 chars
 	SL_ALLOWED,			// when plugin is allowed to load/unload
 	SL_NOW,				// current situation
@@ -78,28 +78,28 @@ public:
 	MPlugin();
 	MPlugin(int index);
 
-	bool ini_parseline(char *line);									// parse line from .ini file
-	bool cmd_parseline(const char *line);							// parse from console command
-	bool plugin_parseline(const char *fname, int loader_index); 	// parse from plugin
-	bool check_input();												// check filename, path, status
+	bool ini_parseline(char *line);													// parse line from .ini file
+	bool cmd_parseline(const char *line);											// parse from console command
+	bool plugin_parseline(const char *fname, int loader_index); 					// parse from plugin
+	bool check_input();																// check filename, path, status
 
 	bool resolve();																	// find a matching file on disk
 	char *resolve_dirs(const char *path, char *tempbuf, size_t bufsize) const;		// try resolve filename in different dirs
 	char *resolve_suffix(const char *path, char *tempbuf, size_t bufsize) const;	// try resolve given filename with different suffixes
 
-	bool platform_match(MPlugin* plugin) const;						// check if a given plugin is the same but possibly for a different platform
+	bool platform_match(MPlugin* plugin) const;										// check if a given plugin is the same but possibly for a different platform
 
-	bool load(PLUG_LOADTIME now);									// load parsed plugin
+	bool load(PLUG_LOADTIME now);													// load parsed plugin
 	bool unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
 	bool reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
 	bool pause();
 	bool unpause();
-	bool retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);			// if previously failed
+	bool retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);							// if previously failed
 	bool clear();
 	bool plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON reason);	// other plugin unloading
-	void show();									// print info about plugin to console
+	void show();																	// print info about plugin to console
 
-	bool newer_file() const;								// check for newer file on disk
+	bool newer_file() const;														// check for newer file on disk
 
 	const char *str_status(STR_STATUS fmt = ST_SIMPLE) const;
 	const char *str_action(STR_ACTION fmt = SA_SIMPLE) const;
@@ -126,8 +126,8 @@ public:
 	void set_action(PLUG_ACTION action);
 
 private:
-	bool query(); // check exports, call init, getfnptrs and query
-	bool attach(PLUG_LOADTIME now); // call attach
+	bool query();						// check exports, call init, getfnptrs and query
+	bool attach(PLUG_LOADTIME now);		// call attach
 	bool detach(PLUG_LOADTIME now, PL_UNLOAD_REASON reason); // call detach
 
 	PLUG_STATUS m_status;				// current status of plugin (loaded, etc)

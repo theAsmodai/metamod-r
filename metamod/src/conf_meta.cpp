@@ -14,15 +14,14 @@ void MConfig::init(option_t* global_options)
 		set(optp, optp->init);
 }
 
-option_t *MConfig::find(const char* lookup) const
+option_t* MConfig::find(const char* lookup) const
 {
-	for (auto optp = m_list; optp->name; optp++)
-	{
+	for (auto optp = m_list; optp->name; optp++) {
 		if (!Q_strcmp(optp->name, lookup)) {
 			return optp;
 		}
 	}
-	
+
 	return nullptr;
 }
 
@@ -38,19 +37,17 @@ bool MConfig::set(const char* key, const char* value) const
 bool MConfig::set(option_t* setp, const char* setstr)
 {
 	char pathbuf[PATH_MAX];
-	int* optval = (int *) setp->dest;
-	char** optstr = (char **) setp->dest;
+	int* optval = (int *)setp->dest;
+	char** optstr = (char **)setp->dest;
 	// cvar_t *optcvar = (cvar_t *) setp->dest;
 	// SETOPT_FN optcmd = (SETOPT_FN) setp->dest;
 
 	if (!setstr)
 		return true;
 
-	switch (setp->type)
-	{
+	switch (setp->type) {
 	case CF_INT:
-		if (!isdigit(setstr[0]))
-		{
+		if (!isdigit(setstr[0])) {
 			META_ERROR("option '%s' invalid format '%s'", setp->name, setstr);
 			return false;
 		}
@@ -58,16 +55,13 @@ bool MConfig::set(option_t* setp, const char* setstr)
 		META_DEBUG(3, "set config int: %s = %d", setp->name, *optval);
 		break;
 	case CF_BOOL:
-		if (is_yes(setstr))
-		{
+		if (is_yes(setstr)) {
 			*optval = TRUE;
 		}
-		else if (is_no(setstr))
-		{
+		else if (is_no(setstr)) {
 			*optval = FALSE;
 		}
-		else
-		{
+		else {
 			META_ERROR("option '%s' invalid format '%s'", setp->name,
 			           setstr);
 			return false;
@@ -76,13 +70,13 @@ bool MConfig::set(option_t* setp, const char* setstr)
 		break;
 	case CF_STR:
 		if (*optstr)
-			Q_free(*optstr);
+		Q_free(*optstr);
 		*optstr = Q_strdup(setstr);
 		META_DEBUG(3, "set config string: %s = %s", setp->name, *optstr);
 		break;
 	case CF_PATH:
 		if (*optstr)
-			Q_free(*optstr);
+		Q_free(*optstr);
 		full_gamedir_path(setstr, pathbuf);
 		*optstr = Q_strdup(pathbuf);
 		META_DEBUG(3, "set config path: %s = %s", setp->name, *optstr);
@@ -99,48 +93,42 @@ bool MConfig::load(const char* fn)
 {
 	char loadfile[PATH_MAX];
 	char line[MAX_CONF_LEN];
-	char *optname, *optval;
-	option_t* optp;
 
 	// Make full pathname (from gamedir if relative, collapse "..",
 	// backslashes, etc).
 	full_gamedir_path(fn, loadfile);
 
 	FILE* fp = fopen(loadfile, "r");
-	if (!fp)
-	{
+	if (!fp) {
 		META_ERROR("unable to open config file '%s': %s", loadfile, strerror(errno));
 		return false;
 	}
 
 	META_DEBUG(2, "Loading from config file: %s", loadfile);
-	for (int ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++)
-	{
+	for (int ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++) {
 		if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2))
 			continue;
 
-		if (!(optname = strtok(line, " \t\r\n")))
-		{
+		char* optname = strtok(line, " \t\r\n");
+		if (!optname) {
 			META_ERROR("'%s' line %d: bad config format: missing option", loadfile, ln);
 			continue;
 		}
-		
-		if (!(optval = strtok(nullptr, "\r\n")))
-		{
+
+		char *optval = strtok(nullptr, "\r\n");
+		if (!optval) {
 			META_ERROR("'%s' line %d: bad config format: missing value", loadfile, ln);
 			continue;
 		}
 
-		if (!(optp = find(optname)))
-		{
+		auto optp = find(optname);
+		if (!optp) {
 			META_ERROR("'%s' line %d: unknown option name '%s'", loadfile, ln, optname);
 			continue;
 		}
 
-		if (!set(optp, optval))
-		{
+		if (!set(optp, optval)) {
 			META_ERROR("'%s' line %d: unable to set option '%s' value '%s'", loadfile, ln, optname, optval);
-			continue;
 		}
 	}
 
@@ -153,15 +141,13 @@ void MConfig::show() const
 {
 	META_CONS("Config options from localinfo and %s:", m_filename);
 
-	for (auto optp = m_list; optp->name; optp++)
-	{
-		int *optval = (int *)optp->dest;
-		char **optstr = (char **)optp->dest;
+	for (auto optp = m_list; optp->name; optp++) {
+		int* optval = (int *)optp->dest;
+		char** optstr = (char **)optp->dest;
 
 		// cvar_t *optcvar = (cvar_t *) optp->dest;
 		// SETOPT_FN optcmd = (SETOPT_FN) optp->dest;
-		switch (optp->type)
-		{
+		switch (optp->type) {
 		case CF_INT:
 			printf("   %-20s\t%d\n", optp->name, *optval);
 			break;
@@ -186,8 +172,7 @@ void MConfig::set_directory()
 	GetModuleFileName(hModule, m_directory, sizeof m_directory);
 #else
 	Dl_info addrInfo;
-	if (dladdr((void *)GiveFnptrsToDll, &addrInfo))
-	{
+	if (dladdr((void *)GiveFnptrsToDll, &addrInfo)) {
 		Q_strncpy(m_directory, addrInfo.dli_fname, sizeof m_directory - 1);
 		m_directory[sizeof m_directory - 1] = '\0';
 	}
@@ -196,7 +181,7 @@ void MConfig::set_directory()
 	normalize_path(m_directory);
 
 	// get directory
-	char *dir = Q_strrchr(m_directory, '/');
+	char* dir = Q_strrchr(m_directory, '/');
 	if (dir) {
 		*dir = '\0';
 	}

@@ -73,7 +73,7 @@ static const char* g_engine_msg_names[] =
 };
 
 // Log to console; newline added.
-void EXT_FUNC mutil_LogConsole(plid_t plid, const char *fmt, ...)
+void EXT_FUNC mutil_LogConsole(plid_t plid, const char* fmt, ...)
 {
 	char buf[MAX_LOGMSG_LEN];
 
@@ -89,7 +89,7 @@ void EXT_FUNC mutil_LogConsole(plid_t plid, const char *fmt, ...)
 }
 
 // Log regular message to logs; newline added.
-void EXT_FUNC mutil_LogMessage(plid_t plid, const char *fmt, ...)
+void EXT_FUNC mutil_LogMessage(plid_t plid, const char* fmt, ...)
 {
 	char buf[MAX_LOGMSG_LEN];
 
@@ -102,7 +102,7 @@ void EXT_FUNC mutil_LogMessage(plid_t plid, const char *fmt, ...)
 }
 
 // Log an error message to logs; newline added.
-void EXT_FUNC mutil_LogError(plid_t plid, const char *fmt, ...)
+void EXT_FUNC mutil_LogError(plid_t plid, const char* fmt, ...)
 {
 	char buf[MAX_LOGMSG_LEN];
 
@@ -158,13 +158,12 @@ void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const c
 
 	mutil_LogMessage(plid, "(centersay) %s", buf);
 
-	for (int n = 1; n <= gpGlobals->maxClients; n++)
-	{
+	for (int n = 1; n <= gpGlobals->maxClients; n++) {
 		auto pEntity = INDEXENT(n);
 
 		if (FNullEnt(pEntity) || pEntity->free)
 			continue;
-		
+
 		UTIL_HudMessage(pEntity, tparms, buf);
 	}
 }
@@ -172,13 +171,12 @@ void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const c
 // Allow plugins to call the entity functions in the GameDLL.  In
 // particular, calling "player()" as needed by most Bots.  Suggested by
 // Jussi Kivilinna.
-qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char *entStr, entvars_t *pev)
+qboolean EXT_FUNC mutil_CallGameEntity(plid_t plid, const char* entStr, entvars_t* pev)
 {
 	META_DEBUG(8, "Looking up game entity '%s' for plugin '%s'", entStr, plid->name);
 	ENTITY_FN pfnEntity = (ENTITY_FN)g_GameDLL.sys_module.getsym(entStr);
-	
-	if (!pfnEntity)
-	{
+
+	if (!pfnEntity) {
 		META_ERROR("Couldn't find game entity '%s' in game DLL '%s' for plugin '%s'", entStr, g_GameDLL.name, plid->name);
 		return false;
 	}
@@ -194,10 +192,9 @@ int EXT_FUNC mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 {
 	META_DEBUG(8, "Looking up usermsg name '%s' for plugin '%s'", msgname, plid->name);
 
-	MRegMsg *umsg = g_regMsgs->find(msgname);
+	MRegMsg* umsg = g_regMsgs->find(msgname);
 
-	if (umsg)
-	{
+	if (umsg) {
 		if (size) *size = umsg->getsize();
 		return umsg->getid();
 	}
@@ -208,35 +205,33 @@ int EXT_FUNC mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 			return n;
 		}
 	}
-	
+
 	return 0;
 }
 
 // Find a usermsg, registered by the gamedll, with the corresponding
 // msgid, and return remaining info about it (msgname, size).
-const char* EXT_FUNC mutil_GetUserMsgName(plid_t plid, int msgid, int *size)
+const char* EXT_FUNC mutil_GetUserMsgName(plid_t plid, int msgid, int* size)
 {
-	plugin_info_t *plinfo = (plugin_info_t *)plid;
+	plugin_info_t* plinfo = (plugin_info_t *)plid;
 	META_DEBUG(8, "Looking up usermsg id '%d' for plugin '%s'", msgid, plinfo->name);
 
 	// Guess names for any built-in g_engine messages mentioned in the SDK;
 	// from dlls/util.h.
-	if (msgid < arraysize(g_engine_msg_names))
-	{
+	if (msgid < arraysize(g_engine_msg_names)) {
 		if (size) *size = -1;
 		return g_engine_msg_names[msgid];
 	}
 
-	MRegMsg *umsg = g_regMsgs->find(msgid);
-	
-	if (umsg)
-	{
+	MRegMsg* umsg = g_regMsgs->find(msgid);
+
+	if (umsg) {
 		if (size) *size = umsg->getsize();
 		// 'name' is assumed to be a constant string, allocated in the
 		// gamedll.
 		return umsg->getname();
 	}
-	
+
 	return nullptr;
 }
 
@@ -246,8 +241,7 @@ const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 	static char buf[PATH_MAX];
 
 	auto plug = g_plugins->find(plid);
-	if (!plug)
-	{
+	if (!plug) {
 		META_ERROR("GetPluginPath: couldn't find plugin '%s'", plid->name);
 		return nullptr;
 	}
@@ -261,10 +255,9 @@ const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 {
 	static char buf[MAX_STRBUF_LEN];
-	const char *cp;
+	const char* cp;
 
-	switch (type)
-	{
+	switch (type) {
 	case GINFO_NAME:
 		cp = g_GameDLL.name;
 		break;
@@ -293,16 +286,14 @@ const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 	return buf;
 }
 
-int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME now, void **plugin_handle)
+int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME now, void** plugin_handle)
 {
-	if (!fname)
-	{
+	if (!fname) {
 		return 1;
 	}
 
 	auto pl_loaded = g_plugins->plugin_addload(plid, fname, now);
-	if (!pl_loaded)
-	{
+	if (!pl_loaded) {
 		if (plugin_handle)
 			*plugin_handle = nullptr;
 
@@ -317,16 +308,15 @@ int EXT_FUNC mutil_LoadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME 
 	return 0;
 }
 
-int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char* fname, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
-	MPlugin *findp;
+	MPlugin* findp;
 
-	if (!fname)
-	{
+	if (!fname) {
 		return 1;
 	}
 
-	char *endptr;
+	char* endptr;
 	int pindex = strtol(fname, &endptr, 10);
 	bool unique = true;
 
@@ -346,10 +336,9 @@ int EXT_FUNC mutil_UnloadMetaPlugin(plid_t plid, const char *fname, PLUG_LOADTIM
 	return 1;
 }
 
-int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void *plugin_handle, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+int EXT_FUNC mutil_UnloadMetaPluginByHandle(plid_t plid, void* plugin_handle, PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
-	if (!plugin_handle)
-	{
+	if (!plugin_handle) {
 		return 1;
 	}
 
@@ -391,22 +380,22 @@ void EXT_FUNC mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIO
 
 // Meta Utility Function table.
 mutil_funcs_t g_MetaUtilFunctions = {
-	mutil_LogConsole,		// pfnLogConsole
-	mutil_LogMessage,		// pfnLogMessage
-	mutil_LogError,			// pfnLogError
-	mutil_LogDeveloper,		// pfnLogDeveloper
-	mutil_CenterSay,		// pfnCenterSay
-	mutil_CenterSayParms,		// pfnCenterSayParms
-	mutil_CenterSayVarargs,		// pfnCenterSayVarargs
-	mutil_CallGameEntity,		// pfnCallGameEntity
-	mutil_GetUserMsgID,		// pfnGetUserMsgID
-	mutil_GetUserMsgName,		// pfnGetUserMsgName
-	mutil_GetPluginPath,		// pfnGetPluginPath
-	mutil_GetGameInfo,		// pfnGetGameInfo
-	mutil_LoadMetaPlugin,		// pfnLoadPlugin
-	mutil_UnloadMetaPlugin,		// pfnUnloadPlugin
+	mutil_LogConsole,				// pfnLogConsole
+	mutil_LogMessage,				// pfnLogMessage
+	mutil_LogError,					// pfnLogError
+	mutil_LogDeveloper,				// pfnLogDeveloper
+	mutil_CenterSay,				// pfnCenterSay
+	mutil_CenterSayParms,			// pfnCenterSayParms
+	mutil_CenterSayVarargs,			// pfnCenterSayVarargs
+	mutil_CallGameEntity,			// pfnCallGameEntity
+	mutil_GetUserMsgID,				// pfnGetUserMsgID
+	mutil_GetUserMsgName,			// pfnGetUserMsgName
+	mutil_GetPluginPath,			// pfnGetPluginPath
+	mutil_GetGameInfo,				// pfnGetGameInfo
+	mutil_LoadMetaPlugin,			// pfnLoadPlugin
+	mutil_UnloadMetaPlugin,			// pfnUnloadPlugin
 	mutil_UnloadMetaPluginByHandle,	// pfnUnloadPluginByHandle
-	mutil_IsQueryingClientCvar,	// pfnIsQueryingClientCvar
-	mutil_MakeRequestId,		// pfnMakeRequestId
-	mutil_GetHookTables,		// pfnGetHookTables
+	mutil_IsQueryingClientCvar,		// pfnIsQueryingClientCvar
+	mutil_MakeRequestId,			// pfnMakeRequestId
+	mutil_GetHookTables,			// pfnGetHookTables
 };

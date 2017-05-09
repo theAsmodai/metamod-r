@@ -34,12 +34,12 @@ compile_data_t g_engfuncs_cdata[] =
 {
 	CDATA_ENG(pfnPrecacheModel),			// pfnPrecacheModel()
 	CDATA_ENG(pfnPrecacheSound),			// pfnPrecacheSound()
-	CDATA_ENG(pfnSetModel),				// pfnSetModel()
+	CDATA_ENG(pfnSetModel),					// pfnSetModel()
 	CDATA_ENG(pfnModelIndex),				// pfnModelIndex()
-	CDATA_ENG(pfnModelFrames),			// pfnModelFrames()
+	CDATA_ENG(pfnModelFrames),				// pfnModelFrames()
 
-	CDATA_ENG(pfnSetSize),				// pfnSetSize()
-	CDATA_ENG(pfnChangeLevel),			// pfnChangeLevel()
+	CDATA_ENG(pfnSetSize),					// pfnSetSize()
+	CDATA_ENG(pfnChangeLevel),				// pfnChangeLevel()
 	CDATA_ENG(pfnGetSpawnParms),			// pfnGetSpawnParms()
 	CDATA_ENG(pfnSaveSpawnParms),			// pfnSaveSpawnParms()
 

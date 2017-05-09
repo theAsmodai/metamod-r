@@ -37,8 +37,6 @@ int g_requestid_counter = 0;
 // Do startup operations...
 void metamod_startup()
 {
-	const char *cp;
-
 	char configFile[MAX_PATH];
 	char pluginFile[MAX_PATH];
 	char execFile[MAX_PATH];
@@ -60,8 +58,7 @@ void metamod_startup()
 
 	// Get gamedir, very early on, because it seems we need it all over the
 	// place here at the start.
-	if (!meta_init_gamedll())
-	{
+	if (!meta_init_gamedll()) {
 		META_ERROR("Failure to init game DLL; exiting...");
 		do_exit(1);
 	}
@@ -73,19 +70,18 @@ void metamod_startup()
 
 	// Set a slight debug level for developer mode, if debug level not
 	// already set.
-	if ((int)CVAR_GET_FLOAT("developer") != 0 && g_meta_debug.value == 0)
+	if (CVAR_GET_FLOAT("developer") != 0.0 && g_meta_debug.value == 0.0)
 		CVAR_SET_FLOAT("meta_debug", 3.0);
 
 	// Init default values
 	g_config->init(g_global_options);
 
 	// Find config file
-	if ((cp = LOCALINFO("mm_configfile")) && *cp != '\0')
-	{
+	const char *cp = LOCALINFO("mm_configfile");
+	if (cp && *cp != '\0') {
 		META_LOG("Configfile specified via localinfo: %s", cp);
 
-		if (is_file_exists_in_gamedir(cp))
-		{
+		if (is_file_exists_in_gamedir(cp)) {
 			Q_strncpy(configFile, cp, sizeof configFile - 1);
 			configFile[sizeof configFile - 1] = '\0';
 		}
@@ -93,8 +89,7 @@ void metamod_startup()
 			META_ERROR("Empty/missing config.ini file: %s; falling back to %s", cp, configFile);
 	}
 
-	if (!is_file_exists_in_gamedir(configFile))
-	{
+	if (!is_file_exists_in_gamedir(configFile)) {
 		Q_strncpy(configFile, g_config->directory(), sizeof configFile - 1);
 		configFile[sizeof configFile - 1] = '\0';
 
@@ -105,8 +100,7 @@ void metamod_startup()
 		}
 
 		Q_strcat(configFile, "/" CONFIG_INI);
-		if (!is_file_exists_in_gamedir(configFile))
-		{
+		if (!is_file_exists_in_gamedir(configFile)) {
 			META_DEBUG(2, "No config.ini file found: %s", CONFIG_INI);
 		}
 	}
@@ -116,39 +110,39 @@ void metamod_startup()
 		g_config->load(configFile);
 
 	// Now, override config options with localinfo commandline options.
-	if ((cp = LOCALINFO("mm_debug")) && *cp != '\0')
-	{
+	cp = LOCALINFO("mm_debug");
+	if (cp && *cp != '\0') {
 		META_LOG("Debuglevel specified via localinfo: %s", cp);
 		g_config->set("debuglevel", cp);
 	}
 
-	if ((cp = LOCALINFO("mm_gamedll")) && *cp != '\0')
-	{
+	cp = LOCALINFO("mm_gamedll");
+	if (cp && *cp != '\0') {
 		META_LOG("Gamedll specified via localinfo: %s", cp);
 		g_config->set("gamedll", cp);
 	}
 
-	if ((cp = LOCALINFO("mm_pluginsfile")) && *cp != '\0')
-	{
+	cp = LOCALINFO("mm_pluginsfile");
+	if (cp && *cp != '\0') {
 		META_LOG("Pluginsfile specified via localinfo: %s", cp);
 		g_config->set("plugins_file", cp);
 	}
 
-	if ((cp = LOCALINFO("mm_execcfg")) && *cp != '\0')
-	{
+	cp = LOCALINFO("mm_execcfg");
+	if (cp && *cp != '\0') {
 		META_LOG("Execcfg specified via localinfo: %s", cp);
 		g_config->set("exec_cfg", cp);
 	}
 
-	if ((cp = LOCALINFO("mm_clientmeta")) && *cp != '\0')
-	{
+	cp = LOCALINFO("mm_clientmeta");
+	if (cp && *cp != '\0') {
 		META_LOG("Clientmeta specified via localinfo: %s", cp);
 		g_config->set("clientmeta", cp);
 	}
 
 	// Check for an initial debug level, since cfg files don't get exec'd
 	// until later.
-	if (g_config->m_debuglevel != 0)
+	if (g_config->m_debuglevel)
 		CVAR_SET_FLOAT("meta_debug", g_config->m_debuglevel);
 	if (!g_config->m_clientmeta)
 		disable_clientcommand_fwd();
@@ -197,8 +191,7 @@ void metamod_startup()
 	// In fact, we need gamedir even earlier, so moved up above.
 
 	// Load plugins file
-	if (!is_file_exists_in_gamedir(pluginFile))
-	{
+	if (!is_file_exists_in_gamedir(pluginFile)) {
 		Q_strncpy(pluginFile, g_config->directory(), sizeof pluginFile - 1);
 		pluginFile[sizeof pluginFile - 1] = '\0';
 
@@ -209,22 +202,19 @@ void metamod_startup()
 		}
 
 		Q_strcat(pluginFile, "/" PLUGINS_INI);
-		if (!is_file_exists_in_gamedir(pluginFile))
-		{
+		if (!is_file_exists_in_gamedir(pluginFile)) {
 			META_DEBUG(2, "No plugins.ini file found: %s", PLUGINS_INI);
 		}
 	}
 
 	g_plugins = new MPluginList(pluginFile);
 
-	if (!meta_load_gamedll())
-	{
+	if (!meta_load_gamedll()) {
 		META_ERROR("Failure to load game DLL; exiting...");
 		do_exit(1);
 	}
 
-	if (!g_plugins->load())
-	{
+	if (!g_plugins->load()) {
 		META_ERROR("Failure to load plugins...");
 		// Exit on failure here?  Dunno...
 	}
@@ -237,18 +227,15 @@ void metamod_startup()
 	// Only attempt load if the file appears to exist and be non-empty, to
 	// avoid confusing users with "couldn't exec exec.cfg" console
 	// messages.
-	if (g_config->m_exec_cfg)
-	{
+	if (g_config->m_exec_cfg) {
 		Q_strncpy(execFile, g_config->m_exec_cfg, sizeof execFile - 1);
 		execFile[sizeof execFile - 1] = '\0';
 	}
 
-	if (is_file_exists_in_gamedir(execFile))
-	{
+	if (is_file_exists_in_gamedir(execFile)) {
 		if (execFile[0] == '/')
 			META_ERROR("Cannot exec absolute pathnames: %s", execFile);
-		else
-		{
+		else {
 			char cmd[NAME_MAX];
 			META_LOG("Exec'ing metamod exec.cfg: %s...", execFile);
 			Q_snprintf(cmd, sizeof cmd, "exec %s\n", execFile);
@@ -262,11 +249,9 @@ void metamod_startup()
 //  - ME_NULLRESULT	_getcwd failed
 bool meta_init_gamedll()
 {
-	char gamedir[PATH_MAX];
-	char *cp;
-
 	Q_memset(&g_GameDLL, 0, sizeof g_GameDLL);
 
+	char gamedir[PATH_MAX];
 	GET_GAME_DIR(gamedir);
 	normalize_path(gamedir);
 
@@ -280,26 +265,23 @@ bool meta_init_gamedll()
 	// Note: the code has always assumed the server op wouldn't do:
 	//    hlds -game other/firearms
 	//
-	if (is_abs_path(gamedir))
-	{
+	if (is_abs_path(gamedir)) {
 		// Old style; GET_GAME_DIR returned full pathname.  Copy this into
 		// our gamedir, and truncate to get the game name.
 		// (note check for both linux and win32 full pathname.)
 		Q_strncpy(g_GameDLL.gamedir, gamedir, sizeof g_GameDLL.gamedir - 1);
 		g_GameDLL.gamedir[sizeof g_GameDLL.gamedir - 1] = '\0';
 
-		cp = Q_strrchr(gamedir, '/') + 1;
+		char* cp = Q_strrchr(gamedir, '/') + 1;
 
 		Q_strncpy(g_GameDLL.name, cp, sizeof g_GameDLL.name - 1);
 		g_GameDLL.name[sizeof g_GameDLL.name - 1] = '\0';
 	}
-	else
-	{
+	else {
 		// New style; GET_GAME_DIR returned game name.  Copy this into our
 		// game name, and prepend the current working directory.
 		char buf[PATH_MAX];
-		if (!_getcwd(buf, sizeof buf))
-		{
+		if (!_getcwd(buf, sizeof buf)) {
 			META_WARNING("dll: Couldn't get cwd; %s", strerror(errno));
 			return false;
 		}
@@ -358,7 +340,7 @@ bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size
 template<typename table_t>
 bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, size_t table_size = sizeof(table_t))
 {
-	typedef int (*getfunc_t)(table_t *pFunctionTable, int interfaceVersion);
+	typedef int(*getfunc_t)(table_t *pFunctionTable, int interfaceVersion);
 
 	auto pfnGetFuncs = (getfunc_t)g_GameDLL.sys_module.getsym(ifname);
 
@@ -389,16 +371,14 @@ bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, 
 //                	(GiveFnptrsToDll, GetEntityAPI, GetEntityAPI2)
 bool meta_load_gamedll()
 {
-	if (!setup_gamedll(&g_GameDLL))
-	{
+	if (!setup_gamedll(&g_GameDLL)) {
 		META_ERROR("dll: Unrecognized game: %s", g_GameDLL.name);
 		// meta_errno should be already set in lookup_game()
 		return false;
 	}
 
 	// open the game DLL
-	if (!g_GameDLL.sys_module.load(g_GameDLL.pathname))
-	{
+	if (!g_GameDLL.sys_module.load(g_GameDLL.pathname)) {
 		META_ERROR("dll: Couldn't load game DLL %s: %s", g_GameDLL.pathname, CSysModule::getloaderror());
 		return false;
 	}
@@ -411,14 +391,11 @@ bool meta_load_gamedll()
 	// dynamically loadable at any time, we have to always pass our table,
 	// so that any plugin loaded later can catch what they need to.
 	auto pfn_give_engfuncs = (GIVE_ENGINE_FUNCTIONS_FN)g_GameDLL.sys_module.getsym("GiveFnptrsToDll");
-	
-	if (pfn_give_engfuncs)
-	{
+	if (pfn_give_engfuncs) {
 		pfn_give_engfuncs(&g_meta_engfuncs, gpGlobals);
 		META_DEBUG(3, "dll: Game '%s': Called GiveFnptrsToDll", g_GameDLL.name);
 	}
-	else
-	{
+	else {
 		META_ERROR("dll: Couldn't find GiveFnptrsToDll() in game DLL '%s'", g_GameDLL.name);
 		return false;
 	}
