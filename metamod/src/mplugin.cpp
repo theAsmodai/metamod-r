@@ -372,8 +372,9 @@ bool MPlugin::platform_match(MPlugin *other) const
 }
 
 // Load a plugin; query, check allowed time, attach.
-bool MPlugin::load(PLUG_LOADTIME now)
+bool MPlugin::load(PLUG_LOADTIME now, bool& delayed)
 {
+	delayed = false;
 	if (!check_input()) {
 		return false;
 	}
@@ -405,6 +406,7 @@ bool MPlugin::load(PLUG_LOADTIME now)
 		if (m_info->loadable > PT_STARTUP) {
 			// will try to attach again at next opportunity
 			META_DEBUG(2, "dll: Delaying load plugin '%s'; can't attach now: allowed=%s; now=%s", m_desc, str_loadable(), str_loadtime(now, SL_SIMPLE));
+			delayed = true;
 			return false;
 		}
 
@@ -445,8 +447,9 @@ bool MPlugin::load(PLUG_LOADTIME now)
 }
 
 // Unload a plugin.  Check time, detach.
-bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, bool& delayed)
 {
+	delayed = false;
 	if (!check_input()) {
 		return false;
 	}
@@ -472,6 +475,7 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 				META_DEBUG(2, "dll: Delaying unload plugin '%s'; can't detach now: allowed=%s; now=%s", m_desc, str_unloadable(), str_loadtime(now, SL_SIMPLE));
 				// caller should give message to user
 				// try to unload again at next opportunity
+				delayed = true;
 				return false;
 			}
 
@@ -534,8 +538,9 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 }
 
 // Reload a plugin; unload and load again.
-bool MPlugin::reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
+bool MPlugin::reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, bool& delayed)
 {
+	delayed = false;
 	if (!check_input()) {
 		return false;
 	}
@@ -560,12 +565,12 @@ bool MPlugin::reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 		reason = PNL_RELOAD;
 	}
 
-	if (!unload(now, reason)) {
+	if (!unload(now, reason, delayed)) {
 		META_WARNING("dll: Failed to unload plugin '%s' for reloading", m_desc);
 		return false;
 	}
 
-	if (!load(now)) {
+	if (!load(now, delayed)) {
 		META_WARNING("dll: Failed to reload plugin '%s' after unloading", m_desc);
 		return false;
 	}
@@ -613,12 +618,13 @@ bool MPlugin::unpause()
 // Retry pending action, presumably from a previous failure.
 bool MPlugin::retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason)
 {
+	bool delayed;
 	if (m_action == PA_LOAD || m_action == PA_ATTACH)
-		return load(now);
+		return load(now, delayed);
 	if (m_action == PA_UNLOAD)
-		return unload(now, reason);
+		return unload(now, reason, delayed);
 	if (m_action == PA_RELOAD)
-		return reload(now, reason);
+		return reload(now, reason, delayed);
 
 	META_ERROR("No pending action to retry for plugin '%s'; (status=%s, action=%s)", m_desc, str_status(), str_action());
 	return false;
@@ -703,8 +709,9 @@ bool MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON rea
 	//try unload
 	PLUG_ACTION old_action = m_action;
 	m_action = PA_UNLOAD;
+	bool delayed;
 
-	if (unload(now, reason)) {
+	if (unload(now, reason, delayed)) {
 		META_DEBUG(1, "Unloaded plugin '%s'", m_desc);
 		pl_unloader->m_is_unloader = false;
 		return true;

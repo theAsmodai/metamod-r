@@ -364,11 +364,12 @@ void cmd_doplug(PLUG_CMD pcmd)
 		case PC_UNLOAD:
 		{
 			findp->set_action(PA_UNLOAD);
-			if (findp->unload(PT_ANYTIME, PNL_COMMAND)) {
+			bool delayed;
+			if (findp->unload(PT_ANYTIME, PNL_COMMAND, delayed)) {
 				META_CONS("Unloaded plugin '%s'", findp->description());
 				g_plugins->show();
 			}
-			else if (false /*meta_errno == ME_DELAYED*/) // TODO
+			else if (delayed)
 				META_CONS("Unload delayed for plugin '%s'", findp->description());
 			else
 				META_CONS("Unload failed for plugin '%s'", findp->description());
@@ -377,7 +378,8 @@ void cmd_doplug(PLUG_CMD pcmd)
 		case PC_FORCE_UNLOAD:
 		{
 			findp->set_action(PA_UNLOAD);
-			if (findp->unload(PT_ANYTIME, PNL_CMD_FORCED)) {
+			bool delayed;
+			if (findp->unload(PT_ANYTIME, PNL_CMD_FORCED, delayed)) {
 				META_CONS("Forced unload plugin '%s'", findp->description());
 				g_plugins->show();
 			}
@@ -388,12 +390,11 @@ void cmd_doplug(PLUG_CMD pcmd)
 		case PC_RELOAD:
 		{
 			findp->set_action(PA_RELOAD);
-			if (findp->reload(PT_ANYTIME, PNL_COMMAND))
+			bool delayed;
+			if (findp->reload(PT_ANYTIME, PNL_COMMAND, delayed))
 				META_CONS("Reloaded plugin '%s'", findp->description());
-			else if (0/*meta_errno == ME_DELAYED*/) // TODO
+			else if (delayed)
 				META_CONS("Reload delayed for plugin '%s'", findp->description());
-			else if (0/*meta_errno == ME_NOTALLOWED*/)
-				META_CONS("Reload not allowed for plugin '%s' now, only allowed %s", findp->description(), findp->str_loadable(SL_ALLOWED));
 			else
 				META_CONS("Reload failed for plugin '%s'", findp->description());
 			break;

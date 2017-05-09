@@ -89,9 +89,9 @@ public:
 
 	bool platform_match(MPlugin* plugin) const;										// check if a given plugin is the same but possibly for a different platform
 
-	bool load(PLUG_LOADTIME now);													// load parsed plugin
-	bool unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
-	bool reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);
+	bool load(PLUG_LOADTIME now, bool& delayed);									// load parsed plugin
+	bool unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, bool& delayed);
+	bool reload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, bool& delayed);
 	bool pause();
 	bool unpause();
 	bool retry(PLUG_LOADTIME now, PL_UNLOAD_REASON reason);							// if previously failed

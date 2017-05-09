@@ -191,7 +191,8 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 	}
 
 	pl_added->m_action = PA_LOAD;
-	if (!pl_added->load(now)) {
+	bool delayed;
+	if (!pl_added->load(now, delayed)) {
 		if (pl_added->m_status == PL_OPENED) {
 			META_DEBUG(1, "Opened plugin '%s', but failed to attach; see log", pl_added->m_desc);
 		}
@@ -448,7 +449,8 @@ bool MPluginList::cmd_addload(const char* args)
 
 	// try to load new plugin
 	pl_added->m_action = PA_LOAD;
-	if (!pl_added->load(PT_ANYTIME)) {
+	bool delayed;
+	if (!pl_added->load(PT_ANYTIME, delayed)) {
 		// load failed
 		if (pl_added->m_status == PL_OPENED)
 			META_CONS("Opened plugin '%s', but failed to attach; see log", pl_added->m_desc);
@@ -479,7 +481,8 @@ bool MPluginList::load()
 		if (m_plist[i].m_status < PL_VALID)
 			continue;
 
-		if (m_plist[i].load(PT_STARTUP))
+		bool delayed;
+		if (m_plist[i].load(PT_STARTUP, delayed))
 			n++;
 		else
 		// all plugins should be loadable at startup...
@@ -502,6 +505,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 	}
 
 	META_LOG("dll: Updating plugins...");
+	bool delayed;
 	for (int i = 0; i < m_max_loaded_count; i++) {
 		auto iplug = &m_plist[i];
 		if (iplug->m_status < PL_VALID)
@@ -515,14 +519,14 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 			break;
 		case PA_LOAD:
 			META_DEBUG(1, "Loading plugin '%s'", iplug->m_desc);
-			if (iplug->load(now))
+			if (iplug->load(now, delayed))
 				nloaded++;
 			/*else if (meta_errno == ME_DELAYED) TODO
 				ndelayed++;*/
 			break;
 		case PA_RELOAD:
 			META_DEBUG(1, "Reloading plugin '%s'", iplug->m_desc);
-			if (iplug->reload(now, PNL_FILE_NEWER))
+			if (iplug->reload(now, PNL_FILE_NEWER, delayed))
 				nreloaded++;
 			/*else if (meta_errno == ME_DELAYED) TODO
 				ndelayed++;*/
@@ -532,7 +536,7 @@ bool MPluginList::refresh(PLUG_LOADTIME now)
 			if (iplug->m_source == PS_INI && iplug->m_status >= PL_RUNNING) {
 				META_DEBUG(1, "Unloading plugin '%s'", iplug->m_desc);
 				iplug->m_action = PA_UNLOAD;
-				if (iplug->unload(now, PNL_INI_DELETED))
+				if (iplug->unload(now, PNL_INI_DELETED, delayed))
 					nunloaded++;
 				/*else if (meta_errno == ME_DELAYED) TODO
 					ndelayed++;*/
