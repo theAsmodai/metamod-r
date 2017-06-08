@@ -785,7 +785,7 @@ bool MPlugin::query()
 		return false;
 	}
 
-	pfn_give_engfuncs(g_engine.pl_funcs, g_engine.globals);
+	pfn_give_engfuncs(&g_engine.pl_funcs, g_engine.globals);
 	META_DEBUG(6, "dll: Plugin '%s': Called GiveFnptrsToDll()", m_desc);
 
 	// Call plugin's Meta_Query(), to pass our meta interface version, and get

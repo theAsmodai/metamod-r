@@ -20,8 +20,6 @@ gamedll_t g_GameDLL;
 ALIGN16
 meta_globals_t g_metaGlobals;
 
-enginefuncs_t g_plugin_engfuncs;
-
 MPluginList *g_plugins;
 MRegCmdList *g_regCmds;
 MRegCvarList *g_regCvars;
@@ -157,16 +155,15 @@ void metamod_startup()
 	// Copy, and store pointer in g_engine struct.  Yes, we could just store
 	// the actual engine_t struct in g_engine, but then it wouldn't be a
 	// pointer to match the other g_engfuncs.
-	g_plugin_engfuncs = *g_engine.funcs;
-	g_engine.pl_funcs = &g_plugin_engfuncs;
+	g_engine.pl_funcs = *g_engine.funcs;
 	// substitute our special versions of various commands
-	g_engine.pl_funcs->pfnAddServerCommand = meta_AddServerCommand;
-	g_engine.pl_funcs->pfnCVarRegister = meta_CVarRegister;
-	g_engine.pl_funcs->pfnCvar_RegisterVariable = meta_CVarRegister;
-	g_engine.pl_funcs->pfnRegUserMsg = meta_RegUserMsg;
+	g_engine.pl_funcs.pfnAddServerCommand = meta_AddServerCommand;
+	g_engine.pl_funcs.pfnCVarRegister = meta_CVarRegister;
+	g_engine.pl_funcs.pfnCvar_RegisterVariable = meta_CVarRegister;
+	g_engine.pl_funcs.pfnRegUserMsg = meta_RegUserMsg;
 
-	if (g_engine.pl_funcs->pfnQueryClientCvarValue)
-		g_engine.pl_funcs->pfnQueryClientCvarValue = meta_QueryClientCvarValue;
+	if (g_engine.pl_funcs.pfnQueryClientCvarValue)
+		g_engine.pl_funcs.pfnQueryClientCvarValue = meta_QueryClientCvarValue;
 
 	// Before, we loaded plugins before loading the game DLL, so that if no
 	// plugins caught engine functions, we could pass engine funcs straight

@@ -34,9 +34,6 @@ extern gamedll_t g_GameDLL;
 extern enginefuncs_t g_engfuncs;
 extern globalvars_t* gpGlobals;
 
-// Our modified version of the engine funcs, to give to plugins.
-extern enginefuncs_t g_plugin_engfuncs;
-
 // g_config structure.
 extern MConfig* g_config;
 
