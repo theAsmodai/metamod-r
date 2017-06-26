@@ -47,6 +47,10 @@ struct meta_globals_t
 	META_RES status;		// readable; "highest" return flag so far
 	void *orig_ret;			// readable; return value from "real" function
 	void *override_ret;		// readable; return value from overriding/superceding plugin
+
+#ifdef METAMOD_CORE
+	int esp_save;
+#endif
 };
 
 extern meta_globals_t *gpMetaGlobals;

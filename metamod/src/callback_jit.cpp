@@ -33,6 +33,7 @@ private:
 		mg_status = 8,
 		mg_orig_ret = 12,
 		mg_over_ret = 16,
+		mg_esp_save = 20
 	};
 
 	enum
@@ -53,7 +54,7 @@ CForwardCallbackJIT::CForwardCallbackJIT(jitdata_t* jitdata) : m_jitdata(jitdata
 
 void CForwardCallbackJIT::naked_main()
 {
-	jit_debug("Enter %s\n", m_jitdata->name);
+	//jit_debug("Enter %s\n", m_jitdata->name);
 
 	// prologue
 	push(ebx);
@@ -96,14 +97,14 @@ void CForwardCallbackJIT::naked_main()
 	else
 		sub(esp, framesize);
 
-	size_t mg_backup = framesize - xmmreg_size - sizeof(int);
+	size_t mg_backup = framesize - sizeof(meta_globals_t);
 
 	// setup globals ptr and backup old data
 	mov(globals, size_t(&g_metaGlobals));
 	movaps(xmm0, xmmword_ptr[globals]);
-	mov(eax, dword_ptr[globals + xmmreg_size]);
-	movaps(xmmword_ptr[esp + mg_backup + sizeof(int)], xmm0);
-	mov(dword_ptr[esp + mg_backup], eax);
+	movq(xmm1, qword_ptr[globals + xmmreg_size]);
+	movaps(xmmword_ptr[esp + mg_backup + sizeof(int) * 2], xmm0);
+	movq(qword_ptr[esp + mg_backup], xmm1);
 
 	// call metamod's pre hook if present
 	if (m_jitdata->mm_hook && m_jitdata->mm_hook_time == P_PRE) {
@@ -152,7 +153,7 @@ void CForwardCallbackJIT::naked_main()
 			mov(dword_ptr[globals + mg_prev_mres], eax);
 		}
 
-		jit_debug("Calling pre [%s] for plug [%s]\n", m_jitdata->name, plug->description());
+		//jit_debug("Calling pre [%s] for plug [%s]\n", m_jitdata->name, plug->description());
 		call_func(ecx);
 
 		mov(edx, dword_ptr[globals + mg_mres]);
@@ -233,7 +234,7 @@ void CForwardCallbackJIT::naked_main()
 			mov(dword_ptr[globals + mg_prev_mres], eax);
 		}
 
-		jit_debug("Calling post [%s] for plug [%s]\n", m_jitdata->name, plug->description());
+		//jit_debug("Calling post [%s] for plug [%s]\n", m_jitdata->name, plug->description());
 		call_func(ecx);
 
 		mov(edx, dword_ptr[globals + mg_mres]);
@@ -258,10 +259,10 @@ void CForwardCallbackJIT::naked_main()
 		call_func(ecx);
 	}
 
-	movaps(xmm0, xmmword_ptr[esp + mg_backup + sizeof(int)]);
-	mov(eax, dword_ptr[esp + mg_backup]);
+	movaps(xmm0, xmmword_ptr[esp + mg_backup + sizeof(int) * 2]);
+	movq(xmm1, qword_ptr[esp + mg_backup]);
 	movaps(xmmword_ptr[globals], xmm0);
-	mov(dword_ptr[globals + xmmreg_size], eax);
+	movq(qword_ptr[globals + xmmreg_size], xmm1);
 
 	if (m_jitdata->has_ret) {
 		mov(eax, dword_ptr[esp + orig_ret]);
@@ -273,7 +274,7 @@ void CForwardCallbackJIT::naked_main()
 	mov(esp, ebp);
 	pop(ebp);
 	pop(ebx);
-	jit_debug("Leave %s\n", m_jitdata->name);
+	//jit_debug("Leave %s\n", m_jitdata->name);
 	ret();
 }
 
