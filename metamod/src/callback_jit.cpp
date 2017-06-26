@@ -140,7 +140,7 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (&plug == &m_jitdata->plugins->front()) { // init
+		if (&plug == &m_jitdata->plugins->front()) { // init meta globals
 			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
 			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
@@ -154,12 +154,14 @@ void CForwardCallbackJIT::naked_main()
 
 		call_func(ecx);
 
+		// update highest meta result
 		mov(edx, dword_ptr[globals + mg_mres]);
 		mov(ecx, dword_ptr[globals + mg_status]);
 		cmp(edx, ecx);
 		cmovg(ecx, edx);
 		mov(dword_ptr[globals + mg_status], ecx);
 
+		// save return value if supercede
 		if (m_jitdata->has_ret) {
 			mov(ecx, dword_ptr[esp + over_ret]);
 			cmp(edx, MRES_SUPERCEDE);
@@ -170,20 +172,22 @@ void CForwardCallbackJIT::naked_main()
 		L(go_next_plugin);
 	}
 
-	// call original if need
+	// call original if it needed
 	cmp(dword_ptr[globals + mg_status], MRES_SUPERCEDE);
 	jz("skip_original");
 	{
+		// and present
 		if (m_jitdata->pfn_original) {
 			mov(ecx, m_jitdata->pfn_original);
 			call_func(ecx);
 		}
 
+		// store original return value
 		if (m_jitdata->has_ret) {
 			if (m_jitdata->pfn_original)
 				mov(dword_ptr[esp + orig_ret], eax);
 			else
-				mov(dword_ptr[esp + orig_ret], TRUE); // for should collide :/
+				mov(dword_ptr[esp + orig_ret], TRUE); // fix for should collide :/
 
 			jmp("skip_supercede");
 		}
@@ -219,7 +223,7 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (&plug == &m_jitdata->plugins->front()) { // init
+		if (&plug == &m_jitdata->plugins->front()) { // init meta globals
 			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
 			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
@@ -233,12 +237,14 @@ void CForwardCallbackJIT::naked_main()
 
 		call_func(ecx);
 
+		// update highest meta result
 		mov(edx, dword_ptr[globals + mg_mres]);
 		mov(ecx, dword_ptr[globals + mg_status]);
 		cmp(ecx, edx);
 		cmovl(ecx, edx);
 		mov(dword_ptr[globals + mg_status], ecx);
 
+		// save return value if supercede
 		if (m_jitdata->has_ret) {
 			cmp(edx, MRES_SUPERCEDE);
 			mov(ecx, dword_ptr[esp + over_ret]);
@@ -255,11 +261,13 @@ void CForwardCallbackJIT::naked_main()
 		call_func(ecx);
 	}
 
+	// restore meta globals
 	movaps(xmm0, xmmword_ptr[esp + mg_backup + sizeof(int) * 2]);
 	movq(xmm1, qword_ptr[esp + mg_backup]);
 	movaps(xmmword_ptr[globals], xmm0);
 	movq(qword_ptr[globals + xmmreg_size], xmm1);
 
+	// setup return value and override it if needed
 	if (m_jitdata->has_ret) {
 		mov(eax, dword_ptr[esp + orig_ret]);
 		cmp(dword_ptr[globals + mg_status], MRES_OVERRIDE);
@@ -370,9 +378,9 @@ void CJit::clear_tramps()
 size_t CJit::is_callback_retaddr(uint32 addr)
 {
 	if (m_callback_allocator.contain(addr)) {
-		// FF D1		call    ecx
-		// 83 C4 20		add     esp, 20h ; optional
-		// 8B 13		mov     edx, [ebx]
+		// FF D1        call    ecx
+		// 83 C4 20     add     esp, 20h ; optional
+		// 8B 13        mov     edx, [ebx]
 		char *ptr = (char *)addr - 2;
 		return mem_compare(ptr, "\xFF\xD1\x83\xC4", 4) || mem_compare(ptr, "\xFF\xD1\x8B\x13", 4);
 	}

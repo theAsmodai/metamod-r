@@ -74,11 +74,11 @@ task publishPrepareFiles << {
 	}
 	copy {
 		from 'metamod/extra/example'
-		into 'publish/publishRoot/metamod/example'
+		into 'publish/publishRoot/metamod/example_plugin'
 	}
 	copy {
 		from 'publish/publishRoot/metamod/sdk'
-		into 'publish/publishRoot/metamod/example/include/metamod'
+		into 'publish/publishRoot/metamod/example_plugin/include/metamod'
 	}
 }
 

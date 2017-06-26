@@ -247,6 +247,7 @@
     <ClInclude Include="..\src\utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\extra\config.ini" />
     <None Include="metamod.def" />
   </ItemGroup>
   <ItemGroup>

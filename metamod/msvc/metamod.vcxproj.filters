@@ -9,6 +9,9 @@
       <UniqueIdentifier>{dfc6c7bb-cea4-43c5-bb1b-b8145cf93dd5}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Extra">
+      <UniqueIdentifier>{6da03b3e-ec77-465c-bdef-280206450268}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\api_info.cpp">
@@ -182,6 +185,9 @@
   <ItemGroup>
     <None Include="metamod.def">
       <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\extra\config.ini">
+      <Filter>Extra</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
