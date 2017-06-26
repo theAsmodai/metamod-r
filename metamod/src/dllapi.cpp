@@ -226,7 +226,7 @@ void compile_dllfunc_callbacks()
 		jitdata.name = cd.name;
 #endif
 
-		*(size_t *)(size_t(&sFunctionTable) + cd.offset) = g_jit.compile_callback(&jitdata);
+		*(size_t *)(size_t(&sFunctionTable_jit) + cd.offset) = g_jit.compile_callback(&jitdata);
 	}
 }
 
@@ -250,7 +250,7 @@ void compile_newdllfunc_callbacks()
 		jitdata.name = cd.name;
 #endif
 
-		*(size_t *)(size_t(&sNewFunctionTable) + cd.offset) = g_jit.compile_callback(&jitdata);
+		*(size_t *)(size_t(&sNewFunctionTable_jit) + cd.offset) = g_jit.compile_callback(&jitdata);
 	}
 }
 
