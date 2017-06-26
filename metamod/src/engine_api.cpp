@@ -253,6 +253,10 @@ void compile_engfuncs_callbacks()
 		jitdata.mm_hook_time = cd.mm_hook_time;
 		jitdata.mm_hook = cd.mm_hook;
 
+#ifdef JIT_DEBUG
+		jitdata.name = cd.name;
+#endif
+
 		*(size_t *)(size_t(&g_meta_engfuncs_jit) + cd.offset) = g_jit.compile_callback(&jitdata);
 	}
 }

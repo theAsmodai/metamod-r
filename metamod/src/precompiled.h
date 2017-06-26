@@ -26,6 +26,7 @@
 #include <rehlds_api.h>
 
 #include "osdep.h"
+#include "mdebug.h"
 #include "api_info.h"
 #include "commands_meta.h"
 #include "metamod.h"

@@ -224,6 +224,10 @@ void compile_dllfunc_callbacks()
 		jitdata.mm_hook_time = cd.mm_hook_time;
 		jitdata.mm_hook = cd.mm_hook;
 
+#ifdef JIT_DEBUG
+		jitdata.name = cd.name;
+#endif
+
 		*(size_t *)(size_t(&sFunctionTable) + cd.offset) = g_jit.compile_callback(&jitdata);
 	}
 }
@@ -244,6 +248,10 @@ void compile_newdllfunc_callbacks()
 		jitdata.pfn_offset = cd.offset;
 		jitdata.mm_hook_time = cd.mm_hook_time;
 		jitdata.mm_hook = cd.mm_hook;
+
+#ifdef JIT_DEBUG
+		jitdata.name = cd.name;
+#endif
 
 		*(size_t *)(size_t(&sNewFunctionTable) + cd.offset) = g_jit.compile_callback(&jitdata);
 	}

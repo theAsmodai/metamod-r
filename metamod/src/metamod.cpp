@@ -426,6 +426,10 @@ void meta_rebuild_callbacks()
 {
 	META_LOG("dll: Rebuilding callbacks...");
 
+#ifdef JIT_DEBUG_FILE
+	mdebug_to_file("dll: Rebuilding callbacks...\n");
+#endif
+
 	g_jit.clear_callbacks();
 
 	compile_engine_callbacks();

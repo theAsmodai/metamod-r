@@ -196,6 +196,7 @@
     <ClCompile Include="..\src\linkent.cpp" />
     <ClCompile Include="..\src\linkgame.cpp" />
     <ClCompile Include="..\src\log_meta.cpp" />
+    <ClCompile Include="..\src\mdebug.cpp" />
     <ClCompile Include="..\src\metamod_rehlds_api.cpp" />
     <ClCompile Include="..\src\metamod.cpp" />
     <ClCompile Include="..\src\mlist.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="..\src\jitasm.h" />
     <ClInclude Include="..\src\linkent.h" />
     <ClInclude Include="..\src\log_meta.h" />
+    <ClInclude Include="..\src\mdebug.h" />
     <ClInclude Include="..\src\metamod_rehlds_api.h" />
     <ClInclude Include="..\src\meta_api.h" />
     <ClInclude Include="..\src\metamod.h" />

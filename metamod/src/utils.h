@@ -53,6 +53,8 @@ private:
 	size_t m_used = 0;
 	std::vector<void *> m_pages;
 	memory_protection m_protection;
+
+	friend class CJit;
 };
 
 bool is_yes(const char* str);

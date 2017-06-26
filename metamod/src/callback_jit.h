@@ -16,6 +16,10 @@ struct jitdata_t
 	int			plugins_count;
 	size_t		table_offset; // from MPlugin
 	size_t		post_table_offset; // from MPlugin
+
+#ifdef JIT_DEBUG
+	const char*	name;
+#endif
 };
 
 struct compile_data_t
@@ -85,6 +89,7 @@ public:
 	size_t compile_tramp(size_t ptr_to_func/*, size_t hook, size_t hook_time*/);
 	void clear_callbacks();
 	void clear_tramps();
+	size_t find_new_retaddr(size_t pfn);
 
 private:
 	static bool is_hook_needed(jitdata_t* jitdata);

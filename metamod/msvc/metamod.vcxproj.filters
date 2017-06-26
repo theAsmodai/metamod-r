@@ -86,6 +86,9 @@
     <ClCompile Include="..\src\public_amalgamation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\mdebug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\api_info.h">
@@ -170,6 +173,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\metamod_rehlds_api.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mdebug.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

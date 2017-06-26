@@ -15,12 +15,13 @@ private:
 
 size_t CUniqueLabel::m_unique_index;
 
-class CForwardCallbackJIT : public jitasm::function<int, CForwardCallbackJIT, int>
+class CForwardCallbackJIT : public jitasm::function<void, CForwardCallbackJIT>
 {
 public:
 	CForwardCallbackJIT(jitdata_t* jitdata);
 	void naked_main();
 	void call_func(Reg32 addr);
+	void jit_debug(const char* format, ...);
 
 private:
 	jitdata_t* m_jitdata;
@@ -52,6 +53,8 @@ CForwardCallbackJIT::CForwardCallbackJIT(jitdata_t* jitdata) : m_jitdata(jitdata
 
 void CForwardCallbackJIT::naked_main()
 {
+	jit_debug("Enter %s\n", m_jitdata->name);
+
 	// prologue
 	push(ebx);
 	push(ebp);
@@ -151,6 +154,7 @@ void CForwardCallbackJIT::naked_main()
 			mov(dword_ptr[globals + mg_status], eax); // NULL
 		}
 
+		jit_debug("Calling pre [%s] for plug [%s]\n", m_jitdata->name, plug->description());
 		call_func(ecx);
 
 		mov(edx, dword_ptr[globals + mg_mres]);
@@ -174,6 +178,7 @@ void CForwardCallbackJIT::naked_main()
 	jz("skip_original");
 	{
 		if (m_jitdata->pfn_original) {
+			//jit_debug("Call original %s\n", m_jitdata->name);
 			mov(ecx, m_jitdata->pfn_original);
 			call_func(ecx);
 		}
@@ -232,6 +237,7 @@ void CForwardCallbackJIT::naked_main()
 			mov(dword_ptr[globals + mg_status], eax); // NULL
 		}
 
+		jit_debug("Calling post [%s] for plug [%s]\n", m_jitdata->name, plug->description());
 		call_func(ecx);
 
 		mov(edx, dword_ptr[globals + mg_mres]);
@@ -271,6 +277,7 @@ void CForwardCallbackJIT::naked_main()
 	mov(esp, ebp);
 	pop(ebp);
 	pop(ebx);
+	jit_debug("Leave %s\n", m_jitdata->name);
 	ret();
 }
 
@@ -299,6 +306,31 @@ void CForwardCallbackJIT::call_func(Reg32 addr)
 	// pop stack
 	if (m_jitdata->args_count)
 		add(esp, m_jitdata->args_count * sizeof(int));
+}
+
+void CForwardCallbackJIT::jit_debug(const char* format, ...)
+{
+#ifdef JIT_DEBUG
+	va_list argptr;
+	char string[1024] = "";
+
+	va_start(argptr, format);
+	Q_vsnprintf(string, sizeof string, format, argptr);
+	va_end(argptr);
+
+	char* memory_leak = Q_strdup(string); // yes, I'm lazy
+	static size_t print_ptr = size_t(&printf);
+	static size_t fprint_ptr = size_t(&mdebug_to_file);
+
+	pushad();
+	push(size_t(memory_leak));
+	call(dword_ptr[size_t(&print_ptr)]);
+#ifdef JIT_DEBUG_FILE
+	call(dword_ptr[size_t(&fprint_ptr)]);
+#endif
+	add(esp, 4);
+	popad();
+#endif
 }
 
 CJit::CJit() : m_callback_allocator(static_allocator::mp_rwx), m_tramp_allocator(static_allocator::mp_rwx)
