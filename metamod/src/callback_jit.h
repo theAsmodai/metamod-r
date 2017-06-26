@@ -88,7 +88,8 @@ public:
 	size_t compile_tramp(size_t ptr_to_func/*, size_t hook, size_t hook_time*/);
 	void clear_callbacks();
 	void clear_tramps();
-	size_t find_new_retaddr(size_t pfn);
+	size_t is_callback_retaddr(uint32 addr);
+	char* find_callback_pattern(char* pattern, size_t len);
 
 private:
 	static bool is_hook_needed(jitdata_t* jitdata);

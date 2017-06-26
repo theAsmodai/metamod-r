@@ -202,7 +202,6 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 		*interfaceVersion = NEW_DLL_FUNCTIONS_VERSION;
 		return FALSE;
 	}
-
 	memcpy(pNewFunctionTable, &sNewFunctionTable, sizeof(NEW_DLL_FUNCTIONS));
 	return TRUE;
 }

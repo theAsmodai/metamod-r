@@ -65,6 +65,26 @@ size_t static_allocator::memory_used() const
 	return (m_pages.size() - 1) * Pagesize + m_used;
 }
 
+bool static_allocator::contain(uint32 addr)
+{
+	for (auto p : m_pages) {
+		if (uint32(p) <= addr && addr < uint32(p) + Pagesize)
+			return true;
+	}
+	return false;
+}
+
+char* static_allocator::find_pattern(char* pattern, size_t len)
+{
+	for (auto p : m_pages) {
+		for (char* c = (char *)p, *e = c + Pagesize - len; c < e; c++) {
+			if (mem_compare(c, pattern, len))
+				return c;
+		}
+	}
+	return nullptr;
+}
+
 void static_allocator::allocate_page()
 {
 #ifdef WIN32
@@ -274,4 +294,14 @@ char* full_gamedir_path(const char* path, char* fullpath)
 	// Replace backslashes, etc.
 	normalize_path(fullpath);
 	return fullpath;
+}
+
+bool mem_compare(const char* addr, const char* pattern, size_t len)
+{
+	for (auto c = pattern, pattern_end = pattern + len; c < pattern_end; ++c, ++addr) {
+		if (*c == *addr || *c == '\x2A')
+			continue;
+		return false;
+	}
+	return true;
 }

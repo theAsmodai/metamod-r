@@ -49,7 +49,7 @@ struct meta_globals_t
 	void *override_ret;		// readable; return value from overriding/superceding plugin
 
 #ifdef METAMOD_CORE
-	int esp_save;
+	uint32* esp_save;
 #endif
 };
 

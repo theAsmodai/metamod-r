@@ -114,6 +114,7 @@ void CForwardCallbackJIT::naked_main()
 
 	// setup meta globals
 	mov(dword_ptr[globals + mg_mres], MRES_UNSET);
+	mov(dword_ptr[globals + mg_esp_save], esp);
 
 	// setup retval pointers
 	if (m_jitdata->has_ret) {
@@ -370,6 +371,23 @@ void CJit::clear_callbacks()
 void CJit::clear_tramps()
 {
 	m_tramp_allocator.deallocate_all();
+}
+
+size_t CJit::is_callback_retaddr(uint32 addr)
+{
+	if (m_callback_allocator.contain(addr)) {
+		// FF D1		call    ecx
+		// 83 C4 20		add     esp, 20h ; optional
+		// 8B 13		mov     edx, [ebx]
+		char *ptr = (char *)addr - 2;
+		return mem_compare(ptr, "\xFF\xD1\x83\xC4", 4) || mem_compare(ptr, "\xFF\xD1\x8B\x13", 4);
+	}
+	return false;
+}
+
+char* CJit::find_callback_pattern(char* pattern, size_t len)
+{
+	return m_callback_allocator.find_pattern(pattern, len);
 }
 
 bool CJit::is_hook_needed(jitdata_t* jitdata)
