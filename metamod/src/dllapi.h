@@ -1,5 +1,19 @@
 #pragma once
 
+#include <eiface.h>
+
+#ifndef DLLEXPORT
+#ifdef _WIN32
+#define DLLEXPORT	__declspec(dllexport)
+#else
+#define DLLEXPORT	__attribute__((visibility("default")))
+#endif // _WIN32
+#endif // DLLEXPORT
+
+#ifndef C_DLLEXPORT
+#define C_DLLEXPORT extern "C" DLLEXPORT
+#endif
+
 typedef void (*FN_GAMEINIT)();
 
 // Typedefs for these are provided in SDK engine/eiface.h, but I didn't

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <util.h>
-#include <dllapi.h>
-#include <plinfo.h>
+#include <extdll.h>
+#include "plinfo.h"
 
 // For GetGameInfo:
 enum ginfo_t
