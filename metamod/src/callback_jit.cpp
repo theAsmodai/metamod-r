@@ -140,7 +140,7 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (&plug == &m_jitdata->plugins->front()) { // init meta globals
+		if (plug == m_jitdata->plugins->front()) { // init meta globals
 			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
 			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
@@ -223,7 +223,7 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (&plug == &m_jitdata->plugins->front()) { // init meta globals
+		if (plug == m_jitdata->plugins->front()) { // init meta globals
 			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
 			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
