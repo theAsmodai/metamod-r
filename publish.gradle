@@ -69,8 +69,12 @@ task publishPrepareFiles << {
 		into 'publish/publishRoot/metamod/sdk'
 	}
 	copy {
-		from 'metamod/extra'
-		into 'publish/publishRoot/metamod'
+		from 'metamod/extra/config.ini'
+		into 'publish/publishRoot/metamod/addons/metamod/'
+	}
+	copy {
+		from 'metamod/extra/example'
+		into 'publish/publishRoot/metamod/example'
 	}
 	copy {
 		from 'publish/publishRoot/metamod/sdk'

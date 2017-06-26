@@ -1,6 +1,6 @@
 #pragma once
 
-#include <extdll.h>
+#include <util.h>
 #include "plinfo.h"
 
 // For GetGameInfo:
