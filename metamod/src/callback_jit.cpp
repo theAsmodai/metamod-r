@@ -54,8 +54,6 @@ CForwardCallbackJIT::CForwardCallbackJIT(jitdata_t* jitdata) : m_jitdata(jitdata
 
 void CForwardCallbackJIT::naked_main()
 {
-	//jit_debug("Enter %s\n", m_jitdata->name);
-
 	// prologue
 	push(ebx);
 	push(ebp);
@@ -154,7 +152,6 @@ void CForwardCallbackJIT::naked_main()
 			mov(dword_ptr[globals + mg_prev_mres], eax);
 		}
 
-		//jit_debug("Calling pre [%s] for plug [%s]\n", m_jitdata->name, plug->description());
 		call_func(ecx);
 
 		mov(edx, dword_ptr[globals + mg_mres]);
@@ -178,7 +175,6 @@ void CForwardCallbackJIT::naked_main()
 	jz("skip_original");
 	{
 		if (m_jitdata->pfn_original) {
-			//jit_debug("Call original %s\n", m_jitdata->name);
 			mov(ecx, m_jitdata->pfn_original);
 			call_func(ecx);
 		}
@@ -235,7 +231,6 @@ void CForwardCallbackJIT::naked_main()
 			mov(dword_ptr[globals + mg_prev_mres], eax);
 		}
 
-		//jit_debug("Calling post [%s] for plug [%s]\n", m_jitdata->name, plug->description());
 		call_func(ecx);
 
 		mov(edx, dword_ptr[globals + mg_mres]);
@@ -275,7 +270,6 @@ void CForwardCallbackJIT::naked_main()
 	mov(esp, ebp);
 	pop(ebp);
 	pop(ebx);
-	//jit_debug("Leave %s\n", m_jitdata->name);
 	ret();
 }
 

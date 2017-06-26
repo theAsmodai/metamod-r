@@ -247,7 +247,7 @@ bool MPluginList::ini_startup()
 	META_LOG("ini: Begin reading plugins list: %s", m_inifile);
 	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++) {
 		auto plug = new MPlugin();
-		memset(plug, 0, sizeof MPlugin);
+		memset(plug, 0, sizeof(MPlugin));
 
 		// Remove line terminations.
 		char* cp;
