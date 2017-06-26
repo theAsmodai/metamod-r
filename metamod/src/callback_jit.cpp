@@ -122,9 +122,7 @@ void CForwardCallbackJIT::naked_main()
 	}
 
 	// call pre
-	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
-		auto plug = &m_jitdata->plugins[i];
-
+	for (auto plug : *m_jitdata->plugins) {
 		if (plug->status() < PL_RUNNING) // allow only running and paused
 			continue;
 
@@ -142,16 +140,16 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (hookid++) {
-			mov(eax, dword_ptr[globals + mg_mres]);
-			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax);
-		}
-		else { // init
+		if (&plug == &m_jitdata->plugins->front()) { // init
 			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
 			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
 			mov(dword_ptr[globals + mg_status], eax); // NULL
+		}
+		else {
+			mov(eax, dword_ptr[globals + mg_mres]);
+			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			mov(dword_ptr[globals + mg_prev_mres], eax);
 		}
 
 		jit_debug("Calling pre [%s] for plug [%s]\n", m_jitdata->name, plug->description());
@@ -205,9 +203,7 @@ void CForwardCallbackJIT::naked_main()
 	L("skip_all");
 
 	// call post
-	for (int i = 0, hookid = 0; i < m_jitdata->plugins_count; i++) {
-		auto plug = &m_jitdata->plugins[i];
-
+	for (auto plug : *m_jitdata->plugins) {
 		if (plug->status() < PL_RUNNING) // allow only running and paused
 			continue;
 
@@ -225,16 +221,16 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (hookid++) {
-			mov(eax, dword_ptr[globals + mg_mres]);
-			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax);
-		}
-		else { // init
+		if (&plug == &m_jitdata->plugins->front()) { // init
 			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
 			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
 			mov(dword_ptr[globals + mg_status], eax); // NULL
+		}
+		else {
+			mov(eax, dword_ptr[globals + mg_mres]);
+			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			mov(dword_ptr[globals + mg_prev_mres], eax);
 		}
 
 		jit_debug("Calling post [%s] for plug [%s]\n", m_jitdata->name, plug->description());
@@ -383,9 +379,7 @@ bool CJit::is_hook_needed(jitdata_t* jitdata)
 	if (!jitdata->plugins)
 		return false;
 
-	for (int i = 0; i < jitdata->plugins_count; i++) {
-		auto plug = &jitdata->plugins[i];
-
+	for (auto& plug : *jitdata->plugins) {
 		const size_t fn_table		= *(size_t *)(size_t(plug) + jitdata->table_offset);
 		const size_t fn_table_post	= *(size_t *)(size_t(plug) + jitdata->post_table_offset);
 

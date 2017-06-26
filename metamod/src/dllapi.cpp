@@ -210,8 +210,7 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 void compile_dllfunc_callbacks()
 {
 	jitdata_t jitdata;
-	jitdata.plugins = g_plugins ? g_plugins->getlist() : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->getmaxcount() : 0;
+	jitdata.plugins = g_plugins ? g_plugins->getPlugins() : nullptr;
 	jitdata.table_offset = offsetof(MPlugin, m_dllapi_table);
 	jitdata.post_table_offset = offsetof(MPlugin, m_dllapi_post_table);
 
@@ -235,8 +234,7 @@ void compile_dllfunc_callbacks()
 void compile_newdllfunc_callbacks()
 {
 	jitdata_t jitdata;
-	jitdata.plugins = g_plugins ? g_plugins->getlist() : nullptr;
-	jitdata.plugins_count = g_plugins ? g_plugins->getmaxcount() : 0;
+	jitdata.plugins = g_plugins ? g_plugins->getPlugins() : nullptr;
 	jitdata.table_offset = offsetof(MPlugin, m_newapi_table);
 	jitdata.post_table_offset = offsetof(MPlugin, m_newapi_post_table);
 

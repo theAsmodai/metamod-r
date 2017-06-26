@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <array>
+#include <list>
 
 #include "osconfig.h"
 #include "jitasm.h"

@@ -12,8 +12,7 @@ struct jitdata_t
 	uint8		mm_hook_time;
 	size_t		mm_hook;
 
-	MPlugin*	plugins;
-	int			plugins_count;
+	plugins_t*	plugins;
 	size_t		table_offset; // from MPlugin
 	size_t		post_table_offset; // from MPlugin
 

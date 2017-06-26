@@ -14,11 +14,6 @@ MPlugin::MPlugin()
 {
 }
 
-// ReSharper disable once CppPossiblyUninitializedMember
-MPlugin::MPlugin(int index) : m_index(index)
-{
-}
-
 // Parse a line from plugins.ini into a plugin.
 bool MPlugin::ini_parseline(char *line)
 {

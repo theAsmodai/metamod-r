@@ -3,13 +3,11 @@
 #include "mplugin.h"		// class MPlugin
 #include "plinfo.h"		// plid_t, etc
 
-// Max number of plugins we can manage.  This is an arbitrary, fixed number,
-// for convenience.  It would probably be better to dynamically grow the
-// list as needed, but we do this for now.
-#define MAX_PLUGINS 50
 
 // Width required to printf above MAX, for show() functions.
 #define WIDTH_MAX_PLUGINS	2
+
+typedef std::list<MPlugin *> plugins_t;
 
 // A list of plugins.
 class MPluginList
@@ -17,8 +15,7 @@ class MPluginList
 public:
 	MPluginList(const char* ifile);
 
-	MPlugin* getlist();
-	int getmaxcount() const;
+	plugins_t* getPlugins();
 
 	MPlugin* find(int pindex);								// find by index
 	MPlugin* find(const char* findpath);					// find by pathname
@@ -27,7 +24,6 @@ public:
 	MPlugin* find_match(const char* prefix, bool& unique);	// find by partial prefix match
 	MPlugin* find_match(MPlugin* pmatch);					// find by platform_match()
 	MPlugin* find(module_handle_t handle);					// find by handle
-	MPlugin* find_empty_slot();
 	MPlugin* add(MPlugin* padd);
 
 	bool found_child_plugins(int source_index) const;
@@ -46,7 +42,7 @@ public:
 	void clear_source_plugin_index(int source_index);
 
 private:
-	int m_max_loaded_count;									// index of last used entry
-	MPlugin m_plist[MAX_PLUGINS];							// array of plugins
+	size_t m_last_index;
+	plugins_t m_plugins;							// array of plugins
 	char m_inifile[PATH_MAX];								// full pathname
 };

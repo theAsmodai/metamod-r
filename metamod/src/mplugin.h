@@ -76,7 +76,6 @@ class MPlugin
 {
 public:
 	MPlugin();
-	MPlugin(int index);
 
 	bool ini_parseline(char *line);													// parse line from .ini file
 	bool cmd_parseline(const char *line);											// parse from console command
