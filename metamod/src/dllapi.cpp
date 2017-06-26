@@ -12,7 +12,7 @@ NEW_DLL_FUNCTIONS sNewFunctionTable;
 NEW_DLL_FUNCTIONS sNewFunctionTable_jit;
 NEW_DLL_FUNCTIONS *pHookedNewDllFunctions = &sNewFunctionTable;
 
-void MM_PRE_HOOK EXT_FUNC mm_ClientConnect(edict_t *pEntity, const char *, const char *, char [128])
+void MM_PRE_HOOK EXT_FUNC mm_ClientConnect(edict_t *pEntity, const char *, const char *, char[128])
 {
 	g_players.clear_player_cvar_query(pEntity);
 }

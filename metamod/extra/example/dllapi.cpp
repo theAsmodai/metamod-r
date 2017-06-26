@@ -129,14 +129,12 @@ NEW_DLL_FUNCTIONS g_NewDllFunctionTable_Post =
 
 C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
-	if (!pFunctionTable)
-	{
-		ALERT(at_logged, __FUNCTION__ " called with null pFunctionTable");
+	if (!pFunctionTable) {
+		ALERT(at_logged, "%s called with null pFunctionTable", __FUNCTION__);
 		return FALSE;
 	}
-	if (*interfaceVersion != INTERFACE_VERSION)
-	{
-		ALERT(at_logged, __FUNCTION__ " version mismatch; requested=%d ours=%d", *interfaceVersion, INTERFACE_VERSION);
+	if (*interfaceVersion != INTERFACE_VERSION) {
+		ALERT(at_logged, "%s version mismatch; requested=%d ours=%d", __FUNCTION__, *interfaceVersion, INTERFACE_VERSION);
 		*interfaceVersion = INTERFACE_VERSION;
 		return FALSE;
 	}
@@ -147,14 +145,12 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 
 C_DLLEXPORT int GetEntityAPI2_Post(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion)
 {
-	if (!pFunctionTable)
-	{
-		ALERT(at_logged, __FUNCTION__ " called with null pFunctionTable");
+	if (!pFunctionTable) {
+		ALERT(at_logged, "%s called with null pFunctionTable", __FUNCTION__);
 		return FALSE;
 	}
-	if (*interfaceVersion != INTERFACE_VERSION)
-	{
-		ALERT(at_logged, __FUNCTION__ " version mismatch; requested=%d ours=%d", *interfaceVersion, INTERFACE_VERSION);
+	if (*interfaceVersion != INTERFACE_VERSION) {
+		ALERT(at_logged, "%s version mismatch; requested=%d ours=%d", __FUNCTION__, *interfaceVersion, INTERFACE_VERSION);
 		*interfaceVersion = INTERFACE_VERSION;
 		return FALSE;
 	}
@@ -165,14 +161,12 @@ C_DLLEXPORT int GetEntityAPI2_Post(DLL_FUNCTIONS *pFunctionTable, int *interface
 
 C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion)
 {
-	if (!pNewFunctionTable)
-	{
-		ALERT(at_logged, __FUNCTION__ " called with null pNewFunctionTable");
+	if (!pNewFunctionTable) {
+		ALERT(at_logged, "%s called with null pNewFunctionTable", __FUNCTION__);
 		return FALSE;
 	}
-	if (*interfaceVersion != NEW_DLL_FUNCTIONS_VERSION)
-	{
-		ALERT(at_logged, __FUNCTION__ " version mismatch; requested=%d ours=%d", *interfaceVersion, NEW_DLL_FUNCTIONS_VERSION);
+	if (*interfaceVersion != NEW_DLL_FUNCTIONS_VERSION) {
+		ALERT(at_logged, "%s version mismatch; requested=%d ours=%d", __FUNCTION__, *interfaceVersion, NEW_DLL_FUNCTIONS_VERSION);
 		*interfaceVersion = NEW_DLL_FUNCTIONS_VERSION;
 		return FALSE;
 	}
@@ -183,14 +177,12 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 
 C_DLLEXPORT int GetNewDLLFunctions_Post(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion)
 {
-	if (!pNewFunctionTable)
-	{
-		ALERT(at_logged, __FUNCTION__ " called with null pNewFunctionTable");
+	if (!pNewFunctionTable) {
+		ALERT(at_logged, "%s called with null pNewFunctionTable", __FUNCTION__);
 		return FALSE;
 	}
-	if (*interfaceVersion != NEW_DLL_FUNCTIONS_VERSION)
-	{
-		ALERT(at_logged, __FUNCTION__ " version mismatch; requested=%d ours=%d", *interfaceVersion, NEW_DLL_FUNCTIONS_VERSION);
+	if (*interfaceVersion != NEW_DLL_FUNCTIONS_VERSION) {
+		ALERT(at_logged, "%s version mismatch; requested=%d ours=%d", __FUNCTION__, *interfaceVersion, NEW_DLL_FUNCTIONS_VERSION);
 		*interfaceVersion = NEW_DLL_FUNCTIONS_VERSION;
 		return FALSE;
 	}

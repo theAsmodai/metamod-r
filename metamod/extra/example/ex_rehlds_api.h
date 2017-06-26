@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __GNUC__
+enum class sv_delta_s;
+#endif
+
 #include <rehlds_api.h>
 
 extern IRehldsApi* g_RehldsApi;

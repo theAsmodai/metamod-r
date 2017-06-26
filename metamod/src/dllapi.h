@@ -14,6 +14,10 @@
 #define C_DLLEXPORT extern "C" DLLEXPORT
 #endif
 
+#ifndef _WIN32
+#define WINAPI
+#endif
+
 typedef void (*FN_GAMEINIT)();
 
 // Typedefs for these are provided in SDK engine/eiface.h, but I didn't

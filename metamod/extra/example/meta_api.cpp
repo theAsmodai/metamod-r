@@ -43,7 +43,7 @@ C_DLLEXPORT int Meta_Attach(PLUG_LOADTIME now, META_FUNCTIONS *pFunctionTable, m
 	gpMetaGlobals = pMGlobals;
 	gpGamedllFuncs = pGamedllFuncs;
 
-	g_engfuncs.pfnServerPrint("\n###############\n# Hello World! #\n###############\n\n");
+	g_engfuncs.pfnServerPrint("\n################\n# Hello World! #\n################\n\n");
 
 	memcpy(pFunctionTable, &gMetaFunctionTable, sizeof(META_FUNCTIONS));
 	return TRUE;
