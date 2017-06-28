@@ -9,7 +9,7 @@ option_t g_global_options[] =
 	{ "debuglevel",		CF_INT,		&g_config->m_debuglevel,	"0" },
 	{ "gamedll",		CF_PATH,	&g_config->m_gamedll,		nullptr },
 	{ "exec_cfg",		CF_STR,		&g_config->m_exec_cfg,		nullptr },
-	{ "clientmeta",		CF_BOOL,	&g_config->m_clientmeta,	"false" },
+	{ "clientmeta",		CF_BOOL,	&g_config->m_clientmeta,	"no" },
 
 	// list terminator
 	{ nullptr, CF_NONE, nullptr, nullptr }
