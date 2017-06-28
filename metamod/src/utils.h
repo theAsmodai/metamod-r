@@ -80,5 +80,6 @@ void __declspec(noreturn) do_exit(int exitval);
 bool is_file_exists_in_gamedir(const char *path);
 char *full_gamedir_path(const char *path, char *fullpath);
 bool mem_compare(const char* addr, const char* pattern, size_t len);
+void NORETURN Sys_Error(const char *error, ...);
 
 extern const char* g_platform_postfixes[4];
