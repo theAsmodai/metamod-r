@@ -69,7 +69,7 @@ void setupToolchain(NativeBinarySpec b)
 			'_snprintf': 'snprintf'
 		])
 
-		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-msse2', '-fomit-frame-pointer', '-inline-forceinline', '-fvisibility=default', '-fvisibility-inlines-hidden', '-fno-rtti', '-g0', '-s'
+		cfg.compilerOptions.args '-Qoption,cpp,--treat_func_as_string_literal_cpp', '-msse2', '-fomit-frame-pointer', '-inline-forceinline', '-fvisibility=default', '-fvisibility-inlines-hidden', '-fno-rtti', '-g0', '-s', '-fno-exceptions'
 	}
 
 	ToolchainConfigUtils.apply(project, cfg, b)

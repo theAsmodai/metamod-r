@@ -305,3 +305,19 @@ bool mem_compare(const char* addr, const char* pattern, size_t len)
 	}
 	return true;
 }
+
+void NORETURN Sys_Error(const char *error, ...)
+{
+	va_list argptr;
+	static char text[1024];
+
+	va_start(argptr, error);
+	vsnprintf(text, sizeof(text), error, argptr);
+	va_end(argptr);
+
+	META_CONS("FATAL ERROR (shutting down): %s\n", text);
+
+	int *null = 0;
+	*null = 0;
+	exit(-1);
+}
