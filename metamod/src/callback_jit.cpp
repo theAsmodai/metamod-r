@@ -320,12 +320,12 @@ void CForwardCallbackJIT::jit_debug(const char* format, ...)
 
 	char* memory_leak = Q_strdup(string); // yes, I'm lazy
 	static size_t print_ptr = size_t(&printf);
-	static size_t fprint_ptr = size_t(&mdebug_to_file);
 
 	pushad();
 	push(size_t(memory_leak));
 	call(dword_ptr[size_t(&print_ptr)]);
 #ifdef JIT_DEBUG_FILE
+	static size_t fprint_ptr = size_t(&mdebug_to_file);
 	call(dword_ptr[size_t(&fprint_ptr)]);
 #endif
 	add(esp, 4);
