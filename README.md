@@ -1,2 +1,3 @@
-# metamod-r
+# metamod-r [![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:Metamod_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=Metamod_Publish&guest=1) [![Download](https://camo.githubusercontent.com/debe101d4b55b28f47fb4d7aac1108891f25f113/687474703a2f2f7265686c64732e6f72672f76657273696f6e2f6d6574616d6f642d2d722d6c6162656c2e737667)](http://teamcity.rehlds.org/guestAuth/downloadArtifacts.html?buildTypeId=Metamod_Publish&buildId=lastSuccessful)
+
 Metamod-r is fully reworked fork of original Metamod by Jussi Kivilinna for Half-Life 1. It contains a huge number of performance optimizations and much cleaner code. The core was written using the JIT compiler.
