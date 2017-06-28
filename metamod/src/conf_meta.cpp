@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-MConfig::MConfig() : m_debuglevel(0), m_gamedll(nullptr), m_exec_cfg(nullptr), m_list(nullptr), m_filename(nullptr)
+MConfig::MConfig() : m_debuglevel(0), m_gamedll(nullptr), m_exec_cfg(nullptr), m_list(nullptr), m_filename(nullptr), m_clientmeta(FALSE)
 {
 	set_directory();
 }
