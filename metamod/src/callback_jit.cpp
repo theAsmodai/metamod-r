@@ -111,7 +111,7 @@ void CForwardCallbackJIT::naked_main()
 	}
 
 	// setup meta globals
-	mov(dword_ptr[globals + mg_mres], MRES_UNSET);
+	mov(dword_ptr[globals + mg_status], MRES_UNSET);
 	mov(dword_ptr[globals + mg_esp_save], esp);
 
 	// setup retval pointers
@@ -141,10 +141,8 @@ void CForwardCallbackJIT::naked_main()
 		jnz(go_next_plugin);
 
 		if (plug == m_jitdata->plugins->front()) { // init meta globals
-			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
-			mov(dword_ptr[globals + mg_status], eax); // NULL
+			mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
 		}
 		else {
 			mov(eax, dword_ptr[globals + mg_mres]);
@@ -161,11 +159,11 @@ void CForwardCallbackJIT::naked_main()
 		cmovg(ecx, edx);
 		mov(dword_ptr[globals + mg_status], ecx);
 
-		// save return value if supercede
+		// save return value if override or supercede
 		if (m_jitdata->has_ret) {
 			mov(ecx, dword_ptr[esp + over_ret]);
-			cmp(edx, MRES_SUPERCEDE);
-			cmovz(ecx, eax);
+			cmp(edx, MRES_OVERRIDE);
+			cmovae(ecx, eax);
 			mov(dword_ptr[esp + over_ret], ecx);
 		}
 
@@ -224,10 +222,8 @@ void CForwardCallbackJIT::naked_main()
 		jnz(go_next_plugin);
 
 		if (plug == m_jitdata->plugins->front()) { // init meta globals
-			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
-			mov(dword_ptr[globals + mg_status], eax); // NULL
+			mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
 		}
 		else {
 			mov(eax, dword_ptr[globals + mg_mres]);
@@ -244,11 +240,11 @@ void CForwardCallbackJIT::naked_main()
 		cmovl(ecx, edx);
 		mov(dword_ptr[globals + mg_status], ecx);
 
-		// save return value if supercede
+		// save return value if override or supercede
 		if (m_jitdata->has_ret) {
-			cmp(edx, MRES_SUPERCEDE);
+			cmp(edx, MRES_OVERRIDE);
 			mov(ecx, dword_ptr[esp + over_ret]);
-			cmovz(ecx, eax);
+			cmovae(ecx, eax);
 			mov(dword_ptr[esp + over_ret], ecx);
 		}
 
@@ -271,7 +267,7 @@ void CForwardCallbackJIT::naked_main()
 	if (m_jitdata->has_ret) {
 		mov(eax, dword_ptr[esp + orig_ret]);
 		cmp(dword_ptr[globals + mg_status], MRES_OVERRIDE);
-		cmovz(eax, dword_ptr[esp + over_ret]);
+		cmovae(eax, dword_ptr[esp + over_ret]);
 	}
 
 	// epilogue
@@ -394,6 +390,9 @@ char* CJit::find_callback_pattern(char* pattern, size_t len)
 
 bool CJit::is_hook_needed(jitdata_t* jitdata)
 {
+	if (!jitdata->pfn_original)
+		return true;
+
 	if (jitdata->mm_hook)
 		return true;
 
