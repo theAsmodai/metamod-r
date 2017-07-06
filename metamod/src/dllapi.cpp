@@ -238,7 +238,7 @@ void compile_newdllfunc_callbacks()
 	jitdata.post_table_offset = offsetof(MPlugin, m_newapi_post_table);
 
 	for (auto& cd : g_newdllfunc_cdata) {
-		jitdata.pfn_original = *(size_t *)(size_t(g_GameDLL.funcs.newapi_table) + cd.offset);
+		jitdata.pfn_original = g_GameDLL.funcs.newapi_table ? *(size_t *)(size_t(g_GameDLL.funcs.newapi_table) + cd.offset) : 0;
 		jitdata.args_count = cd.args_count;
 		jitdata.has_ret = cd.has_ret;
 		jitdata.has_varargs = cd.has_varargs;
