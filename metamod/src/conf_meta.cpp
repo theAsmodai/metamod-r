@@ -105,8 +105,11 @@ bool MConfig::load(const char* fn)
 	}
 
 	META_DEBUG(2, "Loading from config file: %s", loadfile);
-	for (int ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++) {
-		if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2))
+	for (int ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++)
+	{
+		trimbuf(line);
+
+		if (line[0] == '\0' || line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2))
 			continue;
 
 		char* optname = strtok(line, " \t\r\n");

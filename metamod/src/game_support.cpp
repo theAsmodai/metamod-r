@@ -5,14 +5,24 @@
 //! To add support for another mod add an entry here, and add all the
 //! exported entities to link_func.cpp
 const game_modinfo_t g_known_games[] = {
-	// name/gamedir		linux_so		win_dll			desc
+	// name/gamedir linux_so        win_dll         desc
 	//
 	// Previously enumerated in this sourcefile, the list is now kept in a
 	// separate file, generated based on game information stored in a
 	// convenient db.
 	{ "valve",      "hl.so",        "hl.dll",       "Half-Life" },
+	{ "bshift",     "bshift.so",    "hl.dll",       "Half-Life: Blue Shift" },
+	{ "ag",         "ag.so",        "ag.dll",       "Adrenaline Gamer" },
 	{ "cstrike",    "cs.so",        "mp.dll",       "Counter-Strike" },
 	{ "czero",      "cs.so",        "mp.dll",       "Counter-Strike:Condition Zero" },
+	{ "czeror",     "cz.so",        "cz.dll",       "Counter-Strike:Condition Zero Deleted Scenes" },
+	{ "ricochet",   "ricochet.so",  "mp.dll",       "Ricochet" },
+	{ "dmc",        "dmc.so",       "dmc.dll",      "Deathmatch Classic" },
+	{ "dod",        "dod.so",       "dod.dll",      "Day of Defeat" },
+	{ "tfc",        "tfc.so",       "tfc.dll",      "Team Fortress Classic" },
+	{ "gearbox",    "opfor.so",     "opfor.dll",    "Opposing Force" },
+	{ "ns",         "ns.so",        "ns.dll",       "Natural Selection" },
+	{ "nsp",        "ns.so",        "ns.dll",       "Natural Selection Beta" },
 
 	// End of list terminator:
 	{ nullptr, nullptr, nullptr, nullptr }
@@ -28,6 +38,37 @@ static const game_modinfo_t *lookup_game(const char *name)
 
 	// no match found
 	return nullptr;
+}
+
+bool lookup_game_postfixes(gamedll_t *gamedll)
+{
+	char pathname[PATH_MAX];
+	static char postfix_path[PATH_MAX] = "";
+
+	strlcpy(pathname, gamedll->pathname);
+
+	// find extensions and skip
+	char *pos = strrchr(pathname, '.');
+	if (pos) {
+		*pos = '\0';
+	}
+
+	for (size_t i = 0; i < arraysize(g_platform_postfixes); i++)
+	{
+		postfix_path[0] = '\0';
+		strlcat(postfix_path, pathname);
+		strlcat(postfix_path, g_platform_postfixes[i]);
+
+		if (is_file_exists_in_gamedir(postfix_path)) {
+			strlcpy(gamedll->pathname, postfix_path);
+			strlcpy(gamedll->real_pathname, postfix_path);
+			gamedll->file = postfix_path;
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 // Installs gamedll from Steam cache
@@ -103,8 +144,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 
 	// Use override-dll if specified.
 	if (g_config->m_gamedll) {
-		Q_strncpy(gamedll->pathname, g_config->m_gamedll, sizeof gamedll->pathname - 1);
-		gamedll->pathname[sizeof gamedll->pathname - 1] = '\0';
+		strlcpy(gamedll->pathname, g_config->m_gamedll);
 
 		// If the path is relative, the gamedll file will be missing and
 		// it might be found in the cache file.
@@ -115,7 +155,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 			// If we could successfully install the gamedll from the cache we
 			// rectify the pathname to be a full pathname.
 			if (install_gamedll(gamedll->pathname, szInstallPath)) {
-				Q_strncpy(gamedll->pathname, szInstallPath, sizeof(gamedll->pathname));
+				strlcpy(gamedll->pathname, szInstallPath);
 			}
 		}
 
@@ -145,8 +185,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 		Q_snprintf(gamedll->real_pathname, sizeof(gamedll->real_pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);
 	}
 	else {
-		Q_strncpy(gamedll->real_pathname, gamedll->pathname, sizeof gamedll->real_pathname - 1);
-		gamedll->real_pathname[sizeof gamedll->real_pathname - 1] = '\0';
+		strlcpy(gamedll->real_pathname, gamedll->pathname);
 	}
 
 	if (override) {
@@ -157,8 +196,17 @@ bool setup_gamedll(gamedll_t *gamedll)
 		META_LOG("Overriding game '%s' with dllfile '%s'", gamedll->name, gamedll->file);
 	}
 	else if (known) {
-		Q_strncpy(gamedll->desc, known->desc, sizeof gamedll->desc - 1);
-		gamedll->desc[sizeof gamedll->desc - 1] = '\0';
+		strlcpy(gamedll->desc, known->desc);
+
+#if !defined(_WIN32)
+		if (!is_file_exists_in_gamedir(gamedll->pathname))
+		{
+			// trying lookup gamedll with postfixes ie _i386.so
+			if (lookup_game_postfixes(gamedll)) {
+				META_DEBUG(3, "dll: Trying lookup to gamedll with postfixes was a success. Game '%s'", gamedll->pathname);
+			}
+		}
+#endif
 
 		META_LOG("Recognized game '%s'; using dllfile '%s'", gamedll->name, gamedll->file);
 	}

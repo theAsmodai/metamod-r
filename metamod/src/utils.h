@@ -64,6 +64,40 @@ bool is_no(const char* str);
 
 const char* LOCALINFO(char* key);
 
+template <size_t N>
+char *strlcpy(char (&dest)[N], const char *src) {
+	Q_strncpy(dest, src, N - 1);
+	dest[N - 1] = '\0';
+	return dest;
+}
+
+inline char *strnlcpy(char *dest, const char *src, size_t n) {
+	Q_strncpy(dest, src, n - 1);
+	dest[n - 1] = '\0';
+	return dest;
+}
+
+template <size_t N>
+size_t strlcat(char (&dest)[N], const char *src)
+{
+	size_t dstlen = Q_strlen(dest);
+	size_t size = N - dstlen + 1;
+
+	if (!size) {
+		return dstlen;
+	}
+
+	size_t srclen = Q_strlen(src);
+	if (srclen > size) {
+		srclen = size;
+	}
+
+	Q_memcpy(dest + dstlen, src, srclen);
+	dest[dstlen + srclen] = '\0';
+
+	return dstlen + srclen;
+}
+
 #ifdef _WIN32
 char *mm_strtok_r(char *s, const char *delim, char **ptrptr);
 char *realpath(const char *file_name, char *resolved_name);

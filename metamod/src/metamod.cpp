@@ -120,12 +120,6 @@ void metamod_startup()
 		g_config->set("gamedll", cp);
 	}
 
-	cp = LOCALINFO("mm_pluginsfile");
-	if (cp && *cp != '\0') {
-		META_LOG("Pluginsfile specified via localinfo: %s", cp);
-		g_config->set("plugins_file", cp);
-	}
-
 	cp = LOCALINFO("mm_execcfg");
 	if (cp && *cp != '\0') {
 		META_LOG("Execcfg specified via localinfo: %s", cp);

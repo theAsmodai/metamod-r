@@ -8,9 +8,12 @@
 **/msvc/*.opensdf
 **/msvc/*.user
 **/msvc/*.suo
+**/msvc/*.db
+**/msvc/*.opendb
 **/msvc/*.aps
 **/msvc/*.pch
 **/msvc/*.txt
+**/msvc/.vs
 **/msvc/start*.bat
 **/msvc/ipch
 **/PublishPath*.txt
