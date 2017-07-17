@@ -10,9 +10,9 @@ const game_modinfo_t g_known_games[] = {
 	// Previously enumerated in this sourcefile, the list is now kept in a
 	// separate file, generated based on game information stored in a
 	// convenient db.
-	{ "valve",	"hl.so",	"hl.dll",	"Half-Life" },
-	{ "cstrike",	"cs.so",	"mp.dll",	"Counter-Strike" },
-	{ "czero",	"cs.so",	"mp.dll",	"Counter-Strike:Condition Zero" },
+	{ "valve",      "hl.so",        "hl.dll",       "Half-Life" },
+	{ "cstrike",    "cs.so",        "mp.dll",       "Counter-Strike" },
+	{ "czero",      "cs.so",        "mp.dll",       "Counter-Strike:Condition Zero" },
 
 	// End of list terminator:
 	{ nullptr, nullptr, nullptr, nullptr }
