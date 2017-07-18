@@ -24,7 +24,7 @@ const game_modinfo_t g_known_games[] = {
 	{ "ns",         "ns.so",        "ns.dll",       "Natural Selection" },
 	{ "nsp",        "ns.so",        "ns.dll",       "Natural Selection Beta" },
 	{ "ts",         "ts_i386.so",   "mp.dll",       "The Specialists" },
-	{ "esf",        "hl_i386.so",   "hl.dll",       "Earth's Special Forces" }
+	{ "esf",        "hl_i386.so",   "hl.dll",       "Earth's Special Forces" },
 
 	// End of list terminator:
 	{ nullptr, nullptr, nullptr, nullptr }
