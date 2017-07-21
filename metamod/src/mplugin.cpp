@@ -1088,9 +1088,9 @@ void MPlugin::show()
 // last loaded the plugin.
 bool MPlugin::newer_file() const
 {
-	struct stat st;
+	struct stat64 st;
 
-	if (stat(m_pathname, &st) != 0) {
+	if (stat64(m_pathname, &st) != 0) {
 		META_ERROR("ini: Skipping plugin, couldn't stat file '%s': %s", m_pathname, strerror(errno));
 		return false;
 	}

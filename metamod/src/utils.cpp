@@ -171,8 +171,8 @@ bool is_abs_path(const char* path)
 
 bool is_valid_path(const char* path)
 {
-	struct stat st;
-	return !stat(path, &st) && S_ISREG(st.st_mode);
+	struct stat64 st;
+	return !stat64(path, &st) && S_ISREG(st.st_mode);
 }
 
 bool is_platform_postfix(const char* pf)
@@ -242,8 +242,8 @@ bool is_file_exists_in_gamedir(const char* path)
 	else
 		snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
 
-	struct stat st;
-	int ret = stat(buf, &st);
+	struct stat64 st;
+	int ret = stat64(buf, &st);
 	if (ret != 0) {
 		META_DEBUG(5, "Unable to stat '%s': %s", buf, strerror(errno));
 		return false;
