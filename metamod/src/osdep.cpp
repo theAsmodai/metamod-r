@@ -62,7 +62,7 @@ static ElfW(Addr) dlsize(void* base)
 module_handle_t CSysModule::load(const char* filepath)
 {
 	if (!m_handle) {
-		m_handle = dlopen(filepath, RTLD_NOW);
+		m_handle = dlopen(filepath, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
 
 		char buf[1024], dummy[1024], path[260];
 		sprintf(buf, "/proc/%i/maps", getpid());
