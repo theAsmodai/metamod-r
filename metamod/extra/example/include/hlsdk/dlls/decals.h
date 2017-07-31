@@ -1,26 +1,35 @@
-/***
+/*
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
 *
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
 *
-****/
-#ifndef DECALS_H
-#define DECALS_H
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+#pragma once
 
-//
-// Dynamic Decals
-//
-enum decal_e 
-{	
-	DECAL_GUNSHOT1 = 0, 
+enum decal_e
+{
+	DECAL_GUNSHOT1 = 0,
 	DECAL_GUNSHOT2,
 	DECAL_GUNSHOT3,
 	DECAL_GUNSHOT4,
@@ -33,18 +42,18 @@ enum decal_e
 	DECAL_LAMBDA6,
 	DECAL_SCORCH1,
 	DECAL_SCORCH2,
-	DECAL_BLOOD1, 
-	DECAL_BLOOD2, 
-	DECAL_BLOOD3, 
-	DECAL_BLOOD4, 
-	DECAL_BLOOD5, 
-	DECAL_BLOOD6, 
-	DECAL_YBLOOD1, 
-	DECAL_YBLOOD2, 
-	DECAL_YBLOOD3, 
-	DECAL_YBLOOD4, 
-	DECAL_YBLOOD5, 
-	DECAL_YBLOOD6, 
+	DECAL_BLOOD1,
+	DECAL_BLOOD2,
+	DECAL_BLOOD3,
+	DECAL_BLOOD4,
+	DECAL_BLOOD5,
+	DECAL_BLOOD6,
+	DECAL_YBLOOD1,
+	DECAL_YBLOOD2,
+	DECAL_YBLOOD3,
+	DECAL_YBLOOD4,
+	DECAL_YBLOOD5,
+	DECAL_YBLOOD6,
 	DECAL_GLASSBREAK1,
 	DECAL_GLASSBREAK2,
 	DECAL_GLASSBREAK3,
@@ -67,18 +76,8 @@ enum decal_e
 typedef struct
 {
 	char *name;
-	short entityIndex;
-	byte depth;
-	byte flags;
-	vec3_t position;
-} DECALLIST;
+	int index;
 
-typedef struct
-{
-	char	*name;
-	int		index;
 } DLL_DECALLIST;
 
-extern DLL_DECALLIST gDecals[];
-
-#endif	// DECALS_H
+extern DLL_DECALLIST gDecals[42];

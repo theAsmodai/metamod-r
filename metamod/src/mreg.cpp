@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-MRegCmd::MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin->index()), m_status(RG_VALID)
+MRegCmd::MRegCmd(const char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin->index()), m_status(RG_VALID)
 {
 	m_name = Q_strdup(cmd_name);
 }
@@ -55,7 +55,7 @@ MRegCmd* MRegCmdList::find(const char* name) const
 	return nullptr;
 }
 
-MRegCmd* MRegCmdList::add(char* addname, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin)
+MRegCmd* MRegCmdList::add(const char* addname, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin)
 {
 	auto reg = new MRegCmd(addname, cmd_handler, cmd_plugin);
 	m_list.push_back(reg);

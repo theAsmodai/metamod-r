@@ -1,74 +1,120 @@
-/***
+/*
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
 *
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
 *
-****/
-#ifndef FUNC_BREAK_H
-#define FUNC_BREAK_H
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+#pragma once
 
-typedef enum { expRandom, expDirected} Explosions;
-typedef enum { matGlass = 0, matWood, matMetal, matFlesh, matCinderBlock, matCeilingTile, matComputer, matUnbreakableGlass, matRocks, matNone, matLastMaterial } Materials;
+// this many shards spawned when breakable objects break;
+#define NUM_SHARDS 6
 
-#define	NUM_SHARDS 6 // this many shards spawned when breakable objects break;
+// func breakable
+#define SF_BREAK_TRIGGER_ONLY		1	// may only be broken by trigger
+#define SF_BREAK_TOUCH			2	// can be 'crashed through' by running player (plate glass)
+#define SF_BREAK_PRESSURE		4	// can be broken by a player standing on it
+#define SF_BREAK_CROWBAR		256	// instant break if hit with crowbar
 
-class CBreakable : public CBaseDelay
+// func_pushable (it's also func_breakable, so don't collide with those flags)
+#define SF_PUSH_BREAKABLE		128
+
+typedef enum
 {
+	expRandom = 0,
+	expDirected,
+
+} Explosions;
+
+typedef enum
+{
+	matGlass = 0,
+	matWood,
+	matMetal,
+	matFlesh,
+	matCinderBlock,
+	matCeilingTile,
+	matComputer,
+	matUnbreakableGlass,
+	matRocks,
+	matNone,
+	matLastMaterial,
+
+} Materials;
+
+class CBreakable: public CBaseDelay {
 public:
 	// basic functions
-	void Spawn( void );
-	void Precache( void );
-	void KeyValue( KeyValueData* pkvd);
-	void EXPORT BreakTouch( CBaseEntity *pOther );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	void DamageSound( void );
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(KeyValueData *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+
+	// To spark when hit
+	virtual void TraceAttack(entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType) = 0;
 
 	// breakables use an overridden takedamage
-	virtual int TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType );
-	// To spark when hit
-	void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType );
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
 
-	BOOL IsBreakable( void );
-	BOOL SparkWhenHit( void );
+	virtual int DamageDecal(int bitsDamageType) = 0;
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
 
-	int	 DamageDecal( int bitsDamageType );
+public:
+	BOOL Explodable() const { return ExplosionMagnitude() > 0; }
+	int ExplosionMagnitude() const { return pev->impulse; }
+	void ExplosionSetMagnitude(int magnitude) { pev->impulse = magnitude; }
 
-	void EXPORT		Die( void );
-	virtual int		ObjectCaps( void ) { return (CBaseEntity :: ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-	virtual int		Save( CSave &save );
-	virtual int		Restore( CRestore &restore );
-
-	inline BOOL		Explodable( void ) { return ExplosionMagnitude() > 0; }
-	inline int		ExplosionMagnitude( void ) { return pev->impulse; }
-	inline void		ExplosionSetMagnitude( int magnitude ) { pev->impulse = magnitude; }
-
-	static void MaterialSoundPrecache( Materials precacheMaterial );
-	static void MaterialSoundRandom( edict_t *pEdict, Materials soundMaterial, float volume );
-	static const char **MaterialSoundList( Materials precacheMaterial, int &soundCount );
-
-	static const char *pSoundsWood[];
-	static const char *pSoundsFlesh[];
-	static const char *pSoundsGlass[];
-	static const char *pSoundsMetal[];
-	static const char *pSoundsConcrete[];
-	static const char *pSpawnObjects[];
-
-	static	TYPEDESCRIPTION m_SaveData[];
-
-	Materials	m_Material;
-	Explosions	m_Explosion;
-	int			m_idShard;
-	float		m_angle;
-	int			m_iszGibModel;
-	int			m_iszSpawnObject;
+public:
+	Materials m_Material;
+	Explosions m_Explosion;
+	int m_idShard;
+	float m_angle;
+	int m_iszGibModel;
+	int m_iszSpawnObject;
+	float m_flHealth;
 };
 
-#endif	// FUNC_BREAK_H
+class CPushable: public CBreakable {
+public:
+	virtual void Spawn() = 0;
+	virtual void Precache() = 0;
+	virtual void Restart() = 0;
+	virtual void KeyValue(KeyValueData *pkvd) = 0;
+	virtual int Save(CSave &save) = 0;
+	virtual int Restore(CRestore &restore) = 0;
+	virtual int ObjectCaps() = 0;
+	virtual BOOL TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType) = 0;
+	virtual void Touch(CBaseEntity *pOther) = 0;
+	virtual void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value) = 0;
+
+public:
+	float MaxSpeed() const { return m_maxSpeed; }
+
+public:
+	int m_lastSound;
+	float m_maxSpeed;
+	float m_soundTime;
+};

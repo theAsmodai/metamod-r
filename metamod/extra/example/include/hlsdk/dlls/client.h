@@ -1,65 +1,97 @@
-/***
+/*
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
 *
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
 *
-****/
-#ifndef CLIENT_H
-#define CLIENT_H
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+#pragma once
 
-extern void respawn( entvars_t* pev, BOOL fCopyCorpse );
-extern BOOL ClientConnect( edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] );
-extern void ClientDisconnect( edict_t *pEntity );
-extern void ClientKill( edict_t *pEntity );
-extern void ClientPutInServer( edict_t *pEntity );
-extern void ClientCommand( edict_t *pEntity );
-extern void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer );
-extern void ServerActivate( edict_t *pEdictList, int edictCount, int clientMax );
-extern void ServerDeactivate( void );
-extern void StartFrame( void );
-extern void PlayerPostThink( edict_t *pEntity );
-extern void PlayerPreThink( edict_t *pEntity );
-extern void ParmsNewLevel( void );
-extern void ParmsChangeLevel( void );
+// custom enum
+enum ChooseTeamMenuSlot
+{
+	MENU_SLOT_TEAM_UNDEFINED = -1,
 
-extern void ClientPrecache( void );
+	MENU_SLOT_TEAM_TERRORIST = 1,
+	MENU_SLOT_TEAM_CT,
+	MENU_SLOT_TEAM_VIP,
 
-extern const char *GetGameDescription( void );
-extern void PlayerCustomization( edict_t *pEntity, customization_t *pCust );
+	MENU_SLOT_TEAM_RANDOM = 5,
+	MENU_SLOT_TEAM_SPECT
+};
 
-extern void SpectatorConnect ( edict_t *pEntity );
-extern void SpectatorDisconnect ( edict_t *pEntity );
-extern void SpectatorThink ( edict_t *pEntity );
+// custom enum
+enum BuyItemMenuSlot
+{
+	MENU_SLOT_ITEM_VEST = 1,
+	MENU_SLOT_ITEM_VESTHELM,
+	MENU_SLOT_ITEM_FLASHGREN,
+	MENU_SLOT_ITEM_HEGREN,
+	MENU_SLOT_ITEM_SMOKEGREN,
+	MENU_SLOT_ITEM_NVG,
+	MENU_SLOT_ITEM_DEFUSEKIT,
+	MENU_SLOT_ITEM_SHIELD,
+};
 
-extern void Sys_Error( const char *error_string );
+#define CS_NUM_SKIN			4
+#define CZ_NUM_SKIN			5
 
-extern void SetupVisibility( edict_t *pViewEntity, edict_t *pClient, unsigned char **pvs, unsigned char **pas );
-extern void	UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clientdata_s *cd );
-extern int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet );
-extern void CreateBaseline( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec3_t player_mins, vec3_t player_maxs );
-extern void RegisterEncoders( void );
+#define FIELD_ORIGIN0			0
+#define FIELD_ORIGIN1			1
+#define FIELD_ORIGIN2			2
 
-extern int GetWeaponData( struct edict_s *player, struct weapon_data_s *info );
+#define FIELD_ANGLES0			3
+#define FIELD_ANGLES1			4
+#define FIELD_ANGLES2			5
 
-extern void	CmdStart( const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed );
-extern void	CmdEnd ( const edict_t *player );
+#define CUSTOMFIELD_ORIGIN0		0
+#define CUSTOMFIELD_ORIGIN1		1
+#define CUSTOMFIELD_ORIGIN2		2
 
-extern int	ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
+#define CUSTOMFIELD_ANGLES0		3
+#define CUSTOMFIELD_ANGLES1		4
+#define CUSTOMFIELD_ANGLES2		5
 
-extern int GetHullBounds( int hullnumber, float *mins, float *maxs );
+#define CUSTOMFIELD_SKIN		6
+#define CUSTOMFIELD_SEQUENCE		7
+#define CUSTOMFIELD_ANIMTIME		8
 
-extern void	CreateInstancedBaselines ( void );
+typedef struct
+{
+	float m_fTimeEnteredPVS;
 
-extern int	InconsistentFile( const edict_t *player, const char *filename, char *disconnect_message );
+} ENTITYPVSSTATUS;
 
-extern int AllowLagCompensation( void );
+struct PLAYERPVSSTATUS
+{
+	ENTITYPVSSTATUS m_Status[1380];
+	int headnode;
+	int num_leafs;
+	short int leafnums[ MAX_ENT_LEAFS ];
+};
 
-#endif		// CLIENT_H
+struct entity_field_alias_t
+{
+	char name[32];
+	int field;
+};

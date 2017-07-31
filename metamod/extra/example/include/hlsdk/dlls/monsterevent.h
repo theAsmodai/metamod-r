@@ -1,34 +1,44 @@
-/***
+/*
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
-*	
-*	This product contains software technology licensed from Id 
-*	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
-*	All Rights Reserved.
+*   This program is free software; you can redistribute it and/or modify it
+*   under the terms of the GNU General Public License as published by the
+*   Free Software Foundation; either version 2 of the License, or (at
+*   your option) any later version.
 *
-*   Use, distribution, and modification of this source code and/or resulting
-*   object code is restricted to non-commercial enhancements to products from
-*   Valve LLC.  All other use, distribution, or modification is prohibited
-*   without written permission from Valve LLC.
+*   This program is distributed in the hope that it will be useful, but
+*   WITHOUT ANY WARRANTY; without even the implied warranty of
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*   General Public License for more details.
 *
-****/
-#ifndef MONSTEREVENT_H
-#define MONSTEREVENT_H
+*   You should have received a copy of the GNU General Public License
+*   along with this program; if not, write to the Free Software Foundation,
+*   Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*
+*   In addition, as a special exception, the author gives permission to
+*   link the code of this program with the Half-Life Game Engine ("HL
+*   Engine") and Modified Game Libraries ("MODs") developed by Valve,
+*   L.L.C ("Valve").  You must obey the GNU General Public License in all
+*   respects for all of the code used other than the HL Engine and MODs
+*   from Valve.  If you modify this file, you may extend this exception
+*   to your version of the file, but you are not obligated to do so.  If
+*   you do not wish to do so, delete this exception statement from your
+*   version.
+*
+*/
+#pragma once
 
-typedef struct
+typedef struct MonsterEvent_s
 {
-	int			event;
-	char		*options;
+	int event;
+	char *options;
+
 } MonsterEvent_t;
 
-#define EVENT_SPECIFIC			0
-#define EVENT_SCRIPTED			1000
-#define EVENT_SHARED			2000
-#define EVENT_CLIENT			5000
+#define EVENT_SPECIFIC				0
+#define EVENT_SCRIPTED				1000
+#define EVENT_SHARED				2000
+#define EVENT_CLIENT				5000
 
-#define MONSTER_EVENT_BODYDROP_LIGHT	2001
-#define MONSTER_EVENT_BODYDROP_HEAVY	2002
-
+#define MONSTER_EVENT_BODYDROP_LIGHT		2001
+#define MONSTER_EVENT_BODYDROP_HEAVY		2002
 #define MONSTER_EVENT_SWISHSOUND		2010
-
-#endif		// MONSTEREVENT_H

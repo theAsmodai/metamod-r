@@ -34,7 +34,7 @@ class MPlugin;
 class MRegCmd
 {
 public:
-	MRegCmd(char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
+	MRegCmd(const char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
 	~MRegCmd();
 	bool call() const;			// try to call the function
 	void disable();
@@ -57,7 +57,7 @@ public:
 	MRegCmdList();
 	~MRegCmdList();
 	MRegCmd *find(const char *name) const;
-	MRegCmd *add(char *name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
+	MRegCmd *add(const char *name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin);
 	void remove(char* cmd_name);
 	void remove(int owner_plugin_id);
 	void show() const;

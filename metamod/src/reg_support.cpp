@@ -24,7 +24,7 @@ void EXT_FUNC meta_command_handler()
 // The string handed to the engine is just a Q_strdup() of the plugin's
 // string.  The function pointer handed to the engine is actually a pointer
 // to a generic command-handler function (see above).
-void EXT_FUNC meta_AddServerCommand(char* cmd_name, void (*function)())
+void EXT_FUNC meta_AddServerCommand(const char* cmd_name, void (*function)())
 {
 	MPlugin* plug = g_plugins->find_memloc(function);
 
