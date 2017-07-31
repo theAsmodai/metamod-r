@@ -62,21 +62,22 @@ bool MConfig::set(option_t* setp, const char* setstr)
 			*optval = FALSE;
 		}
 		else {
-			META_ERROR("option '%s' invalid format '%s'", setp->name,
-			           setstr);
+			META_ERROR("option '%s' invalid format '%s'", setp->name, setstr);
 			return false;
 		}
 		META_DEBUG(3, "set config bool: %s = %s", setp->name, *optval ? "true" : "false");
 		break;
 	case CF_STR:
-		if (*optstr)
-		Q_free(*optstr);
+		if (*optstr) {
+			free(*optstr);
+		}
 		*optstr = Q_strdup(setstr);
 		META_DEBUG(3, "set config string: %s = %s", setp->name, *optstr);
 		break;
 	case CF_PATH:
-		if (*optstr)
-		Q_free(*optstr);
+		if (*optstr) {
+			free(*optstr);
+		}
 		full_gamedir_path(setstr, pathbuf);
 		*optstr = Q_strdup(pathbuf);
 		META_DEBUG(3, "set config path: %s = %s", setp->name, *optstr);

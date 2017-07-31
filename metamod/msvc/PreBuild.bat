@@ -10,6 +10,7 @@ set repodir=%~2
 set old_version=
 set version_major=0
 set version_minor=0
+set version_maintenance=0
 set version_modifed=
 
 set commitSHA=
@@ -65,6 +66,7 @@ IF EXIST "%srcdir%\version.h" (
 		IF %%i==#define (
 			IF %%j==VERSION_MAJOR set version_major=%%k
 			IF %%j==VERSION_MINOR set version_minor=%%k
+			IF %%j==VERSION_MAINTENANCE set version_maintenance=%%k
 		)
 	)
 ) ELSE (
@@ -72,6 +74,7 @@ IF EXIST "%srcdir%\version.h" (
 		IF NOT [%%j] == [] (
 			IF %%i==majorVersion set version_major=%%j
 			IF %%i==minorVersion set version_minor=%%j
+			IF %%i==maintenanceVersion set version_maintenance=%%j
 		)
 	)
 )
@@ -165,7 +168,7 @@ IF [%localChanged%]==[1] (
 :: Now form full version string like 1.0.0.1
 ::
 
-set new_version=%version_major%.%version_minor%.%commitCount%%version_modifed%
+set new_version=%version_major%.%version_minor%.%version_maintenance%.%commitCount%%version_modifed%
 
 ::
 :: Update appversion.h if version has changed or modifications/mixed revisions detected
@@ -194,8 +197,8 @@ echo.>>"%srcdir%\appversion.h"
 echo // Version defines>>"%srcdir%\appversion.h"
 echo #define APP_VERSION "%new_version%">>"%srcdir%\appversion.h"
 
->>"%srcdir%\appversion.h" echo #define APP_VERSION_C %version_major%,%version_minor%,%commitCount%
-echo #define APP_VERSION_STRD "%version_major%.%version_minor%.%commitCount%">>"%srcdir%\appversion.h"
+>>"%srcdir%\appversion.h" echo #define APP_VERSION_C %version_major%,%version_minor%,%version_maintenance%,%commitCount%
+echo #define APP_VERSION_STRD "%version_major%.%version_minor%.%version_maintenance%.%commitCount%">>"%srcdir%\appversion.h"
 echo #define APP_VERSION_FLAGS 0x0L>>"%srcdir%\appversion.h"
 
 echo.>>"%srcdir%\appversion.h"

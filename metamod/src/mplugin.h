@@ -2,6 +2,12 @@
 
 #include "utils.h"
 
+#if defined(_WIN32)
+	constexpr char *PLATFORM_DLEXT = ".dll";
+#else
+	constexpr char *PLATFORM_DLEXT = ".so";
+#endif
+
 // Flags to indicate current "load" state of plugin.
 // NOTE: order is important, as greater/less comparisons are made.
 enum PLUG_STATUS : uint8

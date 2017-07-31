@@ -7,7 +7,7 @@ MRegCmd::MRegCmd(const char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plug
 
 MRegCmd::~MRegCmd()
 {
-	Q_free(m_name);
+	free(m_name);
 }
 
 bool MRegCmd::call() const
@@ -157,8 +157,8 @@ MRegCvar::MRegCvar(cvar_t* cv_ptr, MPlugin* cv_plugin) : m_cvar(cv_ptr), m_plugi
 
 MRegCvar::~MRegCvar()
 {
-	Q_free((void *)m_cvar->name);
-	Q_free(m_cvar->string);
+	free((void *)m_cvar->name);
+	free(m_cvar->string);
 	delete m_cvar;
 }
 

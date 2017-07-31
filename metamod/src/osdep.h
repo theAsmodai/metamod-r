@@ -1,52 +1,8 @@
 #pragma once
 
-// String describing platform/DLL-type, for matching lines in plugins.ini.
-#ifdef _WIN32
-	#define UNUSED		/**/
-
-	#define PLATFORM	"mswin"
-	#define PLATFORM_SPC	"win32"
-	#define PLATFORM_DLEXT	".dll"
-
-	#define likely(x)      (x)
-	#define unlikely(x)    (x)
-#else
-	#define UNUSED		__attribute__((unused))
-
-	#define PLATFORM	"linux"
-	#define PLATFORM_SPC	"lin32"
-	#define PLATFORM_DLEXT	".so"
-
-	#define likely(x)      __builtin_expect(!!(x), 1)
-	#define unlikely(x)    __builtin_expect(!!(x), 0)
-#endif
-
-#ifdef _WIN32
-typedef HINSTANCE module_handle_t;
-#else
-typedef void* module_handle_t;
-#endif
-
-class CSysModule
-{
-public:
-	CSysModule();
-	module_handle_t load(const char* filename);
-	bool unload();
-	void* getsym(const char* name) const;
-	module_handle_t gethandle() const;
-	bool contain(void* addr) const;
-	static const char* getloaderror();
-
-private:
-	module_handle_t m_handle;
-	uintptr_t m_base;
-	uintptr_t m_size;
-};
-
 // Windows doesn't have an strtok_r() routine, so we write our own.
 #ifdef _WIN32
-	#define strtok_r(s, delim, ptrptr)	mm_strtok_r(s, delim, ptrptr)
+	#define strtok_r strtok_s
 #endif // _WIN32
 
 // Set filename and pathname maximum lengths.  Note some windows compilers
@@ -110,8 +66,4 @@ private:
     #ifndef S_IWGRP
         #define S_IWGRP S_IWUSR
     #endif
-
-	const char *str_GetLastError();
 #endif // _WIN32
-
-const char* str_os_error();

@@ -48,7 +48,7 @@ void setupToolchain(NativeBinarySpec b)
 			pchSourceSet: 'rmod_pch'
 		)
 
-		cfg.extraLibs 'psapi.lib'
+		cfg.extraLibs 'psapi.lib', 'user32.lib'
 		cfg.singleDefines('_CRT_SECURE_NO_WARNINGS')
 	} else if (cfg instanceof GccToolchainConfig) {
 		cfg.compilerOptions.pchConfig = new GccToolchainConfig.PrecompilerHeaderOptions(

@@ -18,6 +18,7 @@
 
 #include "osconfig.h"
 #include "jitasm.h"
+#include "strtools.h"
 
 #define CreateInterface mm_CreateInterface
 
@@ -27,6 +28,7 @@
 #include <rehlds_api.h>
 
 #include "osdep.h"
+#include "sys_module.h"
 #include "mdebug.h"
 #include "api_info.h"
 #include "commands_meta.h"
@@ -38,6 +40,7 @@
 #include "game_support.h"
 #include "mreg.h"
 #include "meta_api.h"
+#include "mextdll.h"
 #include "mutil.h"
 #include "reg_support.h"
 #include "mlist.h"
@@ -47,8 +50,9 @@
 #include "sdk_util.h"
 #include "enginecallbacks.h"
 #include "utils.h"
+#include "mem_utils.h"
 #include "callback_jit.h"
-#include "metamod_rehlds_api.h"
+#include "meta_rehlds_api.h"
 
 #undef CreateInterface
 #include "linkent.h"

@@ -2,6 +2,7 @@
 **/.gradle
 .idea
 *.iml
+*.bat
 **/msvc/Debug*
 **/msvc/Release*
 **/msvc/*.sdf
@@ -14,7 +15,6 @@
 **/msvc/*.pch
 **/msvc/*.txt
 **/msvc/.vs
-**/msvc/start*.bat
 **/msvc/ipch
 **/PublishPath*.txt
 **/*.log

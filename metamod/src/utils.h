@@ -16,87 +16,10 @@ template <typename T, size_t N>
 char(&ArraySizeHelper(T(&array)[N]))[N];
 #define arraysize(array) (sizeof(ArraySizeHelper(array)))
 
-class static_allocator
-{
-public:
-	enum memory_protection : uint8
-	{
-#ifdef _WIN32
-		mp_readwrite = PAGE_READWRITE,
-		mp_rwx = PAGE_EXECUTE_READWRITE
-#else
-		mp_readwrite = PROT_READ | PROT_WRITE,
-		mp_rwx = PROT_READ | PROT_WRITE | PROT_EXEC
-#endif
-	};
-
-	static_allocator(memory_protection protection);
-	char* allocate(const size_t n);
-	char* strdup(const char* string);
-	void deallocate_all();
-	size_t memory_used() const;
-	bool contain(uint32 addr);
-	char* find_pattern(char* pattern, size_t len);
-
-	template<typename T>
-	T* allocate()
-	{
-		return (T *)allocate(sizeof(T));
-	}
-
-private:
-	void allocate_page();
-
-	enum
-	{
-		Pagesize = 4096
-	};
-
-	size_t m_used = 0;
-	std::vector<void *> m_pages;
-	memory_protection m_protection;
-
-	friend class CJit;
-};
-
 bool is_yes(const char* str);
 bool is_no(const char* str);
 
 const char* LOCALINFO(char* key);
-
-template <size_t N>
-char *strlcpy(char (&dest)[N], const char *src) {
-	Q_strncpy(dest, src, N - 1);
-	dest[N - 1] = '\0';
-	return dest;
-}
-
-inline char *strnlcpy(char *dest, const char *src, size_t n) {
-	Q_strncpy(dest, src, n - 1);
-	dest[n - 1] = '\0';
-	return dest;
-}
-
-template <size_t N>
-size_t strlcat(char (&dest)[N], const char *src)
-{
-	size_t dstlen = Q_strlen(dest);
-	size_t size = N - dstlen + 1;
-
-	if (!size) {
-		return dstlen;
-	}
-
-	size_t srclen = Q_strlen(src);
-	if (srclen > size) {
-		srclen = size;
-	}
-
-	Q_memcpy(dest + dstlen, src, srclen);
-	dest[dstlen + srclen] = '\0';
-
-	return dstlen + srclen;
-}
 
 #ifdef _WIN32
 char *mm_strtok_r(char *s, const char *delim, char **ptrptr);
@@ -108,9 +31,6 @@ void normalize_path(char *path);
 bool is_abs_path(const char *path);
 bool is_valid_path(const char *path);
 bool is_platform_postfix(const char *pf);
-
-void __declspec(noreturn) do_exit(int exitval);
-
 bool is_file_exists_in_gamedir(const char *path);
 char *full_gamedir_path(const char *path, char *fullpath);
 bool mem_compare(const char* addr, const char* pattern, size_t len);

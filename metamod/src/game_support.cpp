@@ -47,7 +47,7 @@ bool lookup_game_postfixes(gamedll_t *gamedll)
 	char pathname[PATH_MAX];
 	static char postfix_path[PATH_MAX] = "";
 
-	strlcpy(pathname, gamedll->pathname);
+	Q_strlcpy(pathname, gamedll->pathname);
 
 	// find extensions and skip
 	char *pos = strrchr(pathname, '.');
@@ -58,12 +58,12 @@ bool lookup_game_postfixes(gamedll_t *gamedll)
 	for (size_t i = 0; i < arraysize(g_platform_postfixes); i++)
 	{
 		postfix_path[0] = '\0';
-		strlcat(postfix_path, pathname);
-		strlcat(postfix_path, g_platform_postfixes[i]);
+		Q_strlcat(postfix_path, pathname);
+		Q_strlcat(postfix_path, g_platform_postfixes[i]);
 
 		if (is_file_exists_in_gamedir(postfix_path)) {
-			strlcpy(gamedll->pathname, postfix_path);
-			strlcpy(gamedll->real_pathname, postfix_path);
+			Q_strlcpy(gamedll->pathname, postfix_path);
+			Q_strlcpy(gamedll->real_pathname, postfix_path);
 			gamedll->file = postfix_path;
 
 			return true;
@@ -94,7 +94,7 @@ bool install_gamedll(char *from, const char *to)
 			return false;
 		}
 
-		int length_out = Q_write(fd, cachefile, length_in);
+		int length_out = write(fd, cachefile, length_in);
 		FREE_FILE(cachefile);
 		close(fd);
 
@@ -146,7 +146,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 
 	// Use override-dll if specified.
 	if (g_config->m_gamedll) {
-		strlcpy(gamedll->pathname, g_config->m_gamedll);
+		Q_strlcpy(gamedll->pathname, g_config->m_gamedll);
 
 		// If the path is relative, the gamedll file will be missing and
 		// it might be found in the cache file.
@@ -157,7 +157,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 			// If we could successfully install the gamedll from the cache we
 			// rectify the pathname to be a full pathname.
 			if (install_gamedll(gamedll->pathname, szInstallPath)) {
-				strlcpy(gamedll->pathname, szInstallPath);
+				Q_strlcpy(gamedll->pathname, szInstallPath);
 			}
 		}
 
@@ -187,7 +187,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 		Q_snprintf(gamedll->real_pathname, sizeof(gamedll->real_pathname), "%s/dlls/%s", gamedll->gamedir, knownfn);
 	}
 	else {
-		strlcpy(gamedll->real_pathname, gamedll->pathname);
+		Q_strlcpy(gamedll->real_pathname, gamedll->pathname);
 	}
 
 	if (override) {
@@ -198,7 +198,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 		META_LOG("Overriding game '%s' with dllfile '%s'", gamedll->name, gamedll->file);
 	}
 	else if (known) {
-		strlcpy(gamedll->desc, known->desc);
+		Q_strlcpy(gamedll->desc, known->desc);
 
 #if !defined(_WIN32)
 		if (!is_file_exists_in_gamedir(gamedll->pathname))

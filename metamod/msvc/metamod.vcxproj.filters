@@ -62,9 +62,6 @@
     <ClCompile Include="..\src\mutil.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\osdep.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\precompiled.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -83,13 +80,22 @@
     <ClCompile Include="..\src\callback_jit.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\metamod_rehlds_api.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\public_amalgamation.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\mdebug.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mem_utils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\sys_module.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\mextdll.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\meta_rehlds_api.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -175,10 +181,19 @@
     <ClInclude Include="..\src\jitasm.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\metamod_rehlds_api.h">
+    <ClInclude Include="..\src\mdebug.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\mdebug.h">
+    <ClInclude Include="..\src\mem_utils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\sys_module.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\mextdll.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\meta_rehlds_api.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

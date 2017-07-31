@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-cvar_t g_meta_version = { "metamod_version", APP_VERSION_STRD, FCVAR_SERVER, 0, nullptr };
+cvar_t g_meta_version = { "metamod_version", APP_VERSION, FCVAR_SERVER, 0, nullptr };
 
 MConfig g_static_config;
 MConfig *g_config = &g_static_config;
@@ -44,21 +44,20 @@ void metamod_startup()
 	Q_snprintf(execFile, sizeof execFile, "%s/%s", g_config->directory(), EXEC_CFG);
 
 	META_CONS("   ");
-	META_CONS("   Metamod-r version %s Copyright (c) 2016-2017 ReHLDS Team (rebuild of original Metamod by Will Day and Jussi Kivilinna)", APP_VERSION_STRD);
+	META_CONS("   Metamod-r version %s Copyright (c) 2016-2017 ReHLDS Team (rebuild of original Metamod by Will Day and Jussi Kivilinna)", APP_VERSION);
 	META_CONS("   Metamod-r comes with ABSOLUTELY NO WARRANTY; for details type `meta gpl'.");
 	META_CONS("   This is free software, and you are welcome to redistribute it");
 	META_CONS("   under certain conditions; type `meta gpl' for details.");
 	META_CONS("   ");
 
-	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
+	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION, META_INTERFACE_VERSION);
 	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ "");
 	META_CONS("Metamod-r from: " APP_COMMIT_URL APP_COMMIT_SHA "");
 
 	// Get gamedir, very early on, because it seems we need it all over the
 	// place here at the start.
 	if (!meta_init_gamedll()) {
-		META_ERROR("Failure to init game DLL; exiting...");
-		do_exit(1);
+		Sys_Error("Failure to init game DLL; exiting...");
 	}
 
 	// Register various console commands and cvars.
@@ -201,8 +200,7 @@ void metamod_startup()
 	g_plugins = new MPluginList(pluginFile);
 
 	if (!meta_load_gamedll()) {
-		META_ERROR("Failure to load game DLL; exiting...");
-		do_exit(1);
+		Sys_Error("Failure to load game DLL; exiting...");
 	}
 
 	if (!g_plugins->load()) {
@@ -211,6 +209,10 @@ void metamod_startup()
 	}
 
 	meta_init_rehlds_api();
+
+	if (!g_meta_extdll.init(&g_engine.sys_module)) {
+		Sys_Error("Failure to init extension DLL; exiting...");
+	}
 
 	// Allow for commands to metamod plugins at startup.  Autoexec.cfg is
 	// read too early, and server.cfg is read too late.
@@ -294,7 +296,7 @@ bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size
 	auto pfnGetFuncs = (getfunc_t)g_GameDLL.sys_module.getsym(ifname);
 
 	if (pfnGetFuncs) {
-		table = (table_t *)Q_calloc(1, table_size);
+		table = (table_t *)calloc(1, table_size);
 
 		int ifvers_gamedll = ifvers_mm;
 
@@ -304,7 +306,7 @@ bool get_function_table(const char* ifname, int ifvers_mm, table_t*& table, size
 		}
 
 		META_ERROR("dll: Failure calling %s in game '%s'", ifname, g_GameDLL.name);
-		Q_free(table);
+		free(table);
 		table = nullptr;
 
 		if (ifvers_gamedll != ifvers_mm) {
@@ -336,7 +338,7 @@ bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, 
 	auto pfnGetFuncs = (getfunc_t)g_GameDLL.sys_module.getsym(ifname);
 
 	if (pfnGetFuncs) {
-		table = (table_t *)Q_calloc(1, table_size);
+		table = (table_t *)calloc(1, table_size);
 
 		if (pfnGetFuncs(table, ifvers_mm)) {
 			META_DEBUG(3, "dll: Game '%s': Found %s", g_GameDLL.name, ifname);
@@ -344,7 +346,7 @@ bool get_function_table_old(const char* ifname, int ifvers_mm, table_t*& table, 
 		}
 
 		META_ERROR("dll: Failure calling %s in game '%s'", ifname, g_GameDLL.name);
-		Q_free(table);
+		free(table);
 		table = nullptr;
 	}
 	else {
@@ -478,8 +480,7 @@ static void meta_apply_fix_data(std::vector<fixdata_t>& data)
 
 		char* ptr = g_jit.find_callback_pattern(pattern, sizeof pattern);
 		if (!ptr) {
-			META_ERROR("Failed to fix callback retaddr.\n Bye bye...\n");
-			do_exit(666);
+			Sys_Error("Failed to fix callback retaddr.\n Bye bye...\n");
 		}
 
 		// FF D1        call    ecx

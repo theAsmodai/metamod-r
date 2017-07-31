@@ -28,104 +28,6 @@ const char* LOCALINFO(char* key)
 	return ENTITY_KEYVALUE(nullptr, key);
 }
 
-static_allocator::static_allocator(memory_protection protection) : m_protection(protection)
-{
-}
-
-char* static_allocator::allocate(const size_t n)
-{
-	if (!m_pages.size() || m_used + n > Pagesize)
-		allocate_page();
-
-	auto ptr = reinterpret_cast<char *>(m_pages.back()) + m_used;
-	m_used += n;
-	return ptr;
-}
-
-char* static_allocator::strdup(const char* string)
-{
-	size_t len = strlen(string) + 1;
-	return (char *)memcpy(allocate(len), string, len);
-}
-
-void static_allocator::deallocate_all()
-{
-	for (auto page : m_pages)
-#ifdef WIN32
-		VirtualFree(page, 0, MEM_RELEASE);
-#else
-		munmap(page, Pagesize);
-#endif
-
-	m_pages.clear();
-}
-
-size_t static_allocator::memory_used() const
-{
-	return (m_pages.size() - 1) * Pagesize + m_used;
-}
-
-bool static_allocator::contain(uint32 addr)
-{
-	for (auto p : m_pages) {
-		if (uint32(p) <= addr && addr < uint32(p) + Pagesize)
-			return true;
-	}
-	return false;
-}
-
-char* static_allocator::find_pattern(char* pattern, size_t len)
-{
-	for (auto p : m_pages) {
-		for (char* c = (char *)p, *e = c + Pagesize - len; c < e; c++) {
-			if (mem_compare(c, pattern, len))
-				return c;
-		}
-	}
-	return nullptr;
-}
-
-void static_allocator::allocate_page()
-{
-#ifdef WIN32
-	auto page = VirtualAlloc(nullptr, Pagesize, MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-#else
-	auto page = mmap(nullptr, Pagesize, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, 0, 0);
-#endif
-
-	m_used = 0;
-	m_pages.push_back(page);
-}
-
-#ifdef _WIN32
-// Since windows doesn't provide a verison of strtok_r(), we include one
-// here.  This may or may not operate exactly like strtok_r(), but does
-// what we need it it do.
-char* mm_strtok_r(char* s, const char* delim, char** ptrptr)
-{
-	char* begin = nullptr;
-	char* end = nullptr;
-	char* rest = nullptr;
-	if (s)
-		begin = s;
-	else
-		begin = *ptrptr;
-	if (!begin)
-		return nullptr;
-
-	end = strpbrk(begin, delim);
-	if (end) {
-		*end = '\0';
-		rest = end + 1;
-		*ptrptr = rest + strspn(rest, delim);
-	}
-	else
-		*ptrptr = nullptr;
-
-	return begin;
-}
-#endif // _WIN32
-
 char* trimbuf(char* str)
 {
 	char* ibuf;
@@ -212,12 +114,6 @@ char* realpath(const char* file_name, char* resolved_name)
 }
 #endif // _WIN32
 
-void __declspec(noreturn) do_exit(int exitval)
-{
-	//Allahu Akbar!!
-	*((int *)nullptr) = 0;
-}
-
 // Checks for a non-empty file, relative to the gamedir if necessary.
 // Formerly used LOAD_FILE_FOR_ME, which provided a simple way to check for
 // a file under the gamedir, but which would _also_ look in the sibling
@@ -286,7 +182,7 @@ char* full_gamedir_path(const char* path, char* fullpath)
 
 	// Remove relative path components, if possible.
 	if (!realpath(buf, fullpath)) {
-		META_DEBUG(4, "Unable to get realpath for '%s': %s", buf, str_os_error());
+		META_DEBUG(4, "Unable to get realpath for '%s': %s", buf,  strerror(errno));
 		Q_strncpy(fullpath, path, sizeof fullpath - 1);
 		fullpath[sizeof fullpath - 1] = '\0';
 	}
@@ -294,16 +190,6 @@ char* full_gamedir_path(const char* path, char* fullpath)
 	// Replace backslashes, etc.
 	normalize_path(fullpath);
 	return fullpath;
-}
-
-bool mem_compare(const char* addr, const char* pattern, size_t len)
-{
-	for (auto c = pattern, pattern_end = pattern + len; c < pattern_end; ++c, ++addr) {
-		if (*c == *addr || *c == '\x2A')
-			continue;
-		return false;
-	}
-	return true;
 }
 
 void NORETURN Sys_Error(const char *error, ...)
@@ -316,8 +202,16 @@ void NORETURN Sys_Error(const char *error, ...)
 	va_end(argptr);
 
 	META_CONS("FATAL ERROR (shutting down): %s\n", text);
+	META_ERROR(text);
 
-	int *null = 0;
+#ifdef _WIN32
+	MessageBox(GetForegroundWindow(), text, "Fatal error - Metamod", MB_ICONERROR | MB_OK);
+#endif // _WIN32
+
+	// Allow chance to read the message, before any window closes.
+	sleep(3);
+
+	int *null = nullptr;
 	*null = 0;
 	exit(-1);
 }

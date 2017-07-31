@@ -629,7 +629,7 @@ template<typename T>
 void free_table(T& table)
 {
 	if (table) {
-		Q_free(table);
+		free(table);
 		table = nullptr;
 	}
 }
@@ -861,7 +861,7 @@ bool get_function_table_from_plugin(const char* pl_desc, int ifvers_mm, getter_t
 
 	if (getter) {
 		if (!table)
-			table = (table_t *)Q_calloc(1, table_size);
+			table = (table_t *)calloc(1, table_size);
 		if (getter(table, &ifvers_pl)) {
 			META_DEBUG(3, "dll: Plugin '%s': Found %s", pl_desc, getter_name);
 			return true;
@@ -874,7 +874,7 @@ bool get_function_table_from_plugin(const char* pl_desc, int ifvers_mm, getter_t
 	else {
 		META_DEBUG(5, "dll: Plugin '%s': No %s", pl_desc, getter_name);
 		if (table)
-			Q_free(table);
+			free(table);
 		table = nullptr;
 	}
 
@@ -886,7 +886,7 @@ bool get_function_table_from_plugin_old(const char* pl_desc, int ifvers_mm, gett
 {
 	if (getter) {
 		if (!table)
-			table = (table_t *)Q_calloc(1, table_size);
+			table = (table_t *)calloc(1, table_size);
 		if (getter(table, ifvers_mm)) {
 			META_DEBUG(3, "dll: Plugin '%s': Found %s", pl_desc, getter_name);
 			return true;
@@ -897,7 +897,7 @@ bool get_function_table_from_plugin_old(const char* pl_desc, int ifvers_mm, gett
 	else {
 		META_DEBUG(5, "dll: Plugin '%s': No %s", pl_desc, getter_name);
 		if (table)
-			Q_free(table);
+			free(table);
 		table = nullptr;
 	}
 
@@ -924,7 +924,7 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 	// Make copy of gameDLL's function tables for each plugin, so we don't
 	// risk the plugins screwing with the tables everyone uses.
 	if (g_GameDLL.funcs.dllapi_table && !m_gamedll_funcs.dllapi_table) {
-		m_gamedll_funcs.dllapi_table = (DLL_FUNCTIONS *)Q_malloc(sizeof(DLL_FUNCTIONS));
+		m_gamedll_funcs.dllapi_table = (DLL_FUNCTIONS *)malloc(sizeof(DLL_FUNCTIONS));
 		if (!m_gamedll_funcs.dllapi_table) {
 			META_ERROR("dll: Failed attach plugin '%s': Failed malloc() for dllapi_table");
 			return false;
@@ -932,7 +932,7 @@ bool MPlugin::attach(PLUG_LOADTIME now)
 		Q_memcpy(m_gamedll_funcs.dllapi_table, g_GameDLL.funcs.dllapi_table, sizeof(DLL_FUNCTIONS));
 	}
 	if (g_GameDLL.funcs.newapi_table && !m_gamedll_funcs.newapi_table) {
-		m_gamedll_funcs.newapi_table = (NEW_DLL_FUNCTIONS *)Q_malloc(sizeof(NEW_DLL_FUNCTIONS));
+		m_gamedll_funcs.newapi_table = (NEW_DLL_FUNCTIONS *)malloc(sizeof(NEW_DLL_FUNCTIONS));
 		if (!m_gamedll_funcs.newapi_table) {
 			META_ERROR("dll: Failed attach plugin '%s': Failed malloc() for newapi_table");
 			return false;

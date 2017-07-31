@@ -114,7 +114,7 @@ void cmd_meta_version()
 		return;
 	}
 
-	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
+	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION, META_INTERFACE_VERSION);
 	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ "");
 	META_CONS("Metamod-r from: " APP_COMMIT_URL APP_COMMIT_SHA "");
 }
@@ -127,7 +127,7 @@ void client_meta_version(edict_t *pEntity)
 		return;
 	}
 
-	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
+	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION, META_INTERFACE_VERSION);
 	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ "");
 	META_CONS("Metamod-r from: " APP_COMMIT_URL APP_COMMIT_SHA "");
 }
@@ -336,7 +336,7 @@ void cmd_doplug(PLUG_CMD pcmd)
 			}
 
 			// Allow chance to read the message, before any window closes.
-			do_exit(1);
+			sleep(3);
 		}
 
 		if (findp && !unique) {
