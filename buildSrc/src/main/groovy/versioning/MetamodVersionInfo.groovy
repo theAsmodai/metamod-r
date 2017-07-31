@@ -3,40 +3,56 @@ package versioning
 import groovy.transform.CompileStatic
 import groovy.transform.ToString
 import groovy.transform.TypeChecked
+import org.joda.time.format.DateTimeFormat
 import org.joda.time.DateTime
 
 @CompileStatic @TypeChecked
 @ToString(includeNames = true)
 class MetamodVersionInfo {
-	int majorVersion
-	int minorVersion
+	Integer majorVersion
+	Integer minorVersion
 	Integer maintenanceVersion
-	String specialVersion
-	Integer countCommit
-	DateTime lastCommitDate
-	String commitID
-	String authorCommit
-	String urlCommits
+	String suffix
 
-	String format(String versionSeparator, String suffixSeparator, boolean includeSuffix) {
+	boolean localChanges
+	DateTime commitDate
+	String commitSHA
+	String commitURL
+	Integer commitCount
+
+	String asMavenVersion(boolean extra = true, String separator = ".") {
 		StringBuilder sb = new StringBuilder()
-		sb.append(majorVersion).append(versionSeparator).append(minorVersion)
+		sb.append(majorVersion).append(separator).append(minorVersion);
 		if (maintenanceVersion != null) {
-			sb.append(versionSeparator).append(maintenanceVersion)
+			sb.append(separator).append(maintenanceVersion);
 		}
 
-		if (specialVersion && includeSuffix) {
-			sb.append(suffixSeparator).append(specialVersion)
+		if (commitCount != null) {
+			sb.append(separator).append(commitCount)
+		}
+
+		if (extra && suffix) {
+			sb.append('-' + suffix)
+		}
+
+		// do mark for this build like a modified version
+		if (extra && localChanges) {
+			sb.append('+m');
 		}
 
 		return sb.toString()
 	}
-	String asVersion() {
-		StringBuilder sb = new StringBuilder()
-		sb.append(majorVersion).append('.' + minorVersion).append('.' + countCommit);
-		return sb;
+	String asCommitDate(String pattern = null) {
+		if (pattern == null) {
+			pattern = "MMM  d yyyy";
+			if (commitDate.getDayOfMonth() >= 10) {
+				pattern = "MMM d yyyy";
+			}
+		}
+
+		return DateTimeFormat.forPattern(pattern).withLocale(Locale.ENGLISH).print(commitDate);
 	}
-	String asMavenVersion() {
-		format('.', '-', true)
+	String asCommitTime() {
+		return DateTimeFormat.forPattern('HH:mm:ss').withLocale(Locale.ENGLISH).print(commitDate);
 	}
 }

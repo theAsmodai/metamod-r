@@ -171,20 +171,26 @@ task generateAppVersion {
 	def tplFile = project.file('version/appversion.vm')
 	def renderedFile = project.file('version/appversion.h')
 
+	// check to up-to-date
 	inputs.file tplFile
 	inputs.file project.file('gradle.properties')
 	outputs.file renderedFile
-	inputs.property('version', verInfo.asMavenVersion())
-	inputs.property('lastCommitDate', verInfo.lastCommitDate.toString())
 
-	println "##teamcity[buildNumber '" + verInfo.asVersion() + "']";
+	// this will ensure that this task is redone when the versions change
+	inputs.property('version', rootProject.version)
+	inputs.property('commitDate', verInfo.asCommitDate())
+
+	println "##teamcity[buildNumber '" + verInfo.asMavenVersion(false) + "']";
 
 	doLast {
-		def content = VelocityUtils.renderTemplate(tplFile, verInfo)
+		def templateCtx = [
+			verInfo: verInfo
+		]
 
+		def content = VelocityUtils.renderTemplate(tplFile, templateCtx)
 		renderedFile.delete()
 		renderedFile.write(content, 'utf-8')
 
-		println 'The current Metamod version is ' + verInfo.asVersion().toString() + ', maven version is ' + verInfo.asMavenVersion().toString() + ', commit id: ' + verInfo.commitID.toString() + ', commit author: ' + verInfo.authorCommit.toString() + ', url: (' + verInfo.urlCommits.toString() + ')';
+		println 'The current Metamod maven version is ' + rootProject.version + ', url: (' + verInfo.commitURL + '' + verInfo.commitSHA + ')';
 	}
 }

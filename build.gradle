@@ -25,27 +25,27 @@ if (gitInfo && gitInfo.tag && gitInfo.tag[0] == 'v') {
 		majorVersion: m.group(1) as int,
 		minorVersion: m.group(2) as int,
 		maintenanceVersion: m.group(4) ? (m.group(4) as int) : null,
-		countCommit: gitInfo.countCommit,
-		lastCommitDate: gitInfo.lastCommitDate,
-		commitID: gitInfo.commitID,
-		authorCommit: gitInfo.authorCommit,
-		urlCommits: gitInfo.urlCommits
+		localChanges: gitInfo.localChanges,
+		commitDate: gitInfo.commitDate,
+		commitSHA: gitInfo.commitSHA,
+		commitURL: gitInfo.commitURL
 	)
 } else {
 	versionInfo = new MetamodVersionInfo(
 		majorVersion: project.majorVersion as int,
 		minorVersion: project.minorVersion as int,
-		specialVersion: gitInfo ? project.specialVersion : "SNAPSHOT",
-		countCommit: gitInfo ? gitInfo.countCommit : 0,
-		lastCommitDate: gitInfo ? gitInfo.lastCommitDate : new DateTime(),
-		commitID: gitInfo ? gitInfo.commitID : "",
-		authorCommit: gitInfo ? gitInfo.authorCommit : "",
-		urlCommits: gitInfo ? gitInfo.urlCommits : ""
+		maintenanceVersion: project.maintenanceVersion as int,
+		suffix: '',
+		localChanges: gitInfo ? gitInfo.localChanges : true,
+		commitDate: gitInfo ? gitInfo.commitDate : new DateTime(),
+		commitSHA: gitInfo ? gitInfo.commitSHA : "",
+		commitURL: gitInfo ? gitInfo.commitURL : "",
+		commitCount: gitInfo ? (gitInfo.commitCount as int) : null
 	)
 }
 
 project.ext.metamodVersionInfo = versionInfo
-project.version = versionInfo.asVersion()
+project.version = versionInfo.asMavenVersion()
 
 apply from: 'publish.gradle'
 

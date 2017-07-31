@@ -28,18 +28,18 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#include ""winres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
@@ -72,14 +72,14 @@ BEGIN
 	BEGIN
 		BLOCK "041904b0"
 		BEGIN
-			VALUE "CompanyName", ""
-			VALUE "FileDescription", "Metamod Counter-Strike GameMod DLL"
-			VALUE "FileVersion", APP_VERSION_STRD_RC
-			VALUE "InternalName", "Metamod"
-			VALUE "LegalCopyright", ""
+			VALUE "Comments", "Metamod-r is fully reworked fork of original Metamod-p by Jussi Kivilinna. Metamod allows running multiple mod-like plugin DLLs, to add functionality or change the behavior of the running HLDS game mod."
+			VALUE "FileDescription", "Metamod-r Half-Life MOD DLL"
+			VALUE "FileVersion", APP_VERSION_STRD
+			VALUE "InternalName", "Metamod-r"
+			VALUE "LegalCopyright", "Copyright (c) 2017"
 			VALUE "OriginalFilename", "metamod_mm.dll"
 			VALUE "ProductName", "Metamod"
-			VALUE "ProductVersion", APP_VERSION_STRD_RC
+			VALUE "ProductVersion", APP_VERSION_STRD
 			#if APP_VERSION_FLAGS != 0x0L
 				VALUE "SpecialBuild", APP_VERSION_SPECIALBUILD
 			#endif
@@ -87,7 +87,7 @@ BEGIN
 	END
 	BLOCK "VarFileInfo"
 	BEGIN
-		VALUE "Translation", 0x419, 1200
+		VALUE "Translation", 0x0, 1200
 	END
 END
 
@@ -105,4 +105,3 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-

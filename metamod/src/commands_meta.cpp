@@ -115,8 +115,8 @@ void cmd_meta_version()
 	}
 
 	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
-	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
-	META_CONS("Metamod-r from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
+	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ "");
+	META_CONS("Metamod-r from: " APP_COMMIT_URL APP_COMMIT_SHA "");
 }
 
 // "meta version" client command.
@@ -128,8 +128,8 @@ void client_meta_version(edict_t *pEntity)
 	}
 
 	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
-	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
-	META_CONS("Metamod-r from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
+	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ "");
+	META_CONS("Metamod-r from: " APP_COMMIT_URL APP_COMMIT_SHA "");
 }
 
 // "meta gpl" console command.

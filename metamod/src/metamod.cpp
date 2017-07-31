@@ -44,15 +44,15 @@ void metamod_startup()
 	Q_snprintf(execFile, sizeof execFile, "%s/%s", g_config->directory(), EXEC_CFG);
 
 	META_CONS("   ");
-	META_CONS("   Metamod-r version %s Copyright (c) 2016-2017 ReHlds Team (rebuild of original Metamod by Will Day)", APP_VERSION_STRD);
+	META_CONS("   Metamod-r version %s Copyright (c) 2016-2017 ReHLDS Team (rebuild of original Metamod by Will Day and Jussi Kivilinna)", APP_VERSION_STRD);
 	META_CONS("   Metamod-r comes with ABSOLUTELY NO WARRANTY; for details type `meta gpl'.");
 	META_CONS("   This is free software, and you are welcome to redistribute it");
 	META_CONS("   under certain conditions; type `meta gpl' for details.");
 	META_CONS("   ");
 
 	META_CONS("Metamod-r v%s, API (%s)", APP_VERSION_STRD, META_INTERFACE_VERSION);
-	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ " (" APP_VERSION_STRD ")");
-	META_CONS("Metamod-r from: " APP_COMMITS_URL APP_COMMIT_ID " " APP_COMMIT_AUTHOR "");
+	META_CONS("Metamod-r build: " __TIME__ " " __DATE__ "");
+	META_CONS("Metamod-r from: " APP_COMMIT_URL APP_COMMIT_SHA "");
 
 	// Get gamedir, very early on, because it seems we need it all over the
 	// place here at the start.
