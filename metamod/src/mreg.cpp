@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-MRegCmd::MRegCmd(const char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin->index()), m_status(RG_VALID)
+MRegCmd::MRegCmd(const char* cmd_name, REG_CMD_FN cmd_handler, MPlugin* cmd_plugin) : m_pfunction(cmd_handler), m_plugid(cmd_plugin ? cmd_plugin->index() : 0), m_status(RG_VALID)
 {
 	m_name = Q_strdup(cmd_name);
 }

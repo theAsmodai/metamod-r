@@ -31,8 +31,7 @@ void EXT_FUNC meta_AddServerCommand(const char* cmd_name, void (*function)())
 	META_DEBUG(4, "called: meta_AddServerCommand; cmd_name=%s, function=%d, plugin=%s", cmd_name, function, plug ? plug->file() : "unknown");
 
 	if (!plug) {
-		META_ERROR("Failed to find memloc for regcmd '%s'", cmd_name);
-		return;
+		META_WARNING("Failed to find memloc for regcmd '%s'", cmd_name);
 	}
 
 	// See if this command was previously registered, ie a "reloaded" plugin.
@@ -64,13 +63,11 @@ void EXT_FUNC meta_CVarRegister(cvar_t* pCvar)
 
 	// try to find which plugin is registering this cvar
 	if (!plug) {
-		META_ERROR("Failed to find memloc for regcvar '%s'", pCvar->name);
-		return;
+		META_WARNING("Failed to find memloc for regcvar '%s'", pCvar->name);
 	}
 
 	// See if this cvar was previously registered, ie a "reloaded" plugin.
 	auto reg = g_regCvars->find(pCvar->name);
-
 	if (!reg) {
 		reg = g_regCvars->add(pCvar, plug);
 		CVAR_REGISTER(reg->getcvar());
@@ -89,7 +86,6 @@ void EXT_FUNC meta_CVarRegister(cvar_t* pCvar)
 // commands) nor any useful actions to perform upon plugin unload (like the
 // commands and cvars).  This merely provides differently located storage
 // for the string.
-
 int EXT_FUNC meta_RegUserMsg(const char* pszName, int iSize)
 {
 	char* cp = Q_strdup(pszName);

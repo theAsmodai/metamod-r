@@ -31,7 +31,14 @@ char *CSysModule::find_pattern(char *pos, int range, const char *pattern, size_t
 module_handle_t CSysModule::load(void *addr)
 {
 	MEMORY_BASIC_INFORMATION mem;
-	VirtualQuery(addr, &mem, sizeof(mem));
+	if (!VirtualQuery(addr, &mem, sizeof(mem)))
+		return INVALID_HANDLE;
+
+	if (mem.State != MEM_COMMIT)
+		return INVALID_HANDLE;
+
+	if (!mem.AllocationBase)
+		return INVALID_HANDLE;
 
 	IMAGE_DOS_HEADER *dos = (IMAGE_DOS_HEADER *)mem.AllocationBase;
 	IMAGE_NT_HEADERS *pe = (IMAGE_NT_HEADERS *)((uintptr_t)dos + (uintptr_t)dos->e_lfanew);
@@ -45,6 +52,16 @@ module_handle_t CSysModule::load(void *addr)
 
 	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(addr), &m_handle);
 	return m_handle;
+}
+
+module_handle_t CSysModule::find(void *addr)
+{
+	module_handle_t hHandle = INVALID_HANDLE;
+	if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(addr), &hHandle)) {
+		return INVALID_HANDLE;
+	}
+
+	return hHandle;
 }
 
 module_handle_t CSysModule::load(const char *filepath)
@@ -119,6 +136,21 @@ module_handle_t CSysModule::load(void *addr)
 
 	m_handle = dlopen(dlinfo.dli_fname, RTLD_NOW | RTLD_NOLOAD);
 	return m_handle;
+}
+
+module_handle_t CSysModule::find(void *addr)
+{
+	Dl_info dlinfo;
+	if ((!dladdr(addr, &dlinfo) && !dlinfo.dli_fbase) || !dlinfo.dli_fname) {
+		return false;
+	}
+
+	module_handle_t hHandle = INVALID_HANDLE;
+	if (!(hHandle = dlopen(dlinfo.dli_fname, RTLD_NOW | RTLD_NOLOAD))) {
+		return INVALID_HANDLE;
+	}
+
+	return hHandle;
 }
 
 module_handle_t CSysModule::load(const char *filepath)

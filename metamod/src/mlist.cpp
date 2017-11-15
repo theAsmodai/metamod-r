@@ -86,9 +86,9 @@ MPlugin* MPluginList::find(const char* findpath)
 // Find a plugin that uses the given memory location.
 MPlugin* MPluginList::find_memloc(void* memptr)
 {
-	for (auto p : m_plugins) {
-		if (p->m_sys_module.load(memptr))
-			return p;
+	module_handle_t ptr = CSysModule::find(memptr);
+	if (ptr != CSysModule::INVALID_HANDLE) {
+		return find(ptr);
 	}
 
 	return nullptr;
