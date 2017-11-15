@@ -87,7 +87,7 @@ MPlugin* MPluginList::find(const char* findpath)
 MPlugin* MPluginList::find_memloc(void* memptr)
 {
 	for (auto p : m_plugins) {
-		if (p->m_sys_module.contain(memptr))
+		if (p->m_sys_module.load(memptr))
 			return p;
 	}
 
@@ -136,8 +136,7 @@ MPlugin* MPluginList::find_match(MPlugin* pmatch)
 
 	for (auto p : m_plugins) {
 		auto plug = p;
-
-		if (pmatch->platform_match(plug)) {
+		if (plug->platform_match(pmatch)) {
 			return plug;
 		}
 	}
@@ -188,7 +187,6 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 	}
 
 	META_DEBUG(1, "Loaded plugin '%s' successfully", pl_added->m_desc);
-
 	return pl_added;
 }
 
@@ -245,10 +243,8 @@ bool MPluginList::ini_startup()
 	}
 
 	META_LOG("ini: Begin reading plugins list: %s", m_inifile);
-	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++) {
-		auto plug = new MPlugin();
-		memset(plug, 0, sizeof(MPlugin));
-
+	for (n = 0 , ln = 1; !feof(fp) && fgets(line, sizeof line, fp); ln++)
+	{
 		// Remove line terminations.
 		char* cp;
 		if ((cp = Q_strrchr(line, '\r')))
@@ -256,6 +252,20 @@ bool MPluginList::ini_startup()
 
 		if ((cp = Q_strrchr(line, '\n')))
 			*cp = '\0';
+
+		trimbuf(line);
+
+		// skip empty lines
+		if (line[0] == '\0') {
+			continue;
+		}
+
+		// skip comments
+		if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2)) {
+			continue;
+		}
+
+		auto plug = new MPlugin();
 
 		// Parse directly into next entry in array
 		if (!plug->ini_parseline(line)) {
@@ -267,12 +277,11 @@ bool MPluginList::ini_startup()
 		if (find(plug->m_pathname)) {
 			// Should we check platform specific level here?
 			META_INFO("ini: Skipping duplicate plugin, line %d of %s: %s", ln, m_inifile, plug->m_pathname);
-			delete plug; 
+			delete plug;
 			continue;
 		}
 
-		// Check for a matching platform with different platform specifics
-		// level.
+		// Check for a matching platform with different platform specifics level.
 		auto pmatch = find_match(plug); // TODO: check it
 		if (pmatch) {
 			META_DEBUG(1, "ini: Plugin in line %d overrides existing plugin", ln);
@@ -462,7 +471,7 @@ bool MPluginList::load()
 		if (p->load(PT_STARTUP, delayed))
 			n++;
 		else
-		// all plugins should be loadable at startup->..
+			// all plugins should be loadable at startup->..
 			META_ERROR("dll: Failed to load plugin '%s'", p->m_file);
 	}
 

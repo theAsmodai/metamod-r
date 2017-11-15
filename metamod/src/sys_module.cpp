@@ -118,6 +118,7 @@ module_handle_t CSysModule::load(void *addr)
 	m_size = (size_t)dlsize(dlinfo.dli_fbase);
 
 	m_handle = dlopen(dlinfo.dli_fname, RTLD_NOW | RTLD_NOLOAD);
+	return m_handle;
 }
 
 module_handle_t CSysModule::load(const char *filepath)
@@ -192,7 +193,7 @@ size_t CSysModule::getsize() const
 
 bool CSysModule::contain(void *addr) const
 {
-	return addr && uintptr_t(addr) > m_base && uintptr_t(addr) < m_base + m_size;
+	return addr && uintptr_t(addr) >= m_base && uintptr_t(addr) < m_base + m_size;
 }
 
 const char *CSysModule::getloaderror()

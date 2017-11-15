@@ -32,6 +32,7 @@ void EXT_FUNC meta_AddServerCommand(const char* cmd_name, void (*function)())
 
 	if (!plug) {
 		META_ERROR("Failed to find memloc for regcmd '%s'", cmd_name);
+		return;
 	}
 
 	// See if this command was previously registered, ie a "reloaded" plugin.
@@ -63,7 +64,8 @@ void EXT_FUNC meta_CVarRegister(cvar_t* pCvar)
 
 	// try to find which plugin is registering this cvar
 	if (!plug) {
-		META_DEBUG(1, "Failed to find memloc for regcvar '%s'", pCvar->name);
+		META_ERROR("Failed to find memloc for regcvar '%s'", pCvar->name);
+		return;
 	}
 
 	// See if this cvar was previously registered, ie a "reloaded" plugin.

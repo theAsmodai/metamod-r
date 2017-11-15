@@ -12,6 +12,41 @@ const char *MPlugin::s_rPrintLoadTime[][4] = {
 // ReSharper disable once CppPossiblyUninitializedMember
 MPlugin::MPlugin()
 {
+	m_status = PL_EMPTY;
+	m_action = PA_NULL;
+	m_source = PS_INI;
+	m_platform = SP_WINDOWS;
+	m_index = 0;
+
+	m_info = nullptr;
+	m_file = nullptr;
+
+	m_time_loaded = 0;
+	m_source_plugin_index = 0;
+	m_unloader_index = 0;
+	m_is_unloader = false;
+
+	m_dllapi_table = nullptr;
+	m_dllapi_post_table = nullptr;
+
+	m_newapi_table = nullptr;
+	m_newapi_post_table = nullptr;
+
+	m_engine_table = nullptr;
+	m_engine_post_table = nullptr;
+
+	m_gamedll_funcs.dllapi_table = nullptr;
+	m_gamedll_funcs.newapi_table = nullptr;
+
+	Q_memset(m_desc, 0, sizeof(m_desc));
+	Q_memset(m_filename, 0, sizeof(m_filename));
+	Q_memset(m_pathname, 0, sizeof(m_pathname));
+	Q_memset(&m_mutil_funcs, 0, sizeof(m_mutil_funcs));
+}
+
+MPlugin::~MPlugin()
+{
+	;
 }
 
 // Parse a line from plugins.ini into a plugin.
@@ -21,18 +56,6 @@ bool MPlugin::ini_parseline(char *line)
 	strncpy(buf, line, sizeof buf - 1);
 	buf[sizeof buf - 1] = '\0';
 
-	trimbuf(buf);
-
-	// skip empty lines
-	if (buf[0] == '\0') {
-		return false;
-	}
-
-	// skip comments
-	if (buf[0] == '#' || buf[0] == ';' || !Q_strncmp(buf, "//", 2)) {
-		return false;
-	}
-
 	// grab platform ("win32" or "linux")
 	char* ptr_token;
 	char* token = strtok_r(buf, " \t", &ptr_token);
@@ -40,10 +63,16 @@ bool MPlugin::ini_parseline(char *line)
 		return false;
 	}
 
-	if (!strcmp(token, "linux"))
+#ifdef _WIN32
+	if (!Q_strcmp(token, "win32"))
+		m_platform = SP_WINDOWS;
+	else
+#else
+	if (!Q_strcmp(token, "linux"))
 		m_platform = SP_LINUX;
 	else
-		m_platform = SP_WINDOWS;
+#endif
+		return false;
 
 	// grab filename
 	token = strtok_r(nullptr, " \t\r\n", &ptr_token);
