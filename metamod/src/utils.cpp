@@ -132,11 +132,11 @@ bool is_file_exists_in_gamedir(const char* path)
 		return true;
 
 	if (is_abs_path(path)) {
-		Q_strncpy(buf, path, sizeof buf);
-		buf[sizeof buf - 1] = '\0';
+		Q_strlcpy(buf, path);
 	}
-	else
-		snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
+	else {
+		Q_snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
+	}
 
 	struct stat64 st;
 	int ret = stat64(buf, &st);
@@ -175,8 +175,7 @@ char* full_gamedir_path(const char* path, char* fullpath)
 
 	// Build pathname from filename, plus gamedir if relative path.
 	if (is_abs_path(path)) {
-		Q_strncpy(buf, path, sizeof buf - 1);
-		buf[sizeof buf - 1] = '\0';
+		Q_strlcpy(buf, path);
 	}
 	else snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
 

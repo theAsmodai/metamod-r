@@ -79,16 +79,15 @@ void metamod_startup()
 		META_LOG("Configfile specified via localinfo: %s", cp);
 
 		if (is_file_exists_in_gamedir(cp)) {
-			Q_strncpy(configFile, cp, sizeof configFile - 1);
-			configFile[sizeof configFile - 1] = '\0';
+			Q_strlcpy(configFile, cp);
 		}
-		else
+		else {
 			META_ERROR("Empty/missing config.ini file: %s; falling back to %s", cp, configFile);
+		}
 	}
 
 	if (!is_file_exists_in_gamedir(configFile)) {
-		Q_strncpy(configFile, g_config->directory(), sizeof configFile - 1);
-		configFile[sizeof configFile - 1] = '\0';
+		Q_strlcpy(configFile, g_config->directory());
 
 		// Get out of sub directory and check
 		char *dir = Q_strrchr(configFile, '/');
@@ -182,8 +181,7 @@ void metamod_startup()
 
 	// Load plugins file
 	if (!is_file_exists_in_gamedir(pluginFile)) {
-		Q_strncpy(pluginFile, g_config->directory(), sizeof pluginFile - 1);
-		pluginFile[sizeof pluginFile - 1] = '\0';
+		Q_strlcpy(pluginFile, g_config->directory());
 
 		// Get out of sub directory and check
 		char *dir = Q_strrchr(pluginFile, '/');
@@ -221,8 +219,7 @@ void metamod_startup()
 	// avoid confusing users with "couldn't exec exec.cfg" console
 	// messages.
 	if (g_config->m_exec_cfg) {
-		Q_strncpy(execFile, g_config->m_exec_cfg, sizeof execFile - 1);
-		execFile[sizeof execFile - 1] = '\0';
+		Q_strlcpy(execFile, g_config->m_exec_cfg);
 	}
 
 	if (is_file_exists_in_gamedir(execFile)) {
@@ -262,13 +259,12 @@ bool meta_init_gamedll()
 		// Old style; GET_GAME_DIR returned full pathname.  Copy this into
 		// our gamedir, and truncate to get the game name.
 		// (note check for both linux and win32 full pathname.)
-		Q_strncpy(g_GameDLL.gamedir, gamedir, sizeof g_GameDLL.gamedir - 1);
-		g_GameDLL.gamedir[sizeof g_GameDLL.gamedir - 1] = '\0';
+		Q_strlcpy(g_GameDLL.gamedir, gamedir);
 
-		char* cp = Q_strrchr(gamedir, '/') + 1;
-
-		Q_strncpy(g_GameDLL.name, cp, sizeof g_GameDLL.name - 1);
-		g_GameDLL.name[sizeof g_GameDLL.name - 1] = '\0';
+		char *cp = Q_strrchr(gamedir, '/') + 1;
+		if (cp) {
+			Q_strlcpy(g_GameDLL.name, cp);
+		}
 	}
 	else {
 		// New style; GET_GAME_DIR returned game name.  Copy this into our
@@ -280,8 +276,7 @@ bool meta_init_gamedll()
 		}
 
 		Q_snprintf(g_GameDLL.gamedir, sizeof g_GameDLL.gamedir, "%s/%s", buf, gamedir);
-		Q_strncpy(g_GameDLL.name, gamedir, sizeof g_GameDLL.name - 1);
-		g_GameDLL.name[sizeof g_GameDLL.name - 1] = '\0';
+		Q_strlcpy(g_GameDLL.name, gamedir);
 	}
 
 	META_DEBUG(3, "Game: %s", g_GameDLL.name);

@@ -177,8 +177,7 @@ void MConfig::set_directory()
 #else
 	Dl_info addrInfo;
 	if (dladdr((void *)GiveFnptrsToDll, &addrInfo)) {
-		Q_strncpy(m_directory, addrInfo.dli_fname, sizeof m_directory - 1);
-		m_directory[sizeof m_directory - 1] = '\0';
+		Q_strlcpy(m_directory, addrInfo.dli_fname);
 	}
 #endif
 

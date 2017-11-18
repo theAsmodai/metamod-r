@@ -246,8 +246,7 @@ const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 		return nullptr;
 	}
 
-	Q_strncpy(buf, plug->pathname(), sizeof buf - 1);
-	buf[sizeof buf - 1] = '\0';
+	Q_strlcpy(buf, plug->pathname());
 	return buf;
 }
 
@@ -281,8 +280,7 @@ const char* EXT_FUNC mutil_GetGameInfo(plid_t plid, ginfo_t type)
 		return nullptr;
 	}
 
-	Q_strncpy(buf, cp, sizeof buf - 1);
-	buf[sizeof buf - 1] = '\0';
+	Q_strlcpy(buf, cp);
 	return buf;
 }
 

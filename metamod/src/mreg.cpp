@@ -110,12 +110,10 @@ void MRegCmdList::show() const
 		if (reg->m_status == RG_VALID) {
 			auto iplug = g_plugins->find(reg->m_plugid);
 
-			Q_strncpy(bplug, iplug ? iplug->description() : "(unknown)", sizeof bplug - 1);
-			bplug[sizeof bplug - 1] = '\0';
+			Q_strlcpy(bplug, iplug ? iplug->description() : "(unknown)");
 		}
 		else {
-			Q_strncpy(bplug, "(unloaded)", sizeof bplug - 1);
-			bplug[sizeof bplug - 1] = '\0';
+			Q_strlcpy(bplug, "(unloaded)");
 		}
 
 		META_CONS(" [%*d] %-*s  %-s", WIDTH_MAX_REG, ++total_count, sizeof bplug - 1, bplug, reg->m_name);
@@ -219,16 +217,13 @@ void MRegCvarList::show() const
 	for (auto reg : m_list) {
 		if (reg->m_status == RG_VALID) {
 			auto plug = g_plugins->find(reg->m_plugid);
-			Q_strncpy(bplug, plug ? plug->description() : "(unknown)", sizeof bplug - 1);
-			bplug[sizeof bplug - 1] = '\0';
+			Q_strlcpy(bplug, plug ? plug->description() : "(unknown)");
 		}
 		else {
-			Q_strncpy(bplug, "(unloaded)", sizeof bplug - 1);
-			bplug[sizeof bplug - 1] = '\0';
+			Q_strlcpy(bplug, "(unloaded)");
 		}
 
-		Q_strncpy(bname, reg->m_cvar->name, sizeof bname - 1);
-		bname[sizeof bname - 1] = '\0';
+		Q_strlcpy(bname, reg->m_cvar->name);
 		Q_snprintf(bval, sizeof bval, "%f", reg->m_cvar->value);
 		META_CONS(" [%*d] %-*s  %-*s  %*s  %s", WIDTH_MAX_REG, ++total_count, sizeof bplug - 1, bplug, sizeof bname - 1, bname, sizeof bval - 1, bval, reg->m_cvar->string);
 
@@ -251,8 +246,7 @@ void MRegCvarList::show(int plugin_id) const
 		if (reg->m_plugid != plugin_id)
 			continue;
 
-		Q_strncpy(bname, reg->m_cvar->name, sizeof bname - 1);
-		bname[sizeof bname - 1] = '\0';
+		Q_strlcpy(bname, reg->m_cvar->name);
 		Q_snprintf(bval, sizeof bval, "%f", reg->m_cvar->value);
 		META_CONS("   %-*s  %*s  %s", sizeof bname - 1, bname, sizeof bval - 1, bval, reg->m_cvar->string);
 		total_count++;
@@ -330,8 +324,7 @@ void MRegMsgList::show()
 	META_CONS("%-*s    %5s  %5s", sizeof bname - 1, "Game registered user msgs:", "msgid", "size");
 
 	for (auto msg : m_list) {
-		Q_strncpy(bname, msg->m_name, sizeof bname - 1);
-		bname[sizeof bname - 1] = '\0';
+		Q_strlcpy(bname, msg->m_name);
 		META_CONS("   %-*s   %3d    %3d", sizeof bname - 1, bname, msg->m_msgid, msg->m_size);
 		total_count++;
 	}

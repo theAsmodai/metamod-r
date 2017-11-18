@@ -80,8 +80,7 @@ bool MPlugin::ini_parseline(char *line)
 		return false;
 	}
 
-	Q_strncpy(m_filename, token, sizeof m_filename - 1);
-	m_filename[sizeof m_filename - 1] = '\0';
+	Q_strlcpy(m_filename, token);
 	normalize_path(m_filename);
 
 	// Store name of just the actual _file_, without dir components.
@@ -96,8 +95,7 @@ bool MPlugin::ini_parseline(char *line)
 	token = strtok_r(nullptr, "\n\r", &ptr_token);
 	if (token) {
 		token = token + strspn(token, " \t"); // skip whitespace
-		Q_strncpy(m_desc, token, sizeof m_desc - 1);
-		m_desc[sizeof m_desc - 1] = '\0';
+		Q_strlcpy(m_desc, token);
 	}
 	else {
 		// If no description is specified, temporarily use plugin file,
@@ -120,8 +118,7 @@ bool MPlugin::cmd_parseline(const char *line)
 	char buf[NAME_MAX + PATH_MAX + MAX_DESC_LEN];
 	char *ptr_token;
 
-	Q_strncpy(buf, line, sizeof buf - 1);
-	buf[sizeof buf - 1] = '\0';
+	Q_strlcpy(buf, line);
 
 	// remove "load"
 	char* token = strtok_r(buf, " \t", &ptr_token);
@@ -133,8 +130,7 @@ bool MPlugin::cmd_parseline(const char *line)
 	if (!token)
 		return false;
 
-	Q_strncpy(m_filename, token, sizeof m_filename - 1);
-	m_filename[sizeof m_filename - 1] = '\0';
+	Q_strlcpy(m_filename, token);
 	normalize_path(m_filename);
 
 	// store name of just the actual _file_, without dir components
@@ -149,8 +145,7 @@ bool MPlugin::cmd_parseline(const char *line)
 	token = strtok_r(nullptr, "", &ptr_token);
 	if (token) {
 		token = token + strspn(token, " \t"); // skip whitespace
-		Q_strncpy(m_desc, token, sizeof m_desc - 1);
-		m_desc[sizeof m_desc - 1] = '\0';
+		Q_strlcpy(m_desc, token);
 	}
 	else {
 		// if no description is specified, temporarily use plugin file,
@@ -172,8 +167,7 @@ bool MPlugin::plugin_parseline(const char *fname, int loader_index)
 {
 	m_source_plugin_index = loader_index;
 
-	Q_strncpy(m_filename, fname, sizeof m_filename - 1);
-	m_filename[sizeof m_filename - 1] = '\0';
+	Q_strlcpy(m_filename, fname);
 	normalize_path(m_filename);
 
 	//store just name of the actual _file, without path
@@ -254,8 +248,7 @@ bool MPlugin::resolve()
 	META_DEBUG(2, "Resolved '%s' to file '%s'", m_filename, found);
 
 	// store pathname: the resolved path (should be absolute)
-	Q_strncpy(m_pathname, found, sizeof m_pathname - 1);
-	m_pathname[sizeof m_pathname - 1] = '\0';
+	Q_strlcpy(m_pathname, found);
 
 	// store file: the name of the file (without dir)
 	char* cp = Q_strrchr(m_pathname, '/');
@@ -271,8 +264,7 @@ bool MPlugin::resolve()
 	if (!Q_strnicmp(m_pathname, g_GameDLL.gamedir, len))
 		filename += len + 1;
 
-	Q_strncpy(m_filename, filename, sizeof m_filename - 1);
-	m_filename[sizeof m_filename - 1] = '\0';
+	Q_strlcpy(m_filename, filename);
 	return true;
 }
 
@@ -875,8 +867,7 @@ bool MPlugin::query()
 
 	// Replace temporary desc with plugin's internal name.
 	if (m_desc[0] == '<') {
-		Q_strncpy(m_desc, m_info->name, sizeof m_desc - 1);
-		m_desc[sizeof m_desc - 1] = '\0';
+		Q_strlcpy(m_desc, m_info->name);
 	}
 
 	META_DEBUG(6, "dll: Plugin '%s': Query successful", m_desc);

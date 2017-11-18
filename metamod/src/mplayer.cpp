@@ -17,8 +17,7 @@ void MPlayer::set_cvar_query(const char* cvar)
 	}
 
 	m_isQueried = true;
-	Q_strncpy(g_cvarName, cvar, sizeof g_cvarName - 1);
-	g_cvarName[sizeof g_cvarName - 1] = '\0';
+	Q_strlcpy(g_cvarName, cvar);
 }
 
 // Unmark player as querying a client cvar

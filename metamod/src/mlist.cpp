@@ -4,8 +4,7 @@
 MPluginList::MPluginList(const char* ifile) : m_last_index(0), m_plugins()
 {
 	// store filename of ini file
-	Q_strncpy(m_inifile, ifile, sizeof m_inifile - 1);
-	m_inifile[sizeof m_inifile - 1] = '\0';
+	Q_strlcpy(m_inifile, ifile);
 }
 
 plugins_t* MPluginList::getPlugins()
@@ -199,8 +198,7 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	plug->m_index = ++m_last_index;
 
 	// copy filename into this free slot
-	Q_strncpy(plug->m_filename, padd->m_filename, sizeof plug->m_filename - 1);
-	plug->m_filename[sizeof plug->m_filename - 1] = '\0';
+	Q_strlcpy(plug->m_filename, padd->m_filename);
 
 	// Copy file offset ptr.
 	// Can't just copy ptr, as it points to offset in padd, which will go
@@ -208,12 +206,10 @@ MPlugin* MPluginList::add(MPlugin* padd)
 	plug->m_file = plug->m_filename + (padd->m_file - padd->m_filename);
 
 	// copy description
-	Q_strncpy(plug->m_desc, padd->m_desc, sizeof plug->m_desc - 1);
-	plug->m_desc[sizeof plug->m_desc - 1] = '\0';
+	Q_strlcpy(plug->m_desc, padd->m_desc);
 
 	// copy pathname
-	Q_strncpy(plug->m_pathname, padd->m_pathname, sizeof plug->m_pathname - 1);
-	plug->m_pathname[sizeof plug->m_pathname - 1] = '\0';
+	Q_strlcpy(plug->m_pathname, padd->m_pathname);
 	normalize_path(plug->m_pathname);
 
 	plug->m_source = padd->m_source;
@@ -364,11 +360,9 @@ bool MPluginList::ini_refresh()
 		}
 		else {
 			// This plugin is already in the current list of plugins.
-			// Pathname already matches.  Recopy desc, if specified in
-			// plugins.ini.
+			// Pathname already matches.  Recopy desc, if specified in plugins.ini.
 			if (pl_temp.m_desc[0] != '<') {
-				Q_strncpy(pl_found->m_desc, pl_temp.m_desc, sizeof pl_found->m_desc - 1);
-				pl_found->m_desc[sizeof pl_found->m_desc - 1] = '\0';
+				Q_strlcpy(pl_found->m_desc, pl_temp.m_desc);
 			}
 
 			// Check the file to see if it looks like it's been modified
