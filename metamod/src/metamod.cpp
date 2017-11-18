@@ -241,7 +241,7 @@ bool meta_init_gamedll()
 {
 	Q_memset(&g_GameDLL, 0, sizeof g_GameDLL);
 
-	char gamedir[PATH_MAX];
+	char gamedir[MAX_PATH];
 	GET_GAME_DIR(gamedir);
 	normalize_path(gamedir);
 
@@ -269,7 +269,7 @@ bool meta_init_gamedll()
 	else {
 		// New style; GET_GAME_DIR returned game name.  Copy this into our
 		// game name, and prepend the current working directory.
-		char buf[PATH_MAX];
+		char buf[MAX_PATH];
 		if (!_getcwd(buf, sizeof buf)) {
 			META_WARNING("dll: Couldn't get cwd; %s", strerror(errno));
 			return false;

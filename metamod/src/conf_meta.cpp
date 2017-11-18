@@ -36,7 +36,7 @@ bool MConfig::set(const char* key, const char* value) const
 
 bool MConfig::set(option_t* setp, const char* setstr)
 {
-	char pathbuf[PATH_MAX];
+	char pathbuf[MAX_PATH];
 	int* optval = (int *)setp->dest;
 	char** optstr = (char **)setp->dest;
 	// cvar_t *optcvar = (cvar_t *) setp->dest;
@@ -92,7 +92,7 @@ bool MConfig::set(option_t* setp, const char* setstr)
 
 bool MConfig::load(const char* fn)
 {
-	char loadfile[PATH_MAX];
+	char loadfile[MAX_PATH];
 	char line[MAX_CONF_LEN];
 
 	// Make full pathname (from gamedir if relative, collapse "..",

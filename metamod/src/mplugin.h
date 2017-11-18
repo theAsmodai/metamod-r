@@ -161,10 +161,10 @@ private:
 	gamedll_funcs_t m_gamedll_funcs;
 	mutil_funcs_t m_mutil_funcs;
 
-	char m_filename[PATH_MAX];			// ie "dlls/mm_test_i386.so", from inifile
+	char m_filename[MAX_PATH];			// ie "dlls/mm_test_i386.so", from inifile
 	char *m_file;						// ie "mm_test_i386.so", ptr from filename
 	char m_desc[MAX_DESC_LEN];			// ie "Test metamod plugin", from inifile
-	char m_pathname[PATH_MAX];			// UNIQUE, ie "/home/willday/half-life/cstrike/dlls/mm_test_i386.so", built with GameDLL.gamedir
+	char m_pathname[MAX_PATH];			// UNIQUE, ie "/home/willday/half-life/cstrike/dlls/mm_test_i386.so", built with GameDLL.gamedir
 
 	static const char *s_rPrintLoadTime[][4];
 

@@ -241,7 +241,7 @@ const char* EXT_FUNC mutil_GetUserMsgName(plid_t plid, int msgid, int* size)
 // Return the full path of the plugin's loaded dll/so file.
 const char* EXT_FUNC mutil_GetPluginPath(plid_t plid)
 {
-	static char buf[PATH_MAX];
+	static char buf[MAX_PATH] = "";
 
 	auto plug = g_plugins->find(plid);
 	if (!plug) {

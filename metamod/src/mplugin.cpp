@@ -113,7 +113,7 @@ bool MPlugin::ini_parseline(char *line)
 // Parse a line from console "load" command into a plugin.
 bool MPlugin::cmd_parseline(const char *line)
 {
-	char buf[NAME_MAX + PATH_MAX + MAX_DESC_LEN];
+	char buf[NAME_MAX + MAX_PATH + MAX_DESC_LEN];
 	char *ptr_token;
 
 	Q_strlcpy(buf, line);

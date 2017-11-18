@@ -20,10 +20,10 @@ struct gamedll_t
 {
 	char name[NAME_MAX];                // ie "cstrike" (from gamedir)
 	char desc[NAME_MAX];                // ie "Counter-Strike"
-	char gamedir[PATH_MAX];             // ie "/home/willday/half-life/cstrike"
-	char pathname[PATH_MAX];            // ie "/home/willday/half-life/cstrike/dlls/cs_i386.so"
+	char gamedir[MAX_PATH];             // ie "/home/willday/half-life/cstrike"
+	char pathname[MAX_PATH];            // ie "/home/willday/half-life/cstrike/dlls/cs_i386.so"
 	char const* file;                   // ie "cs_i386.so"
-	char real_pathname[PATH_MAX];       // in case pathname overridden by bot, etc
+	char real_pathname[MAX_PATH];       // in case pathname overridden by bot, etc
 	CSysModule sys_module;
 	gamedll_funcs_t funcs;              // dllapi_table, newapi_table
 };

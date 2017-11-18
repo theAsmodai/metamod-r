@@ -91,8 +91,8 @@ bool is_platform_postfix(const char* pf)
 #ifdef _WIN32
 char* realpath(const char* file_name, char* resolved_name)
 {
-	int ret = GetFullPathName(file_name, PATH_MAX, resolved_name, nullptr);
-	if (ret > PATH_MAX) {
+	int ret = GetFullPathName(file_name, MAX_PATH, resolved_name, nullptr);
+	if (ret > MAX_PATH) {
 		errno = ENAMETOOLONG;
 		return nullptr;
 	}
@@ -123,7 +123,7 @@ char* realpath(const char* file_name, char* resolved_name)
 // Special-case-recognize "/dev/null" as a valid file.
 bool is_file_exists_in_gamedir(const char* path)
 {
-	char buf[PATH_MAX];
+	char buf[MAX_PATH];
 
 	if (!path)
 		return false;
@@ -168,10 +168,10 @@ bool is_file_exists_in_gamedir(const char* path)
 //  - calls NormalizePath() to fix backslashes, etc
 //
 // Much like realpath, buffer pointed to by fullpath is assumed to be
-// able to store a string of PATH_MAX length.
-char* full_gamedir_path(const char* path, char (&fullpath)[PATH_MAX])
+// able to store a string of MAX_PATH length.
+char* full_gamedir_path(const char* path, char (&fullpath)[MAX_PATH])
 {
-	char buf[PATH_MAX];
+	char buf[MAX_PATH];
 
 	// Build pathname from filename, plus gamedir if relative path.
 	if (is_abs_path(path)) {

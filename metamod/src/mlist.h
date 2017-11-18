@@ -44,5 +44,5 @@ public:
 private:
 	size_t m_last_index;
 	plugins_t m_plugins;			// array of plugins
-	char m_inifile[PATH_MAX];		// full pathname
+	char m_inifile[MAX_PATH];		// full pathname
 };

@@ -44,8 +44,8 @@ static const game_modinfo_t *lookup_game(const char *name)
 
 bool lookup_game_postfixes(gamedll_t *gamedll)
 {
-	char pathname[PATH_MAX];
-	static char postfix_path[PATH_MAX] = "";
+	char pathname[MAX_PATH];
+	static char postfix_path[MAX_PATH] = "";
 
 	Q_strlcpy(pathname, gamedll->pathname);
 
