@@ -37,6 +37,7 @@ public:
 	char* m_gamedll; // string if specified in config.ini
 	char* m_exec_cfg; // ie exec.cfg
 	BOOL m_clientmeta;
+	BOOL m_dynalign_list;
 
 private:
 	option_t* m_list;

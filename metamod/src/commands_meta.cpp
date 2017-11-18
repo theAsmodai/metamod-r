@@ -205,6 +205,11 @@ void cmd_meta_pluginlist()
 		return;
 	}
 
+	if (!g_config->m_dynalign_list) {
+		g_plugins->show_static();
+		return;
+	}
+
 	g_plugins->show();
 }
 

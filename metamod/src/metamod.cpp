@@ -6,10 +6,11 @@ MConfig g_static_config;
 MConfig *g_config = &g_static_config;
 option_t g_global_options[] =
 {
-	{ "debuglevel",		CF_INT,		&g_config->m_debuglevel,	"0" },
-	{ "gamedll",		CF_PATH,	&g_config->m_gamedll,		nullptr },
-	{ "exec_cfg",		CF_STR,		&g_config->m_exec_cfg,		nullptr },
-	{ "clientmeta",		CF_BOOL,	&g_config->m_clientmeta,	"no" },
+	{ "debuglevel",		CF_INT,  &g_config->m_debuglevel,    "0" },
+	{ "gamedll",		CF_PATH, &g_config->m_gamedll,       nullptr },
+	{ "exec_cfg",		CF_STR,  &g_config->m_exec_cfg,      nullptr },
+	{ "clientmeta",		CF_BOOL, &g_config->m_clientmeta,    "no" },
+	{ "dynalign_list",  CF_BOOL, &g_config->m_dynalign_list, "yes" },
 
 	// list terminator
 	{ nullptr, CF_NONE, nullptr, nullptr }
@@ -128,6 +129,12 @@ void metamod_startup()
 	if (cp && *cp != '\0') {
 		META_LOG("Clientmeta specified via localinfo: %s", cp);
 		g_config->set("clientmeta", cp);
+	}
+
+	cp = LOCALINFO("mm_dynalign_list");
+	if (cp && *cp != '\0') {
+		META_LOG("Dynamic alignment list specified via localinfo: %s", cp);
+		g_config->set("dynalign_list", cp);
 	}
 
 	// Check for an initial debug level, since cfg files don't get exec'd
