@@ -32,7 +32,7 @@ bool is_abs_path(const char *path);
 bool is_valid_path(const char *path);
 bool is_platform_postfix(const char *pf);
 bool is_file_exists_in_gamedir(const char *path);
-char *full_gamedir_path(const char *path, char *fullpath);
+char *full_gamedir_path(const char *path, char (&fullpath)[PATH_MAX]);
 bool mem_compare(const char* addr, const char* pattern, size_t len);
 void NORETURN Sys_Error(const char *error, ...);
 

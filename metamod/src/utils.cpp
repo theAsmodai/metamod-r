@@ -169,7 +169,7 @@ bool is_file_exists_in_gamedir(const char* path)
 //
 // Much like realpath, buffer pointed to by fullpath is assumed to be
 // able to store a string of PATH_MAX length.
-char* full_gamedir_path(const char* path, char* fullpath)
+char* full_gamedir_path(const char* path, char (&fullpath)[PATH_MAX])
 {
 	char buf[PATH_MAX];
 
@@ -184,8 +184,7 @@ char* full_gamedir_path(const char* path, char* fullpath)
 	// Remove relative path components, if possible.
 	if (!realpath(buf, fullpath)) {
 		META_DEBUG(4, "Unable to get realpath for '%s': %s", buf,  strerror(errno));
-		Q_strncpy(fullpath, path, sizeof fullpath - 1);
-		fullpath[sizeof fullpath - 1] = '\0';
+		Q_strlcpy(fullpath, path);
 	}
 
 	// Replace backslashes, etc.
