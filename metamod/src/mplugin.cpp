@@ -53,8 +53,7 @@ MPlugin::~MPlugin()
 bool MPlugin::ini_parseline(char *line)
 {
 	char buf[1024];
-	strncpy(buf, line, sizeof buf - 1);
-	buf[sizeof buf - 1] = '\0';
+	Q_strlcpy(buf, line);
 
 	// grab platform ("win32" or "linux")
 	char* ptr_token;
@@ -282,8 +281,7 @@ char *MPlugin::resolve_dirs(const char *path, char *tempbuf, size_t maxlen) cons
 
 	// try other file prefixes in gamedir
 	char buf[MAX_PATH];
-	strncpy(buf, tempbuf, sizeof buf - 1);
-	buf[sizeof buf - 1] = '\0';
+	Q_strlcpy(buf, tempbuf);
 
 	char* found = resolve_suffix(buf, tempbuf, maxlen);
 	if (found)
@@ -294,8 +292,7 @@ char *MPlugin::resolve_dirs(const char *path, char *tempbuf, size_t maxlen) cons
 	if (is_valid_path(tempbuf))
 		return tempbuf;
 
-	strncpy(buf, tempbuf, sizeof buf - 1);
-	buf[sizeof buf - 1] = '\0';
+	Q_strlcpy(buf, tempbuf);
 
 	// try other file prefixes for this path
 	return resolve_suffix(buf, tempbuf, maxlen);
@@ -311,7 +308,7 @@ char *MPlugin::resolve_dirs(const char *path, char *tempbuf, size_t maxlen) cons
 char* MPlugin::resolve_suffix(const char *path, char *tempbuf, size_t bufsize) const
 {
 	if (Q_strstr(path, PLATFORM_DLEXT) && is_valid_path(path)) {
-		strncpy(tempbuf, path, bufsize - 1);
+		Q_strncpy(tempbuf, path, bufsize - 1);
 		tempbuf[bufsize - 1] = '\0';
 		return tempbuf;
 	}
@@ -1115,7 +1112,7 @@ bool MPlugin::newer_file() const
 		return false;
 	}
 
-	time_t file_time = max(st.st_ctime, st.st_mtime);
+	time_t file_time = Q_max(st.st_ctime, st.st_mtime);
 	META_DEBUG(5, "newer_file? file=%s; load=%d, file=%d; ctime=%d, mtime=%d", m_file, m_time_loaded, file_time, st.st_ctime, st.st_mtime);
 	if (file_time > m_time_loaded)
 		return true;

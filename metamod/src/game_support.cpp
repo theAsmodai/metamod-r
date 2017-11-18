@@ -50,7 +50,7 @@ bool lookup_game_postfixes(gamedll_t *gamedll)
 	Q_strlcpy(pathname, gamedll->pathname);
 
 	// find extensions and skip
-	char *pos = strrchr(pathname, '.');
+	char *pos = Q_strrchr(pathname, '.');
 	if (pos) {
 		*pos = '\0';
 	}

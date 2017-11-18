@@ -36,9 +36,9 @@ char* trimbuf(char* str)
 	for (ibuf = str; *ibuf && (byte)(*ibuf) < (byte)0x80 && isspace(*ibuf); ++ibuf)
 		;
 
-	int i = strlen(ibuf);
+	int i = Q_strlen(ibuf);
 	if (str != ibuf)
-		memmove(str, ibuf, i);
+		Q_memmove(str, ibuf, i);
 
 	while (--i >= 0) {
 		if (!isspace(str[i]))
@@ -177,7 +177,9 @@ char* full_gamedir_path(const char* path, char* fullpath)
 	if (is_abs_path(path)) {
 		Q_strlcpy(buf, path);
 	}
-	else snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
+	else {
+		Q_snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
+	}
 
 	// Remove relative path components, if possible.
 	if (!realpath(buf, fullpath)) {
@@ -197,7 +199,7 @@ void NORETURN Sys_Error(const char *error, ...)
 	static char text[1024];
 
 	va_start(argptr, error);
-	vsnprintf(text, sizeof(text), error, argptr);
+	Q_vsnprintf(text, sizeof(text), error, argptr);
 	va_end(argptr);
 
 	META_CONS("FATAL ERROR (shutting down): %s\n", text);

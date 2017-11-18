@@ -6,7 +6,7 @@ void mdebug_to_file(const char* fmt, ...)
 
 	va_list argptr;
 	va_start(argptr, fmt);
-	vsnprintf(buf, sizeof buf, fmt, argptr);
+	Q_vsnprintf(buf, sizeof buf, fmt, argptr);
 	va_end(argptr);
 
 	FILE* fp = fopen("mdebug.log", "a");

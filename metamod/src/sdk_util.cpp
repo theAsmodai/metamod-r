@@ -14,12 +14,12 @@ char* UTIL_VarArgs(const char* format, ...)
 
 short FixedSigned16(float value, float scale)
 {
-	return (short)clamp(int(value * scale), SHRT_MIN, SHRT_MAX);
+	return (short)Q_clamp(int(value * scale), SHRT_MIN, SHRT_MAX);
 }
 
 unsigned short FixedUnsigned16(float value, float scale)
 {
-	return (unsigned short)clamp(int(value * scale), 0, USHRT_MAX);
+	return (unsigned short)Q_clamp(int(value * scale), 0, USHRT_MAX);
 }
 
 void UTIL_HudMessage(edict_t* pEntity, const hudtextparms_t& textparms, const char* pMessage)
@@ -52,13 +52,12 @@ void UTIL_HudMessage(edict_t* pEntity, const hudtextparms_t& textparms, const ch
 	if (textparms.effect == 2)
 	WRITE_SHORT(FixedUnsigned16(textparms.fxTime, 1 << 8));
 
-	if (strlen(pMessage) < 512) {
+	if (Q_strlen(pMessage) < 512) {
 		WRITE_STRING(pMessage);
 	}
 	else {
 		char tmp[512];
-		strncpy(tmp, pMessage, sizeof tmp - 1);
-		tmp[sizeof tmp - 1] = '\0';
+		Q_strlcpy(tmp, pMessage);
 		WRITE_STRING(tmp);
 	}
 	MESSAGE_END();

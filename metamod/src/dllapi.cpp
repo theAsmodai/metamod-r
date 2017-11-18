@@ -32,7 +32,7 @@ void MM_PRE_HOOK EXT_FUNC mm_ClientDisconnect(edict_t *pEntity)
 // this forward can be disabled from metamod.cpp
 void MM_PRE_HOOK mm_ClientCommand(edict_t *pEntity)
 {
-	if (!strcmp(CMD_ARGV(0), "meta")) {
+	if (!Q_strcmp(CMD_ARGV(0), "meta")) {
 		client_meta(pEntity);
 	}
 }
@@ -184,7 +184,7 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 		return FALSE;
 	}
 
-	memcpy(pFunctionTable, &sFunctionTable, sizeof(DLL_FUNCTIONS));
+	Q_memcpy(pFunctionTable, &sFunctionTable, sizeof(DLL_FUNCTIONS));
 	return TRUE;
 }
 
@@ -211,7 +211,7 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 	}
 
 	g_meta_extdll.load();
-	memcpy(pNewFunctionTable, &sNewFunctionTable, sizeof(NEW_DLL_FUNCTIONS));
+	Q_memcpy(pNewFunctionTable, &sNewFunctionTable, sizeof(NEW_DLL_FUNCTIONS));
 	return TRUE;
 }
 

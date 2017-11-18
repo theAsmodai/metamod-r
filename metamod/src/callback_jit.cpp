@@ -346,7 +346,7 @@ size_t CJit::compile_callback(jitdata_t* jitdata)
 	auto codeSize = callback.GetCodeSize();
 	auto ptr = m_callback_allocator.allocate(codeSize);
 
-	return (size_t)memcpy(ptr, code, codeSize);
+	return (size_t)Q_memcpy(ptr, code, codeSize);
 }
 
 size_t CJit::compile_tramp(size_t ptr_to_func)

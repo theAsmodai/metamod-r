@@ -200,7 +200,7 @@ int EXT_FUNC mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 	}
 
 	for (int n = 1; n < arraysize(g_engine_msg_names); n++) {
-		if (!strcmp(msgname, g_engine_msg_names[n])) {
+		if (!Q_strcmp(msgname, g_engine_msg_names[n])) {
 			if (size) *size = -1;
 			return n;
 		}
@@ -361,7 +361,7 @@ const char* EXT_FUNC mutil_IsQueryingClientCvar(plid_t plid, const edict_t* pEdi
 int EXT_FUNC mutil_MakeRequestId(plid_t plid)
 {
 	//the offset is to distinguish from gamedll requests, if any
-	return abs(0xbeef << 16) + (++g_requestid_counter);
+	return Q_abs(0xbeef << 16) + (++g_requestid_counter);
 }
 
 void EXT_FUNC mutil_GetHookTables(plid_t plid, enginefuncs_t** peng, DLL_FUNCTIONS** pdll, NEW_DLL_FUNCTIONS** pnewdll)

@@ -27,8 +27,6 @@
     	#define O_BINARY 0
 	#endif
 #elif defined(_WIN32)
-	#define snprintf	_snprintf
-	#define vsnprintf	_vsnprintf
 	#define stat64		_stat64
 	#define sleep(x)	Sleep(x*1000)
     #include <io.h>
