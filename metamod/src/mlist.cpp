@@ -193,7 +193,6 @@ MPlugin* MPluginList::plugin_addload(plid_t plid, const char* fname, PLUG_LOADTI
 MPlugin* MPluginList::add(MPlugin* padd)
 {
 	auto plug = new MPlugin();
-	memset(plug, 0, sizeof(MPlugin));
 
 	plug->m_index = ++m_last_index;
 
@@ -323,12 +322,25 @@ bool MPluginList::ini_refresh()
 		if ((cp = Q_strrchr(line, '\n')))
 			*cp = '\0';
 
+		trimbuf(line);
+
+		// skip empty lines
+		if (line[0] == '\0') {
+			continue;
+		}
+
+		// skip comments
+		if (line[0] == '#' || line[0] == ';' || !Q_strncmp(line, "//", 2)) {
+			continue;
+		}
+
 		// Parse into a temp plugin
-		MPlugin pl_temp = {};
+		MPlugin pl_temp{};
 		if (!pl_temp.ini_parseline(line)) {
 			META_ERROR("ini: Skipping malformed line %d of %s", ln, m_inifile);
 			continue;
 		}
+
 		// Try to find plugin with this pathname in the current list of
 		// plugins.
 		auto pl_found = find(pl_temp.m_pathname);
