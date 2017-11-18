@@ -1,12 +1,12 @@
 #include "precompiled.h"
 
 static hudtextparms_t g_default_csay_tparms = {
-	-1, 0.25, // x, y
-	2, // effect
-	0, 255, 0, 0, // r, g, b,  a1
-	0, 0, 0, 0, // r2, g2, b2,  a2
-	0, 0, 10, 10, // fadein, fadeout, hold, fxtime
-	1 // channel
+	-1, 0.25,		// x, y
+	2,				// effect
+	0, 255, 0, 0,	// r, g, b,  a1
+	0, 0, 0, 0,		// r2, g2, b2,  a2
+	0, 0, 10, 10,	// fadein, fadeout, hold, fxtime
+	1				// channel
 };
 
 static const char* g_engine_msg_names[] =

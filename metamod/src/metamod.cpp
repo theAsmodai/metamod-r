@@ -41,7 +41,7 @@ void metamod_startup()
 
 	Q_snprintf(configFile, sizeof configFile, "%s/%s", g_config->directory(), CONFIG_INI);
 	Q_snprintf(pluginFile, sizeof pluginFile, "%s/%s", g_config->directory(), PLUGINS_INI);
-	Q_snprintf(execFile, sizeof execFile, "%s/%s", g_config->directory(), EXEC_CFG);
+	Q_snprintf(execFile,   sizeof execFile,   "%s/%s", g_config->directory(), EXEC_CFG);
 
 	META_CONS("   ");
 	META_CONS("   Metamod-r version %s Copyright (c) 2016-2017 ReHLDS Team (rebuild of original Metamod by Will Day and Jussi Kivilinna)", APP_VERSION);

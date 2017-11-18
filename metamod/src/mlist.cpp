@@ -661,11 +661,11 @@ void MPluginList::show_client(edict_t* pEntity)
 
 		n++;
 		META_CLIENT(pEntity, " [%3d] %s, v%s, %s, by %s, see %s", n,
-		            p->info()->name ? p->info()->name : "<unknown>",
-		            p->info()->version ? p->info()->version : "<?>",
-		            p->info()->date ? p->info()->date : "<../../..>",
-		            p->info()->author ? p->info()->author : "<unknown>",
-		            p->info()->url ? p->info()->url : "<unknown>");
+			p->info()->name ? p->info()->name : "<unknown>",
+			p->info()->version ? p->info()->version : "<?>",
+			p->info()->date ? p->info()->date : "<../../..>",
+			p->info()->author ? p->info()->author : "<unknown>",
+			p->info()->url ? p->info()->url : "<unknown>");
 	}
 
 	META_CLIENT(pEntity, "%d plugins", n);

@@ -1,9 +1,9 @@
 #include "precompiled.h"
 
-#define CDATA_DLL_H(x, p, h)		CDATA_ENTRY(DLL_FUNCTIONS, x, p, size_t(h))
-#define CDATA_DLL(x)				CDATA_ENTRY(DLL_FUNCTIONS, x, P_PRE, 0u)
-#define CDATA_NEWDLL_H(x, p, h)		CDATA_ENTRY(NEW_DLL_FUNCTIONS, x, p, size_t(h))
-#define CDATA_NEWDLL(x)				CDATA_ENTRY(NEW_DLL_FUNCTIONS, x, P_PRE, 0u)
+#define CDATA_DLL_H(x, p, h)    CDATA_ENTRY(DLL_FUNCTIONS, x, p, size_t(h))
+#define CDATA_DLL(x)            CDATA_ENTRY(DLL_FUNCTIONS, x, P_PRE, 0u)
+#define CDATA_NEWDLL_H(x, p, h) CDATA_ENTRY(NEW_DLL_FUNCTIONS, x, p, size_t(h))
+#define CDATA_NEWDLL(x)         CDATA_ENTRY(NEW_DLL_FUNCTIONS, x, P_PRE, 0u)
 
 DLL_FUNCTIONS sFunctionTable;
 DLL_FUNCTIONS sFunctionTable_jit;
@@ -65,76 +65,76 @@ void EXT_FUNC mm_ServerDeactivate()
 
 compile_data_t g_dllfunc_cdata[] =
 {
-	CDATA_DLL(pfnGameInit),                                         // pfnGameInit()                Initialize the game (one-time call after loading of game .dll)
-	CDATA_DLL(pfnSpawn),                                            // pfnSpawn()
-	CDATA_DLL(pfnThink),                                            // pfnThink()
-	CDATA_DLL(pfnUse),                                              // pfnUse()
-	CDATA_DLL(pfnTouch),                                            // pfnTouch()
-	CDATA_DLL(pfnBlocked),                                          // pfnBlocked()
-	CDATA_DLL(pfnKeyValue),                                         // pfnKeyValue()
-	CDATA_DLL(pfnSave),                                             // pfnSave()
-	CDATA_DLL(pfnRestore),                                          // pfnRestore()
-	CDATA_DLL(pfnSetAbsBox),                                        // pfnSetAbsBox()
-
-	CDATA_DLL(pfnSaveWriteFields),                                  // pfnSaveWriteFields()
-	CDATA_DLL(pfnSaveReadFields),                                   // pfnSaveReadFields()
-
-	CDATA_DLL(pfnSaveGlobalState),                                  // pfnSaveGlobalState()
-	CDATA_DLL(pfnRestoreGlobalState),                               // pfnRestoreGlobalState()
-	CDATA_DLL(pfnResetGlobalState),                                 // pfnResetGlobalState()
-
-	CDATA_DLL_H(pfnClientConnect, P_PRE, mm_ClientConnect),         // pfnClientConnect()           (wd) Client has connected
-	CDATA_DLL_H(pfnClientDisconnect, P_PRE, mm_ClientDisconnect),   // pfnClientDisconnect()        (wd) Player has left the game
-	CDATA_DLL(pfnClientKill),                                       // pfnClientKill()              (wd) Player has typed "kill"
-	CDATA_DLL(pfnClientPutInServer),                                // pfnClientPutInServer()       (wd) Client is entering the game
-	CDATA_DLL_H(pfnClientCommand, P_PRE, mm_ClientCommand),
-	CDATA_DLL(pfnClientUserInfoChanged),                            // pfnClientUserInfoChanged()   (wd) Client has updated their setinfo structure
-	CDATA_DLL(pfnServerActivate),                                   // pfnServerActivate()          (wd) Server is starting a new map
-	CDATA_DLL(pfnServerDeactivate),                                 // pfnServerDeactivate()        (wd) Server is leaving the map (shutdown), or changelevel); SDK2
-
-	CDATA_DLL(pfnPlayerPreThink),                                   // pfnPlayerPreThink()
-	CDATA_DLL(pfnPlayerPostThink),                                  // pfnPlayerPostThink()
-
-	CDATA_DLL(pfnStartFrame),                                       // pfnStartFrame()
-	CDATA_DLL(pfnParmsNewLevel),                                    // pfnParmsNewLevel()
-	CDATA_DLL(pfnParmsChangeLevel),                                 // pfnParmsChangeLevel()
-
-	CDATA_DLL(pfnGetGameDescription),                               // pfnGetGameDescription()      Returns string describing current .dll.  E.g. "TeamFotrress 2"), "Half-Life"
-	CDATA_DLL(pfnPlayerCustomization),                              // pfnPlayerCustomization()     Notifies .dll of new customization for player.
-
-	CDATA_DLL(pfnSpectatorConnect),                                 // pfnSpectatorConnect()        Called when spectator joins server
-	CDATA_DLL(pfnSpectatorDisconnect),                              // pfnSpectatorDisconnect()     Called when spectator leaves the server
-	CDATA_DLL(pfnSpectatorThink),                                   // pfnSpectatorThink()          Called when spectator sends a command packet (usercmd_t)
-
-	CDATA_DLL(pfnSys_Error),                                        // pfnSys_Error()               Notify game .dll that engine is going to shut down.  Allows mod authors to set a breakpoint.  SDK2
-
-	CDATA_DLL(pfnPM_Move),                                          // pfnPM_Move()                 (wd) SDK2
-	CDATA_DLL(pfnPM_Init),                                          // pfnPM_Init()                 Server version of player movement initialization; (wd) SDK2
-	CDATA_DLL(pfnPM_FindTextureType),                               // pfnPM_FindTextureType()      (wd) SDK2
-
-	CDATA_DLL(pfnSetupVisibility),                                  // pfnSetupVisibility()         Set up PVS and PAS for networking for this client; (wd) SDK2
-	CDATA_DLL(pfnUpdateClientData),                                 // pfnUpdateClientData()        Set up data sent only to specific client; (wd) SDK2
-	CDATA_DLL(pfnAddToFullPack),                                    // pfnAddToFullPack()           (wd) SDK2
-	CDATA_DLL(pfnCreateBaseline),                                   // pfnCreateBaseline()          Tweak entity baseline for network encoding), allows setup of player baselines), too.; (wd) SDK2
-	CDATA_DLL(pfnRegisterEncoders),                                 // pfnRegisterEncoders()        Callbacks for network encoding; (wd) SDK2
-	CDATA_DLL(pfnGetWeaponData),                                    // pfnGetWeaponData()           (wd) SDK2
-	CDATA_DLL(pfnCmdStart),                                         // pfnCmdStart()                (wd) SDK2
-	CDATA_DLL(pfnCmdEnd),                                           // pfnCmdEnd()                  (wd) SDK2
-	CDATA_DLL(pfnConnectionlessPacket),                             // pfnConnectionlessPacket()    (wd) SDK2
-	CDATA_DLL(pfnGetHullBounds),                                    // pfnGetHullBounds()           (wd) SDK2
-	CDATA_DLL(pfnCreateInstancedBaselines),                         // pfnCreateInstancedBaselines()(wd) SDK2
-	CDATA_DLL(pfnInconsistentFile),                                 // pfnInconsistentFile()        (wd) SDK2
-	CDATA_DLL(pfnAllowLagCompensation),                             // pfnAllowLagCompensation()    (wd) SDK2
+	CDATA_DLL(pfnGameInit),                                         // Initialize the game (one-time call after loading of game .dll)
+	CDATA_DLL(pfnSpawn),                                            // 
+	CDATA_DLL(pfnThink),                                            // 
+	CDATA_DLL(pfnUse),                                              // 
+	CDATA_DLL(pfnTouch),                                            // 
+	CDATA_DLL(pfnBlocked),                                          // 
+	CDATA_DLL(pfnKeyValue),                                         // 
+	CDATA_DLL(pfnSave),                                             // 
+	CDATA_DLL(pfnRestore),                                          // 
+	CDATA_DLL(pfnSetAbsBox),                                        // 
+                                                                       
+	CDATA_DLL(pfnSaveWriteFields),                                  // 
+	CDATA_DLL(pfnSaveReadFields),                                   // 
+                                                                       
+	CDATA_DLL(pfnSaveGlobalState),                                  // 
+	CDATA_DLL(pfnRestoreGlobalState),                               // 
+	CDATA_DLL(pfnResetGlobalState),                                 // 
+                                                                       
+	CDATA_DLL_H(pfnClientConnect, P_PRE, mm_ClientConnect),         // (wd) Client has connected
+	CDATA_DLL_H(pfnClientDisconnect, P_PRE, mm_ClientDisconnect),   // (wd) Player has left the game
+	CDATA_DLL(pfnClientKill),                                       // (wd) Player has typed "kill"
+	CDATA_DLL(pfnClientPutInServer),                                // (wd) Client is entering the game
+	CDATA_DLL_H(pfnClientCommand, P_PRE, mm_ClientCommand),            
+	CDATA_DLL(pfnClientUserInfoChanged),                            // (wd) Client has updated their setinfo structure
+	CDATA_DLL(pfnServerActivate),                                   // (wd) Server is starting a new map
+	CDATA_DLL(pfnServerDeactivate),                                 // (wd) Server is leaving the map (shutdown), or changelevel); SDK2
+                                                                       
+	CDATA_DLL(pfnPlayerPreThink),                                   // 
+	CDATA_DLL(pfnPlayerPostThink),                                  // 
+                                                                       
+	CDATA_DLL(pfnStartFrame),                                       // 
+	CDATA_DLL(pfnParmsNewLevel),                                    // 
+	CDATA_DLL(pfnParmsChangeLevel),                                 // 
+                                                                       
+	CDATA_DLL(pfnGetGameDescription),                               // Returns string describing current .dll.  E.g. "TeamFotrress 2"), "Half-Life"
+	CDATA_DLL(pfnPlayerCustomization),                              // Notifies .dll of new customization for player.
+                                                                       
+	CDATA_DLL(pfnSpectatorConnect),                                 // Called when spectator joins server
+	CDATA_DLL(pfnSpectatorDisconnect),                              // Called when spectator leaves the server
+	CDATA_DLL(pfnSpectatorThink),                                   // Called when spectator sends a command packet (usercmd_t)
+                                                                       
+	CDATA_DLL(pfnSys_Error),                                        // Notify game .dll that engine is going to shut down.  Allows mod authors to set a breakpoint.  SDK2
+                                                                       
+	CDATA_DLL(pfnPM_Move),                                          // (wd) SDK2
+	CDATA_DLL(pfnPM_Init),                                          // Server version of player movement initialization; (wd) SDK2
+	CDATA_DLL(pfnPM_FindTextureType),                               // (wd) SDK2
+                                                                       
+	CDATA_DLL(pfnSetupVisibility),                                  // Set up PVS and PAS for networking for this client; (wd) SDK2
+	CDATA_DLL(pfnUpdateClientData),                                 // Set up data sent only to specific client; (wd) SDK2
+	CDATA_DLL(pfnAddToFullPack),                                    // (wd) SDK2
+	CDATA_DLL(pfnCreateBaseline),                                   // Tweak entity baseline for network encoding), allows setup of player baselines), too.; (wd) SDK2
+	CDATA_DLL(pfnRegisterEncoders),                                 // Callbacks for network encoding; (wd) SDK2
+	CDATA_DLL(pfnGetWeaponData),                                    // (wd) SDK2
+	CDATA_DLL(pfnCmdStart),                                         // (wd) SDK2
+	CDATA_DLL(pfnCmdEnd),                                           // (wd) SDK2
+	CDATA_DLL(pfnConnectionlessPacket),                             // (wd) SDK2
+	CDATA_DLL(pfnGetHullBounds),                                    // (wd) SDK2
+	CDATA_DLL(pfnCreateInstancedBaselines),                         // (wd) SDK2
+	CDATA_DLL(pfnInconsistentFile),                                 // (wd) SDK2
+	CDATA_DLL(pfnAllowLagCompensation),                             // (wd) SDK2
 };
 
 compile_data_t g_newdllfunc_cdata[] =
 {
-	CDATA_NEWDLL(pfnOnFreeEntPrivateData),                          // pfnOnFreeEntPrivateData() Called right before the object's memory is freed. Calls its destructor.
-	CDATA_NEWDLL_H(pfnGameShutdown, P_PRE, mm_GameShutdown),        // pfnGameShutdown()
-	CDATA_NEWDLL(pfnShouldCollide),                                 // pfnShouldCollide()
+	CDATA_NEWDLL(pfnOnFreeEntPrivateData),                          // Called right before the object's memory is freed. Calls its destructor.
+	CDATA_NEWDLL_H(pfnGameShutdown, P_PRE, mm_GameShutdown),        //
+	CDATA_NEWDLL(pfnShouldCollide),                                 //
 
-	CDATA_NEWDLL(pfnCvarValue),                                     // pfnCvarValue()               (fz) Use mm_CvarValue2 instead
-	CDATA_NEWDLL(pfnCvarValue2)                                     // pfnCvarValue2()              (fz) When pfnQueryClientCvarValue2() completes it will call
+	CDATA_NEWDLL(pfnCvarValue),                                     // (fz) Use mm_CvarValue2 instead
+	CDATA_NEWDLL(pfnCvarValue2)                                     // (fz) When pfnQueryClientCvarValue2() completes it will call
 	// pfnCvarValue2() with the request ID supplied earlier, the name of the cvar requested and the value of that cvar.
 };
 
@@ -191,7 +191,9 @@ C_DLLEXPORT int GetEntityAPI2(DLL_FUNCTIONS *pFunctionTable, int *interfaceVersi
 C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *interfaceVersion)
 {
 	META_DEBUG(6, "called: GetNewDLLFunctions; version=%d", *interfaceVersion);
-#if 0 // ~dvander - but then you can't use cvar querying on many mods...
+
+#if 0
+	// ~dvander - but then you can't use cvar querying on many mods...
 	// Don't provide these functions to engine if gamedll doesn't provide
 	// them. Otherwise, we're in the position of having to provide answers
 	// we can't necessarily provide (for instance, ShouldCollide())...

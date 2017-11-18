@@ -1,8 +1,7 @@
 #pragma once
 
-#include "mplugin.h"		// class MPlugin
+#include "mplugin.h"	// class MPlugin
 #include "plinfo.h"		// plid_t, etc
-
 
 // Width required to printf above MAX, for show() functions.
 #define WIDTH_MAX_PLUGINS	2
@@ -31,7 +30,7 @@ public:
 	bool ini_startup();										// read inifile at startup
 	bool ini_refresh();										// re-read inifile
 	bool cmd_addload(const char* args);						// load from console command
-	MPlugin* plugin_addload(plid_t plid, const char* fname, PLUG_LOADTIME now); //load from plugin
+	MPlugin* plugin_addload(plid_t plid, const char* fname, PLUG_LOADTIME now); // load from plugin
 
 	bool load();											// load the list, at startup
 	bool refresh(PLUG_LOADTIME now);						// update from re-read inifile
@@ -44,6 +43,6 @@ public:
 
 private:
 	size_t m_last_index;
-	plugins_t m_plugins;							// array of plugins
-	char m_inifile[PATH_MAX];								// full pathname
+	plugins_t m_plugins;			// array of plugins
+	char m_inifile[PATH_MAX];		// full pathname
 };

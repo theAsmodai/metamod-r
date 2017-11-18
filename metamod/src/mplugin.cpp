@@ -9,7 +9,6 @@ const char *MPlugin::s_rPrintLoadTime[][4] = {
 	{ "pausable",		"Pause",	"at any time, and pausable",	"for requested pause" },	// PT_ANYPAUSE
 };
 
-// ReSharper disable once CppPossiblyUninitializedMember
 MPlugin::MPlugin()
 {
 	m_status = PL_EMPTY;
@@ -176,8 +175,8 @@ bool MPlugin::plugin_parseline(const char *fname, int loader_index)
 	else
 		m_file = m_filename;
 
-	//grab description
-	//temporarily use plugin file until plugin can be queried
+	// grab description
+	// temporarily use plugin file until plugin can be queried
 	Q_snprintf(m_desc, sizeof m_desc, "<%s>", m_file);
 
 	//make full pathname
@@ -408,7 +407,7 @@ bool MPlugin::load(PLUG_LOADTIME now, bool& delayed)
 				META_ERROR("dll: Couldn't close plugin file '%s': %s", m_file, "invalid handle");
 			}
 			m_status = PL_BADFILE;
-			m_info = nullptr; //prevent crash
+			m_info = nullptr; // prevent crash
 			return false;
 		}
 		m_status = PL_OPENED;
@@ -716,10 +715,10 @@ bool MPlugin::plugin_unload(plid_t plid, PLUG_LOADTIME now, PL_UNLOAD_REASON rea
 
 	m_unloader_index = pl_unloader->index();
 
-	//block unloader from being unloaded by other plugin
+	// block unloader from being unloaded by other plugin
 	pl_unloader->m_is_unloader = true;
 
-	//try unload
+	// try unload
 	PLUG_ACTION old_action = m_action;
 	m_action = PA_UNLOAD;
 	bool delayed;
@@ -1164,10 +1163,18 @@ const char *MPlugin::str_source(STR_SOURCE fmt) const
 	case PS_INI: return show ? "ini" : "ini file";
 	case PS_CMD: return show ? "cmd" : "console command";
 	case PS_PLUGIN:
-	if (m_source_plugin_index <= 0)
-		return show ? "plUN" : "unloaded plugin";
-	return show ? UTIL_VarArgs("pl%d", m_source_plugin_index) : UTIL_VarArgs("plugin [%s]", g_plugins->find(m_source_plugin_index)->description());
-	default: return UTIL_VarArgs(show ? "UNK%d" : "unknown (%d)", m_source);
+	{
+		if (m_source_plugin_index <= 0)
+			return show ? "plUN" : "unloaded plugin";
+
+		if (show) {
+			return UTIL_VarArgs("pl%d", m_source_plugin_index);
+		}
+
+		return UTIL_VarArgs("plugin [%s]", g_plugins->find(m_source_plugin_index)->description());
+	}
+	default:
+		return UTIL_VarArgs(show ? "UNK%d" : "unknown (%d)", m_source);
 	}
 }
 
