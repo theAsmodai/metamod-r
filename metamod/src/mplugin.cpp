@@ -659,9 +659,10 @@ bool MPlugin::clear()
 		META_ERROR("Cannot clear plugin '%s'; not marked as failed, empty, or open (status=%s)", m_desc, str_status());
 		return false;
 	}
+
 	// If file is open, close the file.  Note: after this, attempts to
 	// reference any memory locations in the file will produce a segfault.
-	if (!m_sys_module.unload()) {
+	if (m_sys_module.is_opened() && !m_sys_module.unload()) {
 		META_ERROR("dll: Couldn't close plugin file '%s': %s", m_file, "invalid handle");
 		m_status = PL_FAILED;
 		return false;
