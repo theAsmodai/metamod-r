@@ -191,7 +191,7 @@ MRegCvar* MRegCvarList::find(const char* findname)
 			return reg;
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 // Disable any cvars belonging to the given plugin (by index id).

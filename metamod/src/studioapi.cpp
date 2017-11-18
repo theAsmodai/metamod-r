@@ -20,7 +20,7 @@ C_DLLEXPORT int Server_GetBlendingInterface(int version,
                                             float (*rotationmatrix)[3][4],
                                             float (*bonetransform)[MAXSTUDIOBONES][3][4])
 {
-	static GETBLENDAPI_FN getblend = NULL;
+	static GETBLENDAPI_FN getblend = nullptr;
 	static int missing = 0;
 
 	// Note that we're not checking if
