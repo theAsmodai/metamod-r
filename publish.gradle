@@ -37,7 +37,7 @@ task publishPrepareFiles << {
 
 	_copyFileToDir('publish/metamod.dll', 'publish/publishRoot/metamod/addons/metamod/')
 	//_copyFileToDir('publish/metamod.pdb', 'publish/publishRoot/metamod/addons/metamod/')
-	_copyFile('publish/libmetamod_i386.so', 'publish/publishRoot/metamod/addons/metamod/metamod_i386.so')
+	_copyFile('publish/metamod_i386.so', 'publish/publishRoot/metamod/addons/metamod/metamod_i386.so')
 
 	project.file('publish/publishRoot/metamod/sdk').mkdirs()
 	copy {
