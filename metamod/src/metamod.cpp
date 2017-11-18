@@ -261,9 +261,9 @@ bool meta_init_gamedll()
 		// (note check for both linux and win32 full pathname.)
 		Q_strlcpy(g_GameDLL.gamedir, gamedir);
 
-		char *cp = Q_strrchr(gamedir, '/') + 1;
+		char *cp = Q_strrchr(gamedir, '/');
 		if (cp) {
-			Q_strlcpy(g_GameDLL.name, cp);
+			Q_strlcpy(g_GameDLL.name, cp + 1);
 		}
 	}
 	else {
