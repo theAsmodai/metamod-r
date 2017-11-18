@@ -1155,7 +1155,7 @@ const char *MPlugin::str_status(STR_STATUS fmt) const
 // SHOW is max 4 chars, for "show" output.
 const char *MPlugin::str_action(STR_ACTION fmt) const
 {
-	bool show = fmt == ST_SHOW;
+	bool show = fmt == SA_SHOW;
 	switch (m_action) {
 	case PA_NULL:		return "null";
 	case PA_NONE:		return show ? " -  " : "none";

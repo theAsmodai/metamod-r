@@ -579,6 +579,11 @@ void MPluginList::retry_all(PLUG_LOADTIME now)
 
 void MPluginList::getWidthFields(int source_index, size_t &widthDescBest, size_t &widthFileBest, size_t &widthVersBest)
 {
+	// width by default
+	widthDescBest = sizeof("description") - 1;
+	widthFileBest = sizeof("file") - 1;
+	widthVersBest = sizeof("vers") - 1;
+
 	for (auto p : m_plugins)
 	{
 		if (p->m_status < PL_VALID)
@@ -587,27 +592,9 @@ void MPluginList::getWidthFields(int source_index, size_t &widthDescBest, size_t
 		if (source_index > 0 && p->m_source_plugin_index != source_index)
 			continue;
 
-		size_t nDescLen = Q_strlen(p->m_desc);
-		if (widthDescBest < nDescLen) {
-			widthDescBest = nDescLen;
-		}
-
-		size_t nFileLen = Q_strlen(p->m_file);
-		if (widthFileBest < nFileLen) {
-			widthFileBest = nFileLen;
-		}
-
-		size_t nVersLen;
-		if (p->info() && p->info()->version) {
-			nVersLen = Q_strlen(p->info()->version);
-		}
-		else {
-			nVersLen = sizeof(" -") - 1;
-		}
-
-		if (widthVersBest < nVersLen) {
-			widthVersBest = nVersLen;
-		}
+		widthDescBest = Q_max(widthDescBest, Q_strlen(p->m_desc));
+		widthFileBest = Q_max(widthFileBest, Q_strlen(p->m_file));
+		widthVersBest = Q_max(widthVersBest, (p->info() && p->info()->version) ? Q_strlen(p->info()->version) : sizeof(" -") - 1);
 	}
 }
 
@@ -619,7 +606,7 @@ void MPluginList::show(int source_index)
 	else
 		META_CONS("Child plugins:");
 
-	size_t nWidthDesc = 0, nWidthFile = 0, nWidthVers = 0;
+	size_t nWidthDesc, nWidthFile, nWidthVers;
 	getWidthFields(source_index, nWidthDesc, nWidthFile, nWidthVers);
 
 	char *desc = new char[nWidthDesc + 1]; // + 1 for term null
