@@ -40,6 +40,7 @@ public:
 	void show(int source_index = 0);						// list plugins to console
 	void show_client(edict_t* pEntity);						// list plugins to player client
 	void clear_source_plugin_index(int source_index);
+	void getWidthFields(int source_index, size_t &widthDescBest, size_t &widthFileBest, size_t &widthVersBest);
 
 private:
 	size_t m_last_index;

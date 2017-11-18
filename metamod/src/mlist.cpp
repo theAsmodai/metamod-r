@@ -577,20 +577,59 @@ void MPluginList::retry_all(PLUG_LOADTIME now)
 	}
 }
 
+void MPluginList::getWidthFields(int source_index, size_t &widthDescBest, size_t &widthFileBest, size_t &widthVersBest)
+{
+	for (auto p : m_plugins)
+	{
+		if (p->m_status < PL_VALID)
+			continue;
+
+		if (source_index > 0 && p->m_source_plugin_index != source_index)
+			continue;
+
+		size_t nDescLen = Q_strlen(p->m_desc);
+		if (widthDescBest < nDescLen) {
+			widthDescBest = nDescLen;
+		}
+
+		size_t nFileLen = Q_strlen(p->m_file);
+		if (widthFileBest < nFileLen) {
+			widthFileBest = nFileLen;
+		}
+
+		size_t nVersLen;
+		if (p->info() && p->info()->version) {
+			nVersLen = Q_strlen(p->info()->version);
+		}
+		else {
+			nVersLen = sizeof(" -") - 1;
+		}
+
+		if (widthVersBest < nVersLen) {
+			widthVersBest = nVersLen;
+		}
+	}
+}
+
 // List plugins and information about them in a formatted table.
 void MPluginList::show(int source_index)
 {
-	int n = 0, r = 0;
-	char desc[15 + 1], file[16 + 1], vers[7 + 1]; // plus 1 for term null
-
 	if (source_index <= 0)
 		META_CONS("Currently loaded plugins:");
 	else
 		META_CONS("Child plugins:");
 
-	META_CONS("  %*s  %-*s  %-4s %-4s  %-*s  v%-*s  %-*s  %-5s %-5s", WIDTH_MAX_PLUGINS, "", sizeof desc - 1, "description", "stat", "pend",
-	          sizeof file - 1, "file", sizeof vers - 1, "ers", 2 + WIDTH_MAX_PLUGINS, "src", "load ", "unlod");
+	size_t nWidthDesc = 0, nWidthFile = 0, nWidthVers = 0;
+	getWidthFields(source_index, nWidthDesc, nWidthFile, nWidthVers);
 
+	char *desc = new char[nWidthDesc + 1]; // + 1 for term null
+	char *file = new char[nWidthFile + 1];
+	char *vers = new char[nWidthVers + 1];
+
+	META_CONS("  %*s  %-*s  %-4s %-4s  %-*s  v%-*s  %-3s  %-5s %-5s",
+		WIDTH_MAX_PLUGINS, "", nWidthDesc, "description", "stat", "pend", nWidthFile, "file", nWidthVers, "ers", "src", "load ", "unload");
+
+	int nPlugins = 0, nRunPlugins = 0;
 	for (auto p : m_plugins) {
 		if (p->m_status < PL_VALID)
 			continue;
@@ -598,31 +637,31 @@ void MPluginList::show(int source_index)
 		if (source_index > 0 && p->m_source_plugin_index != source_index)
 			continue;
 
-		Q_strncpy(desc, p->m_desc, sizeof desc - 1);
-		desc[sizeof desc - 1] = '\0';
-
-		Q_strncpy(file, p->m_file, sizeof file - 1);
-		file[sizeof file - 1] = '\0';
+		Q_strcpy(desc, p->m_desc);
+		Q_strcpy(file, p->m_file);
 
 		if (p->info() && p->info()->version) {
-			Q_strncpy(vers, p->info()->version, sizeof vers - 1);
-			vers[sizeof vers - 1] = '\0';
+			Q_strcpy(vers, p->info()->version);
 		}
 		else {
-			Q_strncpy(vers, " -", sizeof vers - 1);
-			vers[sizeof vers - 1] = '\0';
+			Q_strcpy(vers, " -");
 		}
 
-		META_CONS(" [%*d] %-*s  %-4s %-4s  %-*s  v%-*s  %-*s  %-5s %-5s", WIDTH_MAX_PLUGINS, p->m_index,
-		          sizeof desc - 1, desc, p->str_status(ST_SHOW), p->str_action(SA_SHOW), sizeof file - 1, file, sizeof vers - 1, vers,
-		          2 + WIDTH_MAX_PLUGINS, p->str_source(SO_SHOW), p->str_loadable(SL_SHOW), p->str_unloadable(SL_SHOW));
+		META_CONS(" [%*d] %-*s  %-4s %-4s  %-*s  v%-*s  %-3s  %-5s %-5s", WIDTH_MAX_PLUGINS, p->m_index,
+		          nWidthDesc, desc, p->str_status(ST_SHOW), p->str_action(SA_SHOW), nWidthFile, file, nWidthVers, vers,
+		          p->str_source(SO_SHOW), p->str_loadable(SL_SHOW), p->str_unloadable(SL_SHOW));
 
 		if (p->m_status == PL_RUNNING)
-			r++;
-		n++;
+			nRunPlugins++;
+
+		nPlugins++;
 	}
 
-	META_CONS("%d plugins, %d running", n, r);
+	META_CONS("%d plugins, %d running", nPlugins, nRunPlugins);
+
+	delete [] desc;
+	delete [] file;
+	delete [] vers;
 }
 
 // List plugins and information to Player/client entity.  Differs from the
