@@ -145,6 +145,9 @@ void EXT_FUNC mutil_CenterSayVarargs(plid_t plid, hudtextparms_t tparms, const c
 		if (FNullEnt(pEntity) || pEntity->free)
 			continue;
 
+		if ((pEntity->v.flags & FL_DORMANT) == FL_DORMANT)
+			continue;
+
 		UTIL_HudMessage(pEntity, tparms, buf);
 	}
 }
