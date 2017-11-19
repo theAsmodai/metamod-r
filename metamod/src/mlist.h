@@ -36,8 +36,8 @@ public:
 	bool refresh(PLUG_LOADTIME now);						// update from re-read inifile
 	void unpause_all();										// unpause any paused plugins
 	void retry_all(PLUG_LOADTIME now);						// retry any pending plugin actions
-	void show(int source_index = 0);						// list plugins to console use dynamic aligment
-	void show_static(int source_index = 0);					// list plugins to console use static aligment
+	void show(int source_index = 0);						// list plugins to console use dynamic alignment
+	void show_static(int source_index = 0);					// list plugins to console use static alignment
 	void show_client(edict_t* pEntity);						// list plugins to player client
 	void clear_source_plugin_index(int source_index);
 	void getWidthFields(int source_index, size_t &widthDescBest, size_t &widthFileBest, size_t &widthVersBest);
