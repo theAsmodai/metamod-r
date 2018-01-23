@@ -10,7 +10,7 @@ const game_modinfo_t g_known_games[] = {
 	// Previously enumerated in this sourcefile, the list is now kept in a
 	// separate file, generated based on game information stored in a
 	// convenient db.
-	{ "action",             "ahl",                      "ahl.dll",                   "Action Half-Life"                                 }, // _i386.so,  + director's cut [2016], updated linux binary name
+	{ "action",             "ahl.so",                   "ahl.dll",                   "Action Half-Life"                                 }, // _i386.so,  + director's cut [2016], updated linux binary name
 	{ "ag",                 "ag.so",                    "ag.dll",                    "Adrenaline Gamer"                                 }, // .so file by OpenAG fork
 	{ "asheep",             nullptr,                    "hl.dll",                    "Azure Sheep"                                      }, // have no linux binary found!
 	{ "bdef",               "server.so",                "server.dll",                "Base Defense"                                     }, // placed in normal dll folder [2017]
@@ -26,20 +26,20 @@ const game_modinfo_t g_known_games[] = {
 	{ "cstrike",            "cs.so",                    "mp.dll",                    "Counter-Strike 1.6"                               },
 	{ "czero",              "cs.so",                    "mp.dll",                    "Counter-Strike:Condition Zero"                    },
 	{ "czeror",             "cz.so",                    "cz.dll",                    "Counter-Strike:Condition Zero Deleted Scenes"     },
-	{ "dcrisis",            "dc",                       "dc.dll",                    "Desert Crisis"                                    }, // _i386.so, updated linux binary name [2010]
+	{ "dcrisis",            "dc.so",                    "dc.dll",                    "Desert Crisis"                                    }, // _i386.so, updated linux binary name [2010]
 	{ "decay",              nullptr,                    "decay.dll",                 "Half-Life: Decay"                                 }, // have no linux binary!
 	{ "dmc",                "dmc.so",                   "dmc.dll",                   "Deathmatch Classic"                               },
 	{ "dod",                "dod.so",                   "dod.dll",                   "Day of Defeat"                                    },
 	{ "dpb",                "pb.i386.so",               "pb.dll",                    "Digital Paintball"                                }, // ...
-	{ "esf",                "../linuxdll/hl",		    "hl.dll",                    "Earth's Special Forces (old)"                     }, // _i386.so, workaround for basic-linux version
-	{ "esf",                "hl",           		    "hl.dll",                    "Earth's Special Forces"                           }, // _i386.so, full linux version
+	{ "esf",                "../linuxdll/hl.so",        "hl.dll",                    "Earth's Special Forces (old)"                     }, // _i386.so, workaround for basic-linux version
+	{ "esf",                "hl.so",           		    "hl.dll",                    "Earth's Special Forces"                           }, // _i386.so, full linux version
 	{ "existence",          nullptr,                    "existence.dll",             "Existence"                                        }, // have no linux binary found!
 	{ "firearms",           nullptr,                    "firearms.dll",              "Firearms"                                         }, // have no linux binary found!
-	{ "frontline",          "front",                    "frontline.dll",             "Frontline Force"                                  }, // _i386.so, updated linux binary name [2012]
+	{ "frontline",          "front.so",                 "frontline.dll",             "Frontline Force"                                  }, // _i386.so, updated linux binary name [2012]
 	{ "gangstawars",        nullptr,                    "gwars27.dll",               "Gangsta Wars"                                     }, // have no linux binary found!
 	{ "gangwars",           nullptr,                    "mp.dll",                    "Gangwars"                                         }, // have no linux binary found!
 	{ "gearbox",            "opfor.so",                 "opfor.dll",                 "Opposing Force"                                   },
-	{ "globalwarfare",      "gw",                       "mp.dll",                    "Global Warfare"                                   }, // _i386.so, updated linux binary name [2012]
+	{ "globalwarfare",      "gw.so",                    "mp.dll",                    "Global Warfare"                                   }, // _i386.so, updated linux binary name [2012]
 	{ "goldeneye",          nullptr,                    "mp.dll",                    "Goldeneye"                                        }, // have no linux binary found!
 	{ "hcfrenzy",           "hcfrenzy.so",              "hcfrenzy.dll",              "Headcrab Frenzy"                                  },
 	{ "hl15we",             "hl.so",                    "hl.dll",                    "Half-Life 1.5: Weapon Edition"                    },
@@ -69,15 +69,14 @@ const game_modinfo_t g_known_games[] = {
 	{ "recbb2",             "recb.so",                  "recb.dll",                  "Resident Evil : Cold Blood"                       },
 	{ "rewolf",             nullptr,                    "gunman.dll",                "Gunman Chronicles"                                }, // have no linux binary found!
 	{ "ricochet",           "ricochet.so",              "mp.dll",                    "Ricochet"                                         },
-	{ "rockcrowbar",        "rc.so",                    "rc.dll",                    "Rocket Crowbar"                                   },
-	{ "rockcrowbar",        "rc_i386.so",               "rc.dll",                    "Rocket Crowbar"                                   },
+	{ "rockcrowbar",        "rc.so",                    "rc.dll",                    "Rocket Crowbar"                                   }, // + _i386.so
 	{ "rspecies",           "hl.so",                    "hl.dll",                    "Rival Species"                                    },
 	{ "scihunt",            "shunt.so",                 "shunt.dll",                 "Scientist Hunt"                                   },
 	{ "ship",               "ship.so",                  "ship.dll",                  "The Ship"                                         },
 	{ "si",                 "si.so",                    "si.dll",                    "Science & Industry"                               },
 	{ "snow",               "snow.so",                  "snow.dll",                  "Snow-War"                                         },
 	{ "stargatetc",         "hl.so",                    "hl.dll",                    "StargateTC (Old, 1.x)"                            },
-	{ "stargatetc",         "stc",                      "hl.dll",                    "StargateTC (Updated, 2.x)"                        }, // _i386.so
+	{ "stargatetc",         "stc.so",                   "hl.dll",                    "StargateTC (Updated, 2.x)"                        }, // _i386.so
 	{ "stargatetc",         "stc_i386_opt.so",          "hl.dll",                    "StargateTC (Updated, 2.x)"                        }, // ...
 	{ "svencoop",           "hl.so",                    "hl.dll",                    "Sven Coop (Old)"                                  },
 	{ "svencoop",           "server.so",                "server.dll",                "Sven Coop (Steam)"                                },
@@ -87,17 +86,17 @@ const game_modinfo_t g_known_games[] = {
 	{ "timeless",           "pt.so",                    "timeless.dll",              "Project Timeless"                                 },
 	{ "tod",                "hl.so",                    "hl.dll",                    "Tour of Duty"                                     },
 	{ "trainhunters",       "th.so",                    "th.dll",                    "Train Hunters"                                    },
-	{ "ts",	                "ts",                       "mp.dll",		         	 "The Specialists"                                  }, //_i686.so, _i386.so 
+	{ "ts",	                "ts.so",                    "mp.dll",		         	 "The Specialists"                                  }, //_i686.so, _i386.so 
 	{ "tt",                 "tt.so",                    "tt.dll",                    "The Trenches"                                     },
 	{ "underworld",         "uw.so",                    "uw.dll",                    "Underworld Bloodline"                             },
 	{ "valve",              "hl.so",                    "hl.dll",                    "Half-Life"                                        },
 	{ "vs",                 "vs.so",                    "mp.dll",                    "VampireSlayer"                                    },
 	{ "wantedhl",           "hl.so",                    "wanted.dll",                "Wanted!"                                          },
-	{ "wizardwars",         "wizardwars",     			"wizardwars.dll",            "Wizard Wars (Steam)"                              },
-	{ "wizardwars_beta",    "wizardwars",     			"wizardwars.dll",            "Wizard Wars Beta (Steam)"                         },
+	{ "wizardwars",         "wizardwars.so",    		"wizardwars.dll",            "Wizard Wars (Steam)"                              },
+	{ "wizardwars_beta",    "wizardwars.so",     		"wizardwars.dll",            "Wizard Wars Beta (Steam)"                         }, // folder's name is not same as original. not duplicate
 	{ "wizwars",            "mp.so",                    "hl.dll",                    "Wizard Wars (Old)"                                },
-	{ "wormshl",            "wormshl",                  "wormshl.dll",               "WormsHL"                                          }, // _i586.so old, _i686.so steam
-	{ "zp",                 "hl",                       "mp.dll",                    "Zombie Panic"                                     }, // _i386.so
+	{ "wormshl",            "wormshl.so",               "wormshl.dll",               "WormsHL"                                          }, // _i586.so old, _i686.so steam
+	{ "zp",                 "hl.so",                    "mp.dll",                    "Zombie Panic"                                     }, // _i386.so
 
 
 	// End of list terminator:
