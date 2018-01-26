@@ -227,7 +227,7 @@ void compile_dllfunc_callbacks()
 	for (auto& cd : g_dllfunc_cdata) {
 		jitdata.pfn_original = *(size_t *)(size_t(g_GameDLL.funcs.dllapi_table) + cd.offset);
 		jitdata.args_count = cd.args_count;
-		jitdata.has_ret = cd.has_ret;
+		jitdata.rettype = cd.rettype;
 		jitdata.has_varargs = cd.has_varargs;
 		jitdata.pfn_offset = cd.offset;
 		jitdata.mm_hook_time = cd.mm_hook_time;
@@ -251,7 +251,7 @@ void compile_newdllfunc_callbacks()
 	for (auto& cd : g_newdllfunc_cdata) {
 		jitdata.pfn_original = g_GameDLL.funcs.newapi_table ? *(size_t *)(size_t(g_GameDLL.funcs.newapi_table) + cd.offset) : 0;
 		jitdata.args_count = cd.args_count;
-		jitdata.has_ret = cd.has_ret;
+		jitdata.rettype = cd.rettype;
 		jitdata.has_varargs = cd.has_varargs;
 		jitdata.pfn_offset = cd.offset;
 		jitdata.mm_hook_time = cd.mm_hook_time;

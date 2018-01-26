@@ -69,7 +69,7 @@ void CForwardCallbackJIT::naked_main()
 	};
 
 	auto globals = ebx;
-	auto locals_size = m_jitdata->has_ret ? sizeof(int) * 2 /* orig + over */ : 0;
+	auto locals_size = m_jitdata->rettype != rt_void ? sizeof(int) * 2 /* orig + over */ : 0;
 	auto framesize = align(locals_size + sizeof(meta_globals_t) + /* for align */m_jitdata->args_count * sizeof(int), xmmreg_size) - m_jitdata->args_count * sizeof(int);
 
 	if (m_jitdata->has_varargs) {
@@ -115,7 +115,7 @@ void CForwardCallbackJIT::naked_main()
 	mov(dword_ptr[globals + mg_esp_save], esp);
 
 	// setup retval pointers
-	if (m_jitdata->has_ret) {
+	if (m_jitdata->rettype != rt_void) {
 		lea(eax, dword_ptr[esp + over_ret]);
 		mov(dword_ptr[globals + mg_orig_ret], esp);
 		mov(dword_ptr[globals + mg_over_ret], eax);
@@ -160,7 +160,13 @@ void CForwardCallbackJIT::naked_main()
 		mov(dword_ptr[globals + mg_status], ecx);
 
 		// save return value if override or supercede
-		if (m_jitdata->has_ret) {
+		if (m_jitdata->rettype != rt_void) {
+			if (m_jitdata->rettype == rt_float) {
+				sub(esp, sizeof(int));
+				fstp(dword_ptr[esp]);
+				pop(eax);
+			}
+
 			mov(ecx, dword_ptr[esp + over_ret]);
 			cmp(edx, MRES_OVERRIDE);
 			cmovae(ecx, eax);
@@ -181,7 +187,7 @@ void CForwardCallbackJIT::naked_main()
 		}
 
 		// store original return value
-		if (m_jitdata->has_ret) {
+		if (m_jitdata->rettype == rt_integer) {
 			if (m_jitdata->pfn_original)
 				mov(dword_ptr[esp + orig_ret], eax);
 			else
@@ -189,10 +195,18 @@ void CForwardCallbackJIT::naked_main()
 
 			jmp("skip_supercede");
 		}
+		else if (m_jitdata->rettype == rt_float) {
+			if (m_jitdata->pfn_original)
+				fstp(dword_ptr[esp + orig_ret]);
+			else
+				mov(dword_ptr[esp + orig_ret], 0);
+
+			jmp("skip_supercede");
+		}
 	}
 	L("skip_original");
 	{
-		if (m_jitdata->has_ret) {
+		if (m_jitdata->rettype != rt_void) {
 			// if supercede
 			mov(eax, dword_ptr[esp + over_ret]);
 			mov(dword_ptr[esp + orig_ret], eax);
@@ -241,7 +255,13 @@ void CForwardCallbackJIT::naked_main()
 		mov(dword_ptr[globals + mg_status], ecx);
 
 		// save return value if override or supercede
-		if (m_jitdata->has_ret) {
+		if (m_jitdata->rettype != rt_void) {
+			if (m_jitdata->rettype == rt_float) {
+				sub(esp, sizeof(int));
+				fstp(dword_ptr[esp]);
+				pop(eax);
+			}
+
 			cmp(edx, MRES_OVERRIDE);
 			mov(ecx, dword_ptr[esp + over_ret]);
 			cmovae(ecx, eax);
@@ -264,10 +284,16 @@ void CForwardCallbackJIT::naked_main()
 	movq(qword_ptr[globals + xmmreg_size], xmm1);
 
 	// setup return value and override it if needed
-	if (m_jitdata->has_ret) {
+	if (m_jitdata->rettype == rt_integer) {
 		mov(eax, dword_ptr[esp + orig_ret]);
 		cmp(dword_ptr[globals + mg_status], MRES_OVERRIDE);
 		cmovae(eax, dword_ptr[esp + over_ret]);
+	}
+	else if (m_jitdata->rettype == rt_float) {
+		lea(eax, dword_ptr[esp + over_ret]);
+		cmp(dword_ptr[globals + mg_status], MRES_OVERRIDE);
+		cmovb(eax, esp); // orig_ret
+		fld(dword_ptr[eax]);
 	}
 
 	// epilogue
@@ -280,7 +306,7 @@ void CForwardCallbackJIT::naked_main()
 void CForwardCallbackJIT::call_func(Reg32 addr)
 {
 	const size_t fixed_args_count = m_jitdata->args_count - (m_jitdata->has_varargs ? 1u /* excluding format string */ : 0u);
-	const size_t strbuf_offset = m_jitdata->has_ret ? sizeof(int) * 2u /* orig + over */ : 0u;
+	const size_t strbuf_offset = m_jitdata->rettype != rt_void ? sizeof(int) * 2u /* orig + over */ : 0u;
 
 	// push formatted buf instead of format string
 	if (m_jitdata->has_varargs) {

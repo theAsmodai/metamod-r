@@ -202,7 +202,7 @@ void compile_engfuncs_callbacks()
 	for (auto& cd : g_engfuncs_cdata) {
 		jitdata.pfn_original = *(size_t *)(size_t(&g_engfuncs) + cd.offset);
 		jitdata.args_count = cd.args_count;
-		jitdata.has_ret = cd.has_ret;
+		jitdata.rettype = cd.rettype;
 		jitdata.has_varargs = cd.has_varargs;
 		jitdata.pfn_offset = cd.offset;
 		jitdata.mm_hook_time = cd.mm_hook_time;
