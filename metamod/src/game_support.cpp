@@ -214,7 +214,7 @@ bool setup_gamedll(gamedll_t *gamedll)
 	}
 
 	// Neither override nor known-list found a gamedll.
-	if ((!known || !knowfn) && !g_config->m_gamedll)
+	if (!known && !g_config->m_gamedll)
 		return false;
 
 	// Use override-dll if specified.
