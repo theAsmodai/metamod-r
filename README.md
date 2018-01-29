@@ -8,7 +8,7 @@ Metamod-r is fully reworked fork of original Metamod by Jussi Kivilinna for Half
 
 | Game \ Mod | Windows  | Linux   | Comment
 | ------------- | ------| ------|------|
-| [Action Half-Life](http://www.moddb.com/mods/action-half-life/downloads/) | :heavy_check_mark: |  :x: |  Have no linux binary. 
+| [Action Half-Life](http://www.moddb.com/mods/action-half-life/downloads/) | :heavy_check_mark: |  :heavy_check_mark: | 
 | [Adrenaline Gamer](https://github.com/martinwebrant/agmod) | :heavy_check_mark: |  :heavy_check_mark:  |  
 | [Azure Sheep](http://www.moddb.com/mods/azure-sheep/downloads/) | :heavy_check_mark: |  :x: |  Have no linux binary.
 | [Base Defense](http://www.moddb.com/mods/b-def/downloads/) |  :heavy_check_mark: |  :heavy_check_mark: | 
