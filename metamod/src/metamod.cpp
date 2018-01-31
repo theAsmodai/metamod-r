@@ -186,6 +186,18 @@ void metamod_startup()
 	//
 	// In fact, we need gamedir even earlier, so moved up above.
 
+	const char *pf = LOCALINFO("mm_pluginsfile");
+	if (pf && *pf != '\0') {
+		META_LOG("Pluginfile specified via localinfo: %s", pf);
+
+		if (is_file_exists_in_gamedir(pf)) {
+			Q_strlcpy(pluginFile, pf);
+		}
+		else {
+			META_ERROR("Empty/missing plugins.ini file: %s; falling back to %s", pf, pluginFile);
+		}
+	}
+
 	// Load plugins file
 	if (!is_file_exists_in_gamedir(pluginFile)) {
 		Q_strlcpy(pluginFile, g_config->directory());
