@@ -1,6 +1,6 @@
 # metamod-r [![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:Metamod_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=Metamod_Publish&guest=1) [![Download](https://camo.githubusercontent.com/2b15ec2fc402e02b66fde9eab7e896406caeddac/687474703a2f2f7265686c64732e6f72672f76657273696f6e2f6d6574616d6f642d2d722e737667)](http://teamcity.rehlds.org/guestAuth/downloadArtifacts.html?buildTypeId=Metamod_Publish&buildId=lastSuccessful) [![License: GPL v3](https://camo.githubusercontent.com/bf135a9cea09d0ea4bba410582c0e70ec8222736/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f4c6963656e73652d47504c25323076332d626c75652e737667)](https://www.gnu.org/licenses/gpl-3.0)
 
-Metamod-r is fully reworked fork of original Metamod by Jussi Kivilinna for Half-Life 1. It contains a huge number of performance optimizations and much cleaner code. The core was written using the JIT compiler.
+Metamod-r is based on original Metamod by Will Day for Half-Life 1 with some improvements by Jussi Kivilinna. It contains a huge number of performance optimizations and much cleaner code. The core was written using the JIT compiler.
 
 
 ## Supported games
