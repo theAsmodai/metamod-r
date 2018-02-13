@@ -45,7 +45,7 @@ void metamod_startup()
 	Q_snprintf(execFile,   sizeof execFile,   "%s/%s", g_config->directory(), EXEC_CFG);
 
 	META_CONS("   ");
-	META_CONS("   Metamod-r version %s Copyright (c) 2016-2017 ReHLDS Team (rebuild of original Metamod by Will Day and Jussi Kivilinna)", APP_VERSION);
+	META_CONS("   Metamod-r version %s Copyright (c) 2016-2018 ReHLDS Team (rebuild of original Metamod by Will Day and Jussi Kivilinna)", APP_VERSION);
 	META_CONS("   Metamod-r comes with ABSOLUTELY NO WARRANTY; for details type `meta gpl'.");
 	META_CONS("   This is free software, and you are welcome to redistribute it");
 	META_CONS("   under certain conditions; type `meta gpl' for details.");
