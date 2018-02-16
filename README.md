@@ -89,3 +89,37 @@ Metamod-r is based on original Metamod by Will Day for Half-Life 1 with some imp
 | [Wizard Wars](http://www.moddb.com/mods/wizard-wars/downloads/) | :heavy_check_mark: |  :heavy_check_mark: | And `Beta` version too. 
 | [WormsHL](http://www.moddb.com/mods/wormshl/downloads/) | :heavy_check_mark: |  :heavy_check_mark: 
 | [Zombie Panic](http://www.moddb.com/mods/zombie-panic/downloads/) | :heavy_check_mark: |  :heavy_check_mark: 
+
+## Build instructions
+There are several software requirements for building rehlds:
+<ol>
+<li>Java Development Kit (JDK) 7+ (http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)</li>
+<li>For Windows: Visual Studio 2015 and later</li>
+<li>For Linux: Intel C++ Compiler 13 and later</li>
+</ol>
+
+### Checking requirements
+#### JDK version
+Windows<pre>&gt; %JAVA_HOME%\bin\javac -version
+javac 1.8.0_25
+</pre>
+
+Linux
+<pre>$ javac -version
+javac 1.7.0_65
+</pre>
+
+#### Visual Studio
+Help -> About
+
+#### ICC
+<pre>$ icc --version
+icc (ICC) 15.0.1 20141023
+</pre>
+
+### Building
+On Windows:
+<pre>gradlew --max-workers=1 clean buildRelease</pre>
+
+On Linux (ICC):
+<pre>./gradlew --max-workers=1 clean buildRelease</pre>
