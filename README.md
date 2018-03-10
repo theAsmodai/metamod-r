@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/theAsmodai/metamod-r.svg?style=flat-square)](https://github.com/theAsmodai/metamod-r/stargazers) 
 [![Experimental](https://img.shields.io/badge/status-experimental-orange.svg?style=flat-square)](https://github.com/theAsmodai/metamod-r/)
 
-**Metamod-r** based on the original version of [Metamod](http://metamod.org/) written by _Will Day_ for Half-Life 1 with some improvements from [Jussi Kivilinna](https://github.com/jkivilin) ([Metamod-p](https://github.com/jkivilin/metamod-p)). This product contains a large number of performance optimizations and more pure code. The kernel was written using JIT compiler. It is better to use with [ReHLDS](https://github.com/dreamstalker/ReHLDS). Distributed under license 
+**Metamod-r** is based on the original version of [Metamod](http://metamod.org/) written by _Will Day_ for Half-Life 1 with some improvements from [Jussi Kivilinna](https://github.com/jkivilin) ([Metamod-p](https://github.com/jkivilin/metamod-p)). This product contains a large number of performance optimizations and more pure code. The core was written using JIT compiler. It is better to use with [ReHLDS](https://github.com/dreamstalker/ReHLDS). Distributed under license 
 [![GitHub license](https://img.shields.io/github/license/theAsmodai/metamod-r.svg?style=flat-square)](https://github.com/theAsmodai/metamod-r/blob/master/LICENSE). 
 
 ## Documentation
