@@ -114,6 +114,29 @@ char* realpath(const char* file_name, char* resolved_name)
 }
 #endif // _WIN32
 
+bool is_file_exists(const char* file)
+{
+	struct stat64 st;
+	int ret = stat64(file, &st);
+	if (ret != 0) {
+		META_DEBUG(5, "Unable to stat '%s': %s", file, strerror(errno));
+		return false;
+	}
+
+	int reg = S_ISREG(st.st_mode);
+	if (!reg) {
+		META_DEBUG(5, "Not a regular file: %s", file);
+		return false;
+	}
+
+	if (!st.st_size) {
+		META_DEBUG(5, "Empty file: %s", file);
+		return false;
+	}
+
+	return true;
+}
+
 // Checks for a non-empty file, relative to the gamedir if necessary.
 // Formerly used LOAD_FILE_FOR_ME, which provided a simple way to check for
 // a file under the gamedir, but which would _also_ look in the sibling
@@ -138,28 +161,7 @@ bool is_file_exists_in_gamedir(const char* path)
 		Q_snprintf(buf, sizeof buf, "%s/%s", g_GameDLL.gamedir, path);
 	}
 
-	struct stat64 st;
-	int ret = stat64(buf, &st);
-	if (ret != 0) {
-		META_DEBUG(5, "Unable to stat '%s': %s", buf, strerror(errno));
-		return false;
-	}
-
-	int reg = S_ISREG(st.st_mode);
-	if (!reg) {
-		META_DEBUG(5, "Not a regular file: %s", buf);
-		return false;
-	}
-
-	if (!st.st_size) {
-		META_DEBUG(5, "Empty file: %s", buf);
-		return false;
-	}
-
-	if (ret == 0 && reg)
-		return true;
-
-	return false;
+	return is_file_exists(buf);
 }
 
 // Turns path into a full path:

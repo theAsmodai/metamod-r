@@ -106,9 +106,22 @@ const game_modinfo_t g_known_games[] = {
 // Find a modinfo corresponding to the given game name.
 static const game_modinfo_t *lookup_game(const char *name)
 {
+	char temp[MAX_PATH];
+
 	for (auto& known : g_known_games) {
-		if (known.name && !Q_stricmp(known.name, name))
-			return &known;
+		if (known.name && !Q_stricmp(known.name, name)) {
+#ifdef _WIN32
+			const char* knowndll = known.win_dll;
+#else
+			const char* knowndll = known.linux_so;
+#endif
+			if (!knowndll)
+				continue;
+
+			Q_snprintf(temp, sizeof temp, "dlls/%s", knowndll);
+			if (is_file_exists_in_gamedir(temp))
+				return &known;
+		}
 	}
 
 	// no match found
@@ -212,10 +225,6 @@ bool setup_gamedll(gamedll_t *gamedll)
 		knownfn = known->linux_so;
 #endif
 	}
-
-	// Neither override nor known-list found a gamedll.
-	if (!known && !g_config->m_gamedll)
-		return false;
 
 	// Use override-dll if specified.
 	if (g_config->m_gamedll) {
