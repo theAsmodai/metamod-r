@@ -11,7 +11,7 @@
 | :x: | `API 3.1+` |![](https://i.imgur.com/AzhAYR4.png)   ![](https://i.imgur.com/t23p9tU.png)   |  [![Download](https://camo.githubusercontent.com/2b15ec2fc402e02b66fde9eab7e896406caeddac/687474703a2f2f7265686c64732e6f72672f76657273696f6e2f6d6574616d6f642d2d722e737667)](http://teamcity.rehlds.org/guestAuth/downloadArtifacts.html?buildTypeId=Metamod_Publish&buildId=lastSuccessful) 
 
 [![Experimental](https://img.shields.io/badge/status-experimental-orange.svg?style=flat-square)](https://github.com/theAsmodai/metamod-r/)
-[![Build Status](http://teamcity.rehlds.org/app/rest/builds/buildType:(id:Metamod_Publish)/statusIcon)](http://teamcity.rehlds.org/viewType.html?buildTypeId=Metamod_Publish&guest=1) 
+[![Build Status](https://img.shields.io/teamcity/http/teamcity.rehlds.org/e/Metamod_Publish.svg?style=flat-square&label=TC%20Build)](http://teamcity.rehlds.org/viewType.html?buildTypeId=Metamod_Publish&guest=1) 
 [![GitHub issues](https://img.shields.io/github/issues/theAsmodai/metamod-r.svg??longCache=true&style=flat-square)](https://github.com/theAsmodai/metamod-r/issues) 
 [![GitHub forks](https://img.shields.io/github/forks/theAsmodai/metamod-r.svg??longCache=true&style=flat-square)](https://github.com/theAsmodai/metamod-r/network) 
 [![GitHub stars](https://img.shields.io/github/stars/theAsmodai/metamod-r.svg??longCache=true&style=flat-square)](https://github.com/theAsmodai/metamod-r/stargazers) 
@@ -25,7 +25,7 @@ Distributed under
 
 ### Supported games
 * ![en](https://i.imgur.com/rm67tUZ.png) Actual [list of supported games](https://github.com/theAsmodai/metamod-r/wiki/Supported-games).
-* ![ru](https://i.imgur.com/ItziiKg.png) Обновляемый [список поддерживаемых игр](https://github.com/theAsmodai/metamod-r/wiki/Поддерживаемые-игры).
+* ![ru](https://i.imgur.com/ItziiKg.png) Актуальный [список поддерживаемых игр](https://github.com/theAsmodai/metamod-r/wiki/Поддерживаемые-игры).
 
 
 ### Build instructions
