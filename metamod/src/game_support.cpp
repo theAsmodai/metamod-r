@@ -12,6 +12,7 @@ const game_modinfo_t g_known_games[] = {
 	// convenient db.
 	{ "action",             "ahl.so",                   "ahl.dll",                   "Action Half-Life"                                 }, // _i386.so,  + director's cut [2016], updated linux binary name
 	{ "ag",                 "ag.so",                    "ag.dll",                    "Adrenaline Gamer"                                 }, // .so file by OpenAG fork
+	{ "ag",                 "ag_i386.so",               "ag.dll",                    "Adrenaline Gamer"                                 }, // .so file by OpenAG fork
 	{ "asheep",             nullptr,                    "hl.dll",                    "Azure Sheep"                                      }, // have no linux binary found!
 	{ "bdef",               "server.so",                "server.dll",                "Base Defense"                                     }, // placed in normal dll folder [2017]
 	{ "bg",                 "bg.so",                    "bg.dll",                    "The Battle Grounds"                               },
