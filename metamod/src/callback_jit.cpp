@@ -316,6 +316,8 @@ void CForwardCallbackJIT::call_func(Reg32 addr)
 		}
 		else
 			push(esp);
+
+		push(size_t("%s"));
 	}
 
 	// push normal args
@@ -327,7 +329,7 @@ void CForwardCallbackJIT::call_func(Reg32 addr)
 
 	// pop stack
 	if (m_jitdata->args_count)
-		add(esp, m_jitdata->args_count * sizeof(int));
+		add(esp, (m_jitdata->args_count + (m_jitdata->has_varargs ? 1u : 0u)) * sizeof(int));
 }
 
 void CForwardCallbackJIT::jit_debug(const char* format, ...)
