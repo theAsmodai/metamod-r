@@ -141,8 +141,14 @@ void CForwardCallbackJIT::naked_main()
 		jnz(go_next_plugin);
 
 		if (plug == m_jitdata->plugins->front()) { // init meta globals
+			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
+			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
+			mov(dword_ptr[globals + mg_status], eax); // NULL
+
+			// FIXME: in some cases causes a crash
+			//mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			//mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
 		}
 		else {
 			mov(eax, dword_ptr[globals + mg_mres]);
@@ -236,8 +242,14 @@ void CForwardCallbackJIT::naked_main()
 		jnz(go_next_plugin);
 
 		if (plug == m_jitdata->plugins->front()) { // init meta globals
+			xor_(eax, eax);
 			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
+			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
+			mov(dword_ptr[globals + mg_status], eax); // NULL
+
+			// FIXME: in some cases causes a crash
+			//mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+			//mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
 		}
 		else {
 			mov(eax, dword_ptr[globals + mg_mres]);
