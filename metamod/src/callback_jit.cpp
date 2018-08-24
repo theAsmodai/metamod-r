@@ -111,6 +111,7 @@ void CForwardCallbackJIT::naked_main()
 	}
 
 	// setup meta globals
+	mov(dword_ptr[globals + mg_mres], MRES_UNSET);
 	mov(dword_ptr[globals + mg_status], MRES_UNSET);
 	mov(dword_ptr[globals + mg_esp_save], esp);
 
@@ -140,21 +141,10 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (plug == m_jitdata->plugins->front()) { // init meta globals
-			xor_(eax, eax);
-			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
-			mov(dword_ptr[globals + mg_status], eax); // NULL
-
-			// FIXME: in some cases causes a crash
-			//mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			//mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
-		}
-		else {
-			mov(eax, dword_ptr[globals + mg_mres]);
-			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax);
-		}
+		// update meta globals
+		mov(eax, dword_ptr[globals + mg_mres]);
+		mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+		mov(dword_ptr[globals + mg_prev_mres], eax);
 
 		call_func(ecx);
 
@@ -241,21 +231,10 @@ void CForwardCallbackJIT::naked_main()
 		jecxz(go_next_plugin);
 		jnz(go_next_plugin);
 
-		if (plug == m_jitdata->plugins->front()) { // init meta globals
-			xor_(eax, eax);
-			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax); // MRES_UNSET
-			mov(dword_ptr[globals + mg_status], eax); // NULL
-
-			// FIXME: in some cases causes a crash
-			//mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			//mov(dword_ptr[globals + mg_prev_mres], MRES_UNSET);
-		}
-		else {
-			mov(eax, dword_ptr[globals + mg_mres]);
-			mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
-			mov(dword_ptr[globals + mg_prev_mres], eax);
-		}
+		// update meta globals
+		mov(eax, dword_ptr[globals + mg_mres]);
+		mov(dword_ptr[globals + mg_mres], MRES_IGNORED);
+		mov(dword_ptr[globals + mg_prev_mres], eax);
 
 		call_func(ecx);
 
@@ -289,12 +268,6 @@ void CForwardCallbackJIT::naked_main()
 		call_func(ecx);
 	}
 
-	// restore meta globals
-	movaps(xmm0, xmmword_ptr[esp + mg_backup + sizeof(int) * 2]);
-	movq(xmm1, qword_ptr[esp + mg_backup]);
-	movaps(xmmword_ptr[globals], xmm0);
-	movq(qword_ptr[globals + xmmreg_size], xmm1);
-
 	// setup return value and override it if needed
 	if (m_jitdata->rettype == rt_integer) {
 		mov(eax, dword_ptr[esp + orig_ret]);
@@ -307,6 +280,12 @@ void CForwardCallbackJIT::naked_main()
 		cmovb(eax, esp); // orig_ret
 		fld(dword_ptr[eax]);
 	}
+
+	// restore meta globals
+	movaps(xmm0, xmmword_ptr[esp + mg_backup + sizeof(int) * 2]);
+	movq(xmm1, qword_ptr[esp + mg_backup]);
+	movaps(xmmword_ptr[globals], xmm0);
+	movq(qword_ptr[globals + xmmreg_size], xmm1);
 
 	// epilogue
 	mov(esp, ebp);
