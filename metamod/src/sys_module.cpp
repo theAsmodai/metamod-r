@@ -142,7 +142,7 @@ module_handle_t CSysModule::find(void *addr)
 {
 	Dl_info dlinfo;
 	if ((!dladdr(addr, &dlinfo) && !dlinfo.dli_fbase) || !dlinfo.dli_fname) {
-		return false;
+		return INVALID_HANDLE;
 	}
 
 	module_handle_t hHandle = INVALID_HANDLE;
