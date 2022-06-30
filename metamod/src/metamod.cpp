@@ -449,7 +449,7 @@ static void meta_collect_fix_data(uint32* const esp, std::vector<fixdata_t>& dat
 	char* raddr = (char *)*pret;
 	size_t args_count = 0;
 
-	if ((raddr[0] == 0x83 && raddr[1] == 0xC4)) // add esp, XX
+	if ((unsigned char)raddr[0] == 0x83 && (unsigned char)raddr[1] == 0xC4) // add esp, XX
 		args_count = raddr[2] / 4;
 
 	// 8B 0D 4E 61 BC 00        mov     ecx, ds:0BC614Eh

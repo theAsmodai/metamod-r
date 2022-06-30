@@ -26,6 +26,5 @@ public:
 	const char* is_querying_cvar(const edict_t* pEntity) const;
 
 private:
-	int m_maxplayers = 32;
 	MPlayer m_players[MAX_CLIENTS + 1]; // array of players
 };

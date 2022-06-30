@@ -108,10 +108,10 @@ MPlugin* MPluginList::find_match(const char* prefix, bool& unique)
 		if (p->m_status < PL_VALID)
 			continue;
 
-		if (p->info() && !Q_strnicmp(p->info()->name, prefix, len)
+		if ((p->info() && !Q_strnicmp(p->info()->name, prefix, len))
 			|| !Q_strnicmp(p->m_desc, prefix, len)
 			|| !Q_strnicmp(p->m_file, prefix, len)
-			|| p->info() && !Q_strnicmp(p->info()->logtag, prefix, len)) {
+			|| (p->info() && !Q_strnicmp(p->info()->logtag, prefix, len))) {
 			if (pfound) {
 				unique = false;
 				break;

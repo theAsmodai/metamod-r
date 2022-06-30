@@ -1,7 +1,4 @@
 **/build
-**/.gradle
-.idea
-*.iml
 *.bat
 **/msvc/Debug*
 **/msvc/Release*
@@ -19,5 +16,5 @@
 **/PublishPath*.txt
 **/*.log
 
+metamod/version/appversion.h
 publish
-**/appversion.h

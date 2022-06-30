@@ -3,7 +3,7 @@
 CExtDll g_meta_extdll;
 
 CExtDll::CExtDll()
-	: m_dlls(nullptr), m_count(nullptr), m_hGameDLL(CSysModule::INVALID_HANDLE)
+	: m_hGameDLL(CSysModule::INVALID_HANDLE), m_dlls(nullptr), m_count(nullptr)
 {
 }
 
