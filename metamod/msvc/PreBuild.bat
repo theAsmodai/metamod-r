@@ -170,7 +170,7 @@ IF [%localChanged%]==[1] (
 :: Now form full version string like 1.0.0.1
 ::
 
-set new_version=%version_major%.%version_minor%.%version_maintenance%.%commitCount%-dev%version_modifed%
+set new_version=%version_major%.%version_minor%.%version_maintenance%.%commitCount%%version_modifed%
 
 ::
 :: Update appversion.h if version has changed or modifications/mixed revisions detected

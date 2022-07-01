@@ -61,7 +61,7 @@ jobs:
 
       - name: Build using Intel C++ Compiler 19.0
         run: |
-          rm -rf build && CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=COMPAT_GLIBC -B build && cmake --build build --verbose -j8
+          rm -rf build && CC=icc CXX=icpc cmake -DCMAKE_BUILD_TYPE=COMPAT_GLIBC -B build && cmake --build build -j8
 
       - name: Prepare SDK
         run: |

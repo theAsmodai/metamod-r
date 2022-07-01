@@ -29,7 +29,6 @@ option(USE_STATIC_LIBSTDC "Enables static linking libstdc++." OFF)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_VERBOSE_MAKEFILE ON)
 
 # Avoid -rdynamic -fPIC options
 set(CMAKE_SHARED_LIBRARY_CXX_FLAGS "")
