@@ -1,0 +1,30 @@
+METAMOD_ABI_1.0 {
+	global:
+		GiveFnptrsToDll;
+		GetEntityAPI;
+		GetEntityAPI2;
+		GetNewDLLFunctions;
+		Server_GetBlendingInterface;
+		worldspawn;
+		extern "C++" {
+			mutil_*;
+			mm_*;
+			metamod_*;
+			meta_*;
+			META_*;
+			get_function_table*;
+			do_link_ent*;
+			cmd_*;
+			compile_*;
+			client_meta*;
+			MReg*::*;
+			MPlugin*::*;
+			MPlayer*::*;
+			MConfig::*;
+			CJit::*;
+			CForwardCallbackJIT::*;
+			CExtDll::*;
+		};
+	local:
+		*;
+};

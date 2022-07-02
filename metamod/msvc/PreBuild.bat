@@ -4,6 +4,8 @@
 :: Pre-build auto-versioning script
 ::
 
+chcp 65001
+
 set srcdir=%~1
 set repodir=%~2
 
@@ -26,6 +28,14 @@ set "hour=%dt:~8,2%"
 set "min=%dt:~10,2%"
 set "sec=%dt:~12,2%"
 
+::
+:: Remove leading zero from MM (e.g 09 > 9)
+::
+for /f "tokens=* delims=0" %%I in ("%MM%") do set MM=%%I
+
+::
+:: Index into array to get month name
+::
 for /f "tokens=%MM%" %%I in ("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec") do set "month=%%I"
 
 ::
@@ -69,14 +79,6 @@ IF EXIST "%srcdir%\version.h" (
 			IF %%j==VERSION_MAINTENANCE set version_maintenance=%%k
 		)
 	)
-) ELSE (
-	FOR /F "usebackq tokens=1,2,3,* delims==" %%i in ("%repodir%..\gradle.properties") do (
-		IF NOT [%%j] == [] (
-			IF %%i==majorVersion set version_major=%%j
-			IF %%i==minorVersion set version_minor=%%j
-			IF %%i==maintenanceVersion set version_maintenance=%%j
-		)
-	)
 )
 
 ::
@@ -90,7 +92,7 @@ IF NOT %errlvl% == "1" (
 
 	FOR /F "tokens=*" %%i IN ('"git -C "%repodir%\." rev-list --count !branch_name!"') DO (
 		IF NOT [%%i] == [] (
-			set /a commitCount=%%i
+			set commitCount=%%i
 		)
 	)
 )
@@ -143,9 +145,9 @@ IF NOT %errlvl% == "1" (
 
 		:: append extra string
 		If NOT "!commitURL!"=="!commitURL:bitbucket.org=!" (
-			set commitURL=https://!commitURL!/commits/
-		) ELSE (
 			set commitURL=https://!commitURL!/commit/
+		) ELSE (
+			set commitURL=https://!commitURL!/commits/
 		)
 	)
 )
@@ -173,9 +175,7 @@ set new_version=%version_major%.%version_minor%.%version_maintenance%.%commitCou
 ::
 :: Update appversion.h if version has changed or modifications/mixed revisions detected
 ::
-IF NOT "%new_version%"=="%old_version%" (
-	goto _update
-)
+IF NOT "%new_version%"=="%old_version%" goto _update
 
 goto _exit
 
@@ -189,10 +189,10 @@ echo Updating appversion.h, new version is "%new_version%", the old one was %old
 echo #ifndef __APPVERSION_H__>"%srcdir%\appversion.h"
 echo #define __APPVERSION_H__>>"%srcdir%\appversion.h"
 echo.>>"%srcdir%\appversion.h"
-echo // >>"%srcdir%\appversion.h"
+echo //>>"%srcdir%\appversion.h"
 echo // This file is generated automatically.>>"%srcdir%\appversion.h"
 echo // Don't edit it.>>"%srcdir%\appversion.h"
-echo // >>"%srcdir%\appversion.h"
+echo //>>"%srcdir%\appversion.h"
 echo.>>"%srcdir%\appversion.h"
 echo // Version defines>>"%srcdir%\appversion.h"
 echo #define APP_VERSION "%new_version%">>"%srcdir%\appversion.h"
@@ -202,7 +202,7 @@ echo #define APP_VERSION_STRD "%version_major%.%version_minor%.%version_maintena
 echo #define APP_VERSION_FLAGS 0x0L>>"%srcdir%\appversion.h"
 
 echo.>>"%srcdir%\appversion.h"
-echo #define APP_COMMIT_DATE "%YYYY%-%DD%-%MM%">>"%srcdir%\appversion.h"
+echo #define APP_COMMIT_DATE "%month% %DD% %YYYY%">>"%srcdir%\appversion.h"
 echo #define APP_COMMIT_TIME "%hour%:%min%:%sec%">>"%srcdir%\appversion.h"
 
 echo.>>"%srcdir%\appversion.h"
@@ -212,12 +212,6 @@ echo.>>"%srcdir%\appversion.h"
 
 echo #endif //__APPVERSION_H__>>"%srcdir%\appversion.h"
 echo.>>"%srcdir%\appversion.h"
-
-::
-:: Do update of version.cpp file last modify time to force it recompile
-::
-copy /b "%srcdir%\version.cpp"+,, "%srcdir%\version.cpp"
-endlocal
 
 :_exit
 exit /B 0

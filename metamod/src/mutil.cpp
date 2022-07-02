@@ -202,7 +202,7 @@ int EXT_FUNC mutil_GetUserMsgID(plid_t plid, const char* msgname, int* size)
 		return umsg->getid();
 	}
 
-	for (int n = 1; n < arraysize(g_engine_msg_names); n++) {
+	for (unsigned int n = 1; n < arraysize(g_engine_msg_names); n++) {
 		if (!Q_strcmp(msgname, g_engine_msg_names[n])) {
 			if (size) *size = -1;
 			return n;
@@ -221,7 +221,7 @@ const char* EXT_FUNC mutil_GetUserMsgName(plid_t plid, int msgid, int* size)
 
 	// Guess names for any built-in g_engine messages mentioned in the SDK;
 	// from dlls/util.h.
-	if (msgid < arraysize(g_engine_msg_names)) {
+	if ((unsigned)msgid < arraysize(g_engine_msg_names)) {
 		if (size) *size = -1;
 		return g_engine_msg_names[msgid];
 	}

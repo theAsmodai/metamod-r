@@ -26,7 +26,7 @@ void EXT_FUNC meta_command_handler()
 // to a generic command-handler function (see above).
 void EXT_FUNC meta_AddServerCommand(const char* cmd_name, void (*function)())
 {
-	MPlugin* plug = g_plugins->find_memloc(function);
+	MPlugin* plug = g_plugins->find_memloc((void *)function);
 
 	META_DEBUG(4, "called: meta_AddServerCommand; cmd_name=%s, function=%d, plugin=%s", cmd_name, function, plug ? plug->file() : "unknown");
 

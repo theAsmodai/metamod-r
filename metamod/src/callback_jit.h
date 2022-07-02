@@ -1,6 +1,6 @@
 #pragma once
 
-#define CDATA_ENTRY(s, x, p, h)	{#x, offsetof(s, x), (uint8)getArgsCount(decltype(s##::##x)()), getRetType(decltype(s##::##x)()), is_varargs(decltype(s##::##x)()), p, h}
+#define CDATA_ENTRY(s, x, p, h)	{#x, offsetof(s, x), (uint8)getArgsCount(decltype(s::x)()), getRetType(decltype(s::x)()), is_varargs(decltype(s::x)()), p, h}
 
 enum rettype_t : uint8_t
 {
