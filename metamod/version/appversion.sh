@@ -108,7 +108,7 @@ init()
 		MODIFIED=+m
 	fi
 
-	NEW_VERSION="$MAJOR.$MINOR.$MAINTENANCE.$COMMIT_COUNT-dev$MODIFIED"
+	NEW_VERSION="$MAJOR.$MINOR.$MAINTENANCE.$COMMIT_COUNT$MODIFIED"
 
 	# Update appversion.h if version has changed or modifications/mixed revisions detected
 	if [ "$NEW_VERSION" != "$OLD_VERSION" ]; then
