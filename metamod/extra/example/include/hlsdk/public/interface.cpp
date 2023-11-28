@@ -121,6 +121,14 @@ void *Sys_GetProcAddress(void *pModuleHandle, const char *pName)
 	return GetProcAddress((HMODULE)pModuleHandle, pName);
 }
 
+// Purpose: Returns a module handle by its name.
+// Input  : pModuleName - module name
+// Output : the module handle or NULL in case of an error
+CSysModule *Sys_GetModuleHandle(const char *pModuleName)
+{
+	return reinterpret_cast<CSysModule *>(GetModuleHandle(pModuleName));
+}
+
 // Purpose: Loads a DLL/component from disk and returns a handle to it
 // Input  : *pModuleName - filename of the component
 // Output : opaque handle to the module (hides system dependency)

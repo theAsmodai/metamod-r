@@ -7,7 +7,7 @@ const RehldsFuncs_t* g_RehldsFuncs;
 IRehldsHookchains* g_RehldsHookchains;
 IRehldsServerStatic* g_RehldsSvs;
 
-bool rehlds_api_try_init(CSysModule* engineModule, char* failureReason)
+bool rehlds_api_init(CSysModule* engineModule)
 {
 	if (!engineModule) {
 		gpMetaUtilFuncs->pfnLogConsole(PLID, "Failed to locate engine module\n");
@@ -16,14 +16,13 @@ bool rehlds_api_try_init(CSysModule* engineModule, char* failureReason)
 
 	CreateInterfaceFn ifaceFactory = Sys_GetFactory(engineModule);
 	if (!ifaceFactory) {
-		sprintf(failureReason, "Failed to locate interface factory in engine module\n");
+		gpMetaUtilFuncs->pfnLogConsole(PLID, "Failed to locate interface factory in engine module\n");
 		return false;
 	}
 
 	int retCode = 0;
 	g_RehldsApi = (IRehldsApi*)ifaceFactory(VREHLDS_HLDS_API_VERSION, &retCode);
 	if (!g_RehldsApi) {
-		sprintf(failureReason, "Failed to locate retrieve rehlds api interface from engine module, return code is %d\n", retCode);
 		return false;
 	}
 
@@ -31,12 +30,12 @@ bool rehlds_api_try_init(CSysModule* engineModule, char* failureReason)
 	int minorVersion = g_RehldsApi->GetMinorVersion();
 
 	if (majorVersion != REHLDS_API_VERSION_MAJOR) {
-		sprintf(failureReason, "REHLDS Api major version mismatch; expected %d, real %d\n", REHLDS_API_VERSION_MAJOR, majorVersion);
+		gpMetaUtilFuncs->pfnLogConsole(PLID, "REHLDS Api major version mismatch; expected %d, real %d\n", REHLDS_API_VERSION_MAJOR, majorVersion);
 		return false;
 	}
 
 	if (minorVersion < REHLDS_API_VERSION_MINOR) {
-		sprintf(failureReason, "REHLDS Api minor version mismatch; expected at least %d, real %d\n", REHLDS_API_VERSION_MINOR, minorVersion);
+		gpMetaUtilFuncs->pfnLogConsole(PLID, "REHLDS Api minor version mismatch; expected at least %d, real %d\n", REHLDS_API_VERSION_MINOR, minorVersion);
 		return false;
 	}
 
@@ -47,25 +46,31 @@ bool rehlds_api_try_init(CSysModule* engineModule, char* failureReason)
 	return true;
 }
 
-bool meta_init_rehlds_api() {
-	char failReason[2048];
-
-#ifdef WIN32
-	CSysModule* engineModule = Sys_LoadModule("swds.dll");
-	if (!rehlds_api_try_init(engineModule, failReason)) {
-		engineModule = Sys_LoadModule("filesystem_stdio.dll");
-		if (!rehlds_api_try_init(engineModule, failReason)) {
-			gpMetaUtilFuncs->pfnLogConsole(PLID, "%s", failReason);
-			return false;
-		}
+bool meta_init_rehlds_api()
+{
+#ifdef _WIN32
+	// Find the most appropriate module handle from a list of DLL candidates
+	// Notes:
+	// - "swds.dll" is the library Dedicated Server
+	//
+	//    Let's also attempt to locate the ReHLDS API in the client's library
+	// - "sw.dll" is the client library for Software render, with a built-in listenserver
+	// - "hw.dll" is the client library for Hardware render, with a built-in listenserver
+	const char *dllNames[] = { "swds.dll", "hw.dll", "sw.dll" }; // List of DLL candidates to lookup for the ReHLDS API
+	CSysModule *engineModule = NULL; // The module handle of the selected DLL
+	for (const char *dllName : dllNames)
+	{
+		if (engineModule = Sys_GetModuleHandle(dllName))
+			break; // gotcha
 	}
+
 #else
-	CSysModule* engineModule = Sys_LoadModule("engine_i486.so");
-	if (!rehlds_api_try_init(engineModule, failReason)) {
-		gpMetaUtilFuncs->pfnLogConsole(PLID, "%s", failReason);
+	CSysModule *engineModule = Sys_GetModuleHandle("engine_i486.so");
+#endif
+
+	if (!rehlds_api_init(engineModule)) {
 		return false;
 	}
-#endif
 
 	return true;
 }
