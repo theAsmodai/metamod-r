@@ -471,7 +471,7 @@ bool MPlugin::unload(PLUG_LOADTIME now, PL_UNLOAD_REASON reason, bool& delayed)
 			return false;
 		}
 	}
-	if (m_action != PA_UNLOAD && m_action != PA_RELOAD) {
+	if (m_action != PA_UNLOAD && m_action != PA_RELOAD && reason != PNL_CMD_FORCED) {
 		META_WARNING("dll: Not unloading plugin '%s'; not marked for unload (action=%s)", m_desc, str_action());
 		return false;
 	}

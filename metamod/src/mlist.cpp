@@ -573,6 +573,15 @@ void MPluginList::unpause_all()
 	}
 }
 
+// Unload all plugins currently loaded
+void MPluginList::unload_all()
+{
+	bool delayed;
+	for (auto p : m_plugins) {
+		p->unload(PT_ANYTIME, PNL_CMD_FORCED, delayed);
+	}
+}
+
 // Retry any pending actions on plugins, for instance load/unload delayed
 // until changelevel.
 void MPluginList::retry_all(PLUG_LOADTIME now)

@@ -35,6 +35,7 @@ public:
 	bool load();											// load the list, at startup
 	bool refresh(PLUG_LOADTIME now);						// update from re-read inifile
 	void unpause_all();										// unpause any paused plugins
+	void unload_all();										// unload all plugins
 	void retry_all(PLUG_LOADTIME now);						// retry any pending plugin actions
 	void show(int source_index = 0);						// list plugins to console use dynamic alignment
 	void show_static(int source_index = 0);					// list plugins to console use static alignment

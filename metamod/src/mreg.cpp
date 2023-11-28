@@ -64,17 +64,21 @@ MRegCmd* MRegCmdList::add(const char* addname, REG_CMD_FN cmd_handler, MPlugin* 
 
 void MRegCmdList::remove(char* cmd_name)
 {
-	for (auto it = m_list.begin(), end = m_list.end(); it != end; ++it) {
+	for (auto it = m_list.begin(); it != m_list.end(); ) {
 		auto reg = *it;
 
 		if (!Q_stricmp(reg->m_name, cmd_name)) {
 			if (g_RehldsFuncs) {
 				g_RehldsFuncs->Cmd_RemoveCmd(cmd_name);
-				m_list.erase(it);
+				delete reg;
+				it = m_list.erase(it);
 			}
 			else {
 				reg->disable();
+				it++;
 			}
+		} else {
+			it++;
 		}
 	}
 }
@@ -82,17 +86,22 @@ void MRegCmdList::remove(char* cmd_name)
 // Disable any functions belonging to the given plugin (by index id).
 void MRegCmdList::remove(int owner_plugin_id)
 {
-	for (auto it = m_list.begin(), end = m_list.end(); it != end; ++it) {
+	for (auto it = m_list.begin(); it != m_list.end(); ) {
 		auto reg = *it;
 
-		if (reg->m_plugid == owner_plugin_id) {
-			if (g_RehldsFuncs) {
-				g_RehldsFuncs->Cmd_RemoveCmd(reg->m_name);
-				m_list.erase(it);
-			}
-			else {
-				reg->disable();
-			}
+		if (reg->m_plugid != owner_plugin_id) {
+			it++;
+			continue;
+		}
+
+		if (g_RehldsFuncs) {
+			g_RehldsFuncs->Cmd_RemoveCmd(reg->m_name);
+			delete reg;
+			it = m_list.erase(it);
+		}
+		else {
+			reg->disable();
+			it++;
 		}
 	}
 }

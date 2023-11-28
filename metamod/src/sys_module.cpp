@@ -68,6 +68,7 @@ module_handle_t CSysModule::load(const char *filepath)
 {
 	if (!m_handle) {
 		m_handle = LoadLibrary(filepath);
+		if (m_handle) m_free = true;
 
 		MODULEINFO module_info;
 		if (GetModuleInformation(GetCurrentProcess(), m_handle, &module_info, sizeof(module_info))) {
@@ -157,6 +158,7 @@ module_handle_t CSysModule::load(const char *filepath)
 {
 	if (!m_handle) {
 		m_handle = dlopen(filepath, RTLD_NOW | RTLD_LOCAL | RTLD_DEEPBIND);
+		if (m_handle) m_free = true;
 
 		char buf[1024], dummy[1024], path[260];
 		Q_sprintf(buf, "/proc/%i/maps", getpid());

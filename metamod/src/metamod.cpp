@@ -32,6 +32,8 @@ unsigned int g_CALL_API_count = 0;
 
 int g_requestid_counter = 0;
 
+bool g_metamod_active = false;
+
 // Very first metamod function that's run.
 // Do startup operations...
 void metamod_startup()
@@ -60,6 +62,8 @@ void metamod_startup()
 	if (!meta_init_gamedll()) {
 		Sys_Error("Failure to init game DLL; exiting...");
 	}
+
+	g_metamod_active = true;
 
 	// Register various console commands and cvars.
 	// Can I do these here, rather than waiting for GameDLLInit() ?
@@ -509,6 +513,8 @@ static void meta_apply_fix_data(std::vector<fixdata_t>& data)
 
 void meta_rebuild_callbacks()
 {
+	if (!g_metamod_active) return;
+
 	std::vector<fixdata_t> fixdata;
 	if (g_metaGlobals.esp_save) {
 		META_LOG("dll: Begin scan to collect callback fix data...");

@@ -74,6 +74,8 @@ extern unsigned int g_CALL_API_count;
 // stores previous requestid counter
 extern int g_requestid_counter;
 
+extern bool g_metamod_active;
+
 // (patch by BAILOPAN)
 // Holds cached player info, right now only things for querying cvars
 // Max players is always 32, small enough that we can use a static array

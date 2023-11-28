@@ -12,8 +12,11 @@ NEW_DLL_FUNCTIONS sNewFunctionTable;
 NEW_DLL_FUNCTIONS sNewFunctionTable_jit;
 NEW_DLL_FUNCTIONS *pHookedNewDllFunctions = &sNewFunctionTable;
 
-void MM_PRE_HOOK EXT_FUNC mm_GameShutdown()
+// Unload game DLL and meta plugins
+void MM_POST_HOOK EXT_FUNC mm_GameShutdown()
 {
+	g_metamod_active = false;
+	if (g_plugins) g_plugins->unload_all();
 	g_meta_extdll.unload();
 	g_GameDLL.sys_module.unload();
 	g_engine.sys_module.unload();
@@ -130,7 +133,7 @@ compile_data_t g_dllfunc_cdata[] =
 compile_data_t g_newdllfunc_cdata[] =
 {
 	CDATA_NEWDLL(pfnOnFreeEntPrivateData),                          // Called right before the object's memory is freed. Calls its destructor.
-	CDATA_NEWDLL_H(pfnGameShutdown, P_PRE, mm_GameShutdown),        //
+	CDATA_NEWDLL_H(pfnGameShutdown, P_POST, mm_GameShutdown),        //
 	CDATA_NEWDLL(pfnShouldCollide),                                 //
 
 	CDATA_NEWDLL(pfnCvarValue),                                     // (fz) Use mm_CvarValue2 instead
