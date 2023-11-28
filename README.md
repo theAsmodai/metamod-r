@@ -2,11 +2,12 @@
 
 **Metamod-r** is based on the original version of [Metamod](http://metamod.org/) written by _Will Day_ for Half-Life 1 with some improvements from [Jussi Kivilinna](https://github.com/jkivilin) ([Metamod-p](https://github.com/jkivilin/metamod-p)). This product contains a large number of performance optimizations and more pure code. The core was written using JIT compiler.
 
-**Metamod-r is incompatible with original `HLDS`. It's necessary to have installed [ReHLDS](https://github.com/dreamstalker/ReHLDS) (`API 3.1+`). There is no guarantee that the product will work in a different environment.**
+**Metamod-r is recommended to be run with [ReHLDS](https://github.com/dreamstalker/ReHLDS) (`API 3.1+`). 
+There is compatible with original `HLDS`**
 
 |HLDS | [ReHLDS](https://github.com/dreamstalker/ReHLDS) |  OS | Download |
 |---------| -------|    --- | ---   |
-| :x: | `API 3.1+` |![](https://i.imgur.com/AzhAYR4.png)   ![](https://i.imgur.com/t23p9tU.png)   |  [![Download](https://camo.githubusercontent.com/3d98e8552f23d02a71bc35672904ccc9a1e2201ae6eff9c892539a57035b290d/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f72656c656173652f74686541736d6f6461692f6d6574616d6f642d722e737667)](https://github.com/theAsmodai/metamod-r/releases/latest)
+| :heavy_check_mark: | :heavy_check_mark: `API 3.1+` |![](https://i.imgur.com/AzhAYR4.png)   ![](https://i.imgur.com/t23p9tU.png)   |  [![Download](https://camo.githubusercontent.com/3d98e8552f23d02a71bc35672904ccc9a1e2201ae6eff9c892539a57035b290d/68747470733a2f2f696d672e736869656c64732e696f2f6769746875622f72656c656173652f74686541736d6f6461692f6d6574616d6f642d722e737667)](https://github.com/theAsmodai/metamod-r/releases/latest)
 
 [![Official Site](https://img.shields.io/badge/Link-Official%20site-3CB371.svg?longCache=true&style=flat-square)](https://metamod-r.org/)
 [![Experimental](https://img.shields.io/badge/status-experimental-orange.svg?style=flat-square)](https://github.com/theAsmodai/metamod-r/)
