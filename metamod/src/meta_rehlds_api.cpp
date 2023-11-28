@@ -46,7 +46,26 @@ bool rehlds_api_init(CSysModule* engineModule)
 
 bool meta_init_rehlds_api()
 {
-	CSysModule* engineModule = Sys_LoadModule(ENGINE_LIB);
+#ifdef _WIN32
+	// Find the most appropriate module handle from a list of DLL candidates
+	// Notes:
+	// - "swds.dll" is the library Dedicated Server
+	//
+	//    Let's also attempt to locate the ReHLDS API in the client's library
+	// - "sw.dll" is the client library for Software render, with a built-in listenserver
+	// - "hw.dll" is the client library for Hardware render, with a built-in listenserver
+	const char *dllNames[] = { "swds.dll", "hw.dll", "sw.dll" }; // List of DLL candidates to lookup for the ReHLDS API
+	CSysModule *engineModule = NULL; // The module handle of the selected DLL
+	for (const char *dllName : dllNames)
+	{
+		if (engineModule = Sys_GetModuleHandle(dllName))
+			break; // gotcha
+	}
+
+#else
+	CSysModule *engineModule = Sys_GetModuleHandle("engine_i486.so");
+#endif
+
 	if (!rehlds_api_init(engineModule)) {
 		return false;
 	}
