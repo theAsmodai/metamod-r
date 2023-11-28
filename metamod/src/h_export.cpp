@@ -16,6 +16,7 @@ void WINAPI GiveFnptrsToDll(enginefuncs_t* pengfuncsFromEngine, globalvars_t* pG
 	g_engine.funcs = &g_engfuncs;
 	g_engine.globals = pGlobals;
 	g_engfuncs = *pengfuncsFromEngine;
+	g_metamod_module.load(&g_engfuncs);
 	g_engine.sys_module.load(pengfuncsFromEngine);
 
 	g_engfuncs = *pengfuncsFromEngine;

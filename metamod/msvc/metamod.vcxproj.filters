@@ -35,12 +35,6 @@
     <ClCompile Include="..\src\h_export.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\linkent.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\linkgame.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\log_meta.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -96,6 +90,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="..\src\meta_rehlds_api.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osdep_linkent_win32.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\osdep_linkent_linux.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

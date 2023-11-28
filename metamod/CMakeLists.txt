@@ -149,8 +149,7 @@ target_sources(metamod PRIVATE
 	"src/engine_api.cpp"
 	"src/game_support.cpp"
 	"src/h_export.cpp"
-	"src/linkent.cpp"
-	"src/linkgame.cpp"
+	"src/osdep_linkent_linux.cpp"
 	"src/log_meta.cpp"
 	"src/mdebug.cpp"
 	"src/mem_utils.cpp"
@@ -174,6 +173,7 @@ target_sources(metamod PRIVATE
 
 target_link_libraries(metamod PRIVATE
 	dl
+	pthread
 	$<$<CONFIG:COMPAT_GLIBC>:libc-2.11.1.so>
 )
 

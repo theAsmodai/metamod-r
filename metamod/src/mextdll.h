@@ -12,8 +12,6 @@ public:
 
 private:
 	module_handle_t m_hGameDLL;
-	extensiondll_t *m_dlls;
-	size_t *m_count;
 };
 
 extern CExtDll g_meta_extdll;

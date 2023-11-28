@@ -15,6 +15,9 @@
 // cvar to contain version
 extern cvar_t g_meta_version;
 
+// metamod module handle
+extern CSysModule g_metamod_module;
+
 // Info about the game dll/mod.
 struct gamedll_t
 {
