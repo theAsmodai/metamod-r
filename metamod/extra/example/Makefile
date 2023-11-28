@@ -7,7 +7,7 @@ COMPILER = g++
 
 OBJECTS = *.cpp
 
-LINK =
+LINK = -ldl
 
 OPT_FLAGS = -O3 -msse3 -flto -funroll-loops -fomit-frame-pointer -fno-stack-protector -fPIC
 
@@ -15,9 +15,9 @@ INCLUDE = -I. -I$(HLSDK)/common -I$(HLSDK)/dlls -I$(HLSDK)/engine \
 		-I$(HLSDK)/game_shared -I$(HLSDK)/pm_shared -I$(HLSDK)/public -I$(METAMOD)
 
 BIN_DIR = Release
-CFLAGS = $(OPT_FLAGS)
+CFLAGS = $(OPT_FLAGS) -Wno-unused-result
 
-CFLAGS += -g -DNDEBUG -Dlinux -D__linux__ -D__USE_GNU -std=gnu++11 -shared
+CFLAGS += -g -DNDEBUG -Dlinux -D__linux__ -D__USE_GNU -std=gnu++11 -shared -m32
 
 OBJ_LINUX := $(OBJECTS:%.c=$(BIN_DIR)/%.o)
 
