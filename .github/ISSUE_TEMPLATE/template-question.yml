@@ -1,17 +1,11 @@
 name: Question
 description: Create some Question for this project
-title: "[TASK]: "
+title: "[Question]: "
 labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Question"
-#projects: ["octo-org/1", "octo-org/44"]
-#assignees:
-#  - s1lentq
-#  - theAsmodai
-#  - stamepicmorg
 body:
   - type: markdown
     attributes:
-      value: |
-        Thanks for taking the time to fill out this Question!
+      value: Thanks for taking the time to fill out this Question!
   - type: input
     id: contact
     attributes:
@@ -26,17 +20,9 @@ body:
       label: Tell us more about your Question
       description: What happened?
       placeholder: Tell us about your Question!
-      value: "I have an Question!"
+      value: I have an Question!
     validations:
       required: true
-#  - type: checkboxes
-#    id: terms
-#    attributes:
-#      label: Code of Conduct
-#      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
-#      options:
-#        - label: I agree to follow this project's Code of Conduct
-#          required: true
-- type: markdown
-  attributes:
-    value: "Thanks for completing our form!"
+  - type: markdown
+    attributes:
+      value: Thanks for completing our form!
