@@ -1,0 +1,28 @@
+name: Question
+description: Create some Question for this project
+title: "[Question]: "
+labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Question"
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this Question!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details (optional)
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: have-question
+    attributes:
+      label: Tell us more about your Question
+      description: What happened?
+      placeholder: Tell us about your Question!
+      value: I have an Question!
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Thanks for completing our form!

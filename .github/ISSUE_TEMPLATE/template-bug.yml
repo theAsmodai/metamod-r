@@ -1,17 +1,13 @@
 name: Bug Report
 description: A generic bug report
 title: "[BUG]: "
-labels: ["Type: Bug", "Status: Available"]
-#projects: ["octo-org/1", "octo-org/44"]
+labels: "[Type: Bug, Status: Available]"
 assignees:
   - s1lentq
-#  - theAsmodai
-#  - stamepicmorg
 body:
   - type: markdown
     attributes:
-      value: |
-        Thanks for taking the time to fill out this bug report!
+      value: Thanks for taking the time to fill out this bug report!
   - type: input
     id: contact
     attributes:
@@ -26,7 +22,7 @@ body:
       label: What happened?
       description: Also tell us, what did you expect to happen?
       placeholder: Tell us what you see!
-      value: "A bug happened!"
+      value: A bug happened!
     validations:
       required: true
   - type: dropdown
@@ -77,17 +73,17 @@ body:
       label: What version of engine are you seeing the problem on?
       multiple: true
       options:
-        - HLDS (5758)  #Windows
-        - HLDS (5787)  #Linux
-        - HLDS (6132)  #Both
-        - HLDS (6153)  #Both
-        - HLDS (6153b) #Both
-        - HLDS (7561)  #Windows
-        - HLDS (7559)  #Linux
-        - HLDS (7882)  #Linux
-        - HLDS (8308)  #Both
-        - HLDS (8196)  #Linux
-        - HLDS (8684)  #Both
+        - HLDS (5758) Windows
+        - HLDS (5787) Linux
+        - HLDS (6132) Both
+        - HLDS (6153) Both
+        - HLDS (6153b) Both
+        - HLDS (7561) Windows
+        - HLDS (7559) Linux
+        - HLDS (7882) Linux
+        - HLDS (8308) Both
+        - HLDS (8196) Linux
+        - HLDS (8684) Both
         - reHLDS (Nightly CI build)
         - reHLDS (3.13.0.788)
         - reHLDS (3.12.0.780)
@@ -150,16 +146,6 @@ body:
       label: Relevant log output
       description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
       render: shell
-    validations:
-      required: true 
-#  - type: checkboxes
-#    id: terms
-#    attributes:
-#      label: Code of Conduct
-#      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
-#      options:
-#        - label: I agree to follow this project's Code of Conduct
-#          required: true
-- type: markdown
-  attributes:
-    value: "Thanks for completing our form!"
+  - type: markdown
+    attributes:
+      value: Thanks for completing our form!

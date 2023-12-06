@@ -1,0 +1,31 @@
+name: New Feature
+description: Suggest an idea for this project
+title: "[Feature request]: "
+labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Rrequest"
+assignees:
+  - s1lentq
+  - stamepicmorg
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this Feature request!
+  - type: input
+    id: contact-task
+    attributes:
+      label: Contact Details (optional)
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: have-idea
+    attributes:
+      label: Tell us more about your idea
+      description: Tell us what you expect from the project and the developers?
+      placeholder: Tell us about your idea!
+      value: I have an idea!
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Thanks for completing our form!

@@ -1,0 +1,28 @@
+name: Task
+description: Create some generic task for this project
+title: "[TASK]: "
+labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Task"
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to fill out this Task!
+  - type: input
+    id: contact-feature
+    attributes:
+      label: Contact Details (optional)
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: have-task
+    attributes:
+      label: Tell us more about your task
+      description: Tell us what you want from the project and the developers?
+      placeholder: Tell us about your task!
+      value: I have an task!
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: Thanks for completing our form!
