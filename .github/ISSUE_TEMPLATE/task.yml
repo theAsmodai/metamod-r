@@ -1,0 +1,42 @@
+name: Generic task
+description: Create some generic task for this project
+title: "[TASK]: "
+labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Task"
+#projects: ["octo-org/1", "octo-org/44"]
+#assignees:
+#  - s1lentq
+#  - theAsmodai
+#  - stamepicmorg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this Task!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details (optional)
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: have-task
+    attributes:
+      label: Tell us more about your task
+      description: Tell us what you want from the project and the developers?
+      placeholder: Tell us about your task!
+      value: "I have an task!"
+    validations:
+      required: true
+#  - type: checkboxes
+#    id: terms
+#    attributes:
+#      label: Code of Conduct
+#      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
+#      options:
+#        - label: I agree to follow this project's Code of Conduct
+#          required: true
+- type: markdown
+  attributes:
+    value: "Thanks for completing our form!"

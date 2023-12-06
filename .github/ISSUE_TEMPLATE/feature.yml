@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest an idea for this project
+title: "[Feature request]: "
+labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Rrequest"
+#projects: ["octo-org/1", "octo-org/44"]
+assignees:
+  - s1lentq
+#  - theAsmodai
+  - stamepicmorg
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this Feature request!
+  - type: input
+    id: contact
+    attributes:
+      label: Contact Details (optional)
+      description: How can we get in touch with you if we need more info?
+      placeholder: ex. email@example.com
+    validations:
+      required: false
+  - type: textarea
+    id: have-idea
+    attributes:
+      label: Tell us more about your idea
+      description: Tell us what you expect from the project and the developers?
+      placeholder: Tell us about your idea!
+      value: "I have an idea!"
+    validations:
+      required: true
+#  - type: checkboxes
+#    id: terms
+#    attributes:
+#      label: Code of Conduct
+#      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com)
+#      options:
+#        - label: I agree to follow this project's Code of Conduct
+#          required: true
+- type: markdown
+  attributes:
+    value: "Thanks for completing our form!"
