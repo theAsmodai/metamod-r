@@ -1,7 +1,7 @@
 name: Task
 description: Create some generic task for this project
 title: "[TASK]: "
-labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Task"
+labels: ["Engine: Independent", "Priority: Medium", "OS: Independent", "Status: Available", "Type: Task"]
 body:
   - type: markdown
     attributes:

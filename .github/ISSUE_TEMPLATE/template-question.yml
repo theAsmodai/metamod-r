@@ -1,7 +1,7 @@
 name: Question
 description: Create some Question for this project
 title: "[Question]: "
-labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Question"
+labels: ["Engine: Independent", "Priority: Medium", "OS: Independent", "Status: Available", "Type: Question"]
 body:
   - type: markdown
     attributes:

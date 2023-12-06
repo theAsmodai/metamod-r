@@ -1,7 +1,7 @@
 name: New Feature
 description: Suggest an idea for this project
 title: "[Feature request]: "
-labels: "Engine: Independent, Priority: Medium, OS: Independent, Status: Available, Type: Rrequest"
+labels: ["Engine: Independent", "Priority: Medium", "OS: Independent", "Status: Available", "Type: Rrequest"]
 assignees:
   - s1lentq
   - stamepicmorg
