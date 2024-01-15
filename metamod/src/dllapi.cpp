@@ -16,7 +16,8 @@ NEW_DLL_FUNCTIONS *pHookedNewDllFunctions = &sNewFunctionTable;
 void MM_POST_HOOK EXT_FUNC mm_GameShutdown()
 {
 	g_metamod_active = false;
-	if (g_plugins) g_plugins->unload_all();
+	if (g_plugins && !g_dedicated_server) g_plugins->unload_all();
+
 	g_meta_extdll.unload();
 	g_GameDLL.sys_module.unload();
 	g_engine.sys_module.unload();

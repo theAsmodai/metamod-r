@@ -35,6 +35,7 @@ unsigned int g_CALL_API_count = 0;
 int g_requestid_counter = 0;
 
 bool g_metamod_active = false;
+bool g_dedicated_server = false;
 
 // Very first metamod function that's run.
 // Do startup operations...
@@ -166,6 +167,7 @@ void metamod_startup()
 	g_engine.pl_funcs.pfnCVarRegister = meta_CVarRegister;
 	g_engine.pl_funcs.pfnCvar_RegisterVariable = meta_CVarRegister;
 	g_engine.pl_funcs.pfnRegUserMsg = meta_RegUserMsg;
+	g_dedicated_server = g_engine.pl_funcs.pfnIsDedicatedServer() ? true : false;
 
 	if (g_engine.pl_funcs.pfnQueryClientCvarValue)
 		g_engine.pl_funcs.pfnQueryClientCvarValue = meta_QueryClientCvarValue;

@@ -78,6 +78,7 @@ extern unsigned int g_CALL_API_count;
 extern int g_requestid_counter;
 
 extern bool g_metamod_active;
+extern bool g_dedicated_server;
 
 // (patch by BAILOPAN)
 // Holds cached player info, right now only things for querying cvars
