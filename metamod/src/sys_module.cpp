@@ -194,7 +194,7 @@ bool CSysModule::unload()
 
 	bool ret = true;
 	if (m_free) {
-		ret = dlclose(m_handle) != 0;
+		ret = dlclose(m_handle) == 0;
 	}
 
 	m_handle = INVALID_HANDLE;
