@@ -39,6 +39,9 @@
 // Initializes replacement code
 bool meta_init_linkent_replacement(CSysModule *moduleMetamod, CSysModule *moduleGame);
 
+// Remove replacement code if new linkent mechanism was found
+void meta_shutdown_linkent_replacement();
+
 // Comments from SDK dlls/util.h:
 //! This is the glue that hooks .MAP entity class names to our CPP classes.
 //! The _declspec forces them to be exported by name so we can do a lookup with GetProcAddress().

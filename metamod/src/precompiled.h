@@ -53,6 +53,7 @@
 #include "mem_utils.h"
 #include "callback_jit.h"
 #include "meta_rehlds_api.h"
+#include "physint.h"
 
 #undef CreateInterface
 #include "linkent.h"

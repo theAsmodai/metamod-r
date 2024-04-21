@@ -221,6 +221,33 @@ C_DLLEXPORT int GetNewDLLFunctions(NEW_DLL_FUNCTIONS *pNewFunctionTable, int *in
 	return TRUE;
 }
 
+C_DLLEXPORT int Server_GetPhysicsInterface(int iVersion, server_physics_api_t *pfuncsFromEngine, physics_interface_t *pFunctionTable)
+{
+	// TODO: provide physint to plugins
+	if (iVersion != SV_PHYSICS_INTERFACE_VERSION || pfuncsFromEngine == nullptr || pFunctionTable == nullptr)
+		return FALSE;
+
+
+	// we have linkent alternative, shutdown linkent replacement
+	meta_shutdown_linkent_replacement();
+
+	// engine always require for nullptr, only replace single function needed for linkent alternative
+	Q_memset(pFunctionTable, 0, sizeof(*pFunctionTable));
+	pFunctionTable->SV_CreateEntity = [](edict_t *pent, const char *szName)
+	{
+		// check if gamedll implements this entity
+		ENTITY_FN SpawnEdict = reinterpret_cast<ENTITY_FN>(g_GameDLL.sys_module.getsym(szName));
+
+		// should we check metamod module itself? engine will do GPA on metamod module before failing back to this call anyway
+		if( !SpawnEdict )
+			return -1; // failed
+
+		SpawnEdict( &pent->v );
+		return 0; // handled
+	};
+	return TRUE;
+}
+
 void compile_dllfunc_callbacks()
 {
 	jitdata_t jitdata;

@@ -244,3 +244,8 @@ bool meta_init_linkent_replacement(CSysModule *moduleMetamod, CSysModule *module
 {
 	return combine_module_export_tables(moduleMetamod, moduleGame);
 }
+
+void meta_shutdown_linkent_replacement()
+{
+	// no-op
+}
