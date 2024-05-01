@@ -60,6 +60,8 @@ static unsigned char dlsym_old_bytes[BYTES_SIZE];
 // Mutex for our protection
 static pthread_mutex_t mutex_replacement_dlsym = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
+static int is_original_restored;
+
 // constructs new jmp forwarder
 inline void construct_jmp_instruction(void *x, void *place, void *target)
 {
@@ -105,7 +107,6 @@ static void *__replacement_dlsym(void *module, const char *funcname)
 	// these are needed in case dlsym calls dlsym, default one doesn't do
 	// it but some LD_PRELOADed library that hooks dlsym might actually
 	// do so.
-	static int is_original_restored = 0;
 	int was_original_restored = is_original_restored;
 
 	// Lock before modifing original dlsym
@@ -214,4 +215,19 @@ bool meta_init_linkent_replacement(CSysModule *moduleMetamod, CSysModule *module
 
 	// done
 	return true;
+}
+
+void meta_shutdown_linkent_replacement()
+{
+	// Lock before modifing original dlsym
+	pthread_mutex_lock(&mutex_replacement_dlsym);
+
+	// restore old dlsym
+	if (!is_original_restored)
+	{
+		restore_original_dlsym();
+		is_original_restored = 1;
+	}
+
+	pthread_mutex_unlock(&mutex_replacement_dlsym);
 }
